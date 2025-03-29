@@ -1,40 +1,40 @@
 class Canvas{
-
+    /** @type {HTMLCanvasElement} */
+    canvasHTMLElement;
     /** @type {CanvasRenderingContext2D} */
-    canvasElement;
-    /** @type {DrawableBase[]} */
+    #ctx;
+    /** @type {Entity[]} */
     objects = [];
 
+    /** @type {number} */
+    lastPaintTimestamp;
+    
     /**
-     * @param {CanvasRenderingContext2D} canvas
+     * @param {CanvasRenderingContext2D} ctx
+     * @param {HTMLCanvasElement} canvasHTMLElement
      */
-    constructor(canvas){
-        this.canvasElement = canvas;
+    constructor(ctx,canvasHTMLElement){
+        this.#ctx = ctx;
+        this.canvasHTMLElement = canvasHTMLElement;
+        ctx.font = "12px serif";
+        ctx.fillStyle = "white";
     }
 
-    async startPaintingAsync(){
-        while(true){
-            await new Promise(resolve => setTimeout(resolve, 10));
-            this.canvasElement.clearRect(0, 0, this.canvasElement.canvas.width, this.canvasElement.canvas.height);
-            this.drawObjects();
-        }
-    }
 
-    drawObjects(){
-        ctx.lineWidth = 14;
-        ctx.strokeStyle = "green";
-        this.objects.forEach((item) => {
-            for(let i = 0; i < item.path.length - 1 ; i++){
-                let selectedPoint = item.path[i];
-                let nextPoint = item.path[i + 1];
-                this.canvasElement.moveTo(selectedPoint.x,selectedPoint.y);
-                this.canvasElement.lineTo(nextPoint.x,nextPoint.y);
-                this.canvasElement.stroke();
-            }
+    drawObjects(timestamp){
+        this.lastPaintTimestamp = timestamp;
+
+        this.objects.forEach( (object) => {
+            object.draw(this.#ctx);
         })
     }
 
-    #drawPolygon(){
-
+    clearCanvas(){
+        this.#ctx.clearRect(0,0,this.canvasHTMLElement.width,this.canvasHTMLElement.height);
     }
+
+    writeText(text,x,y){
+        this.#ctx.fillText(text,x,y);
+    }
+
 }

@@ -1,12 +1,16 @@
-/**
- * @type {CanvasRenderingContext2D}
- */
-const ctx = document.getElementById('canvas').getContext('2d');
+const canvas = /** @type {HTMLCanvasElement} */ (document.getElementById('canvas'));
+/** @type {CanvasRenderingContext2D} */
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerHeight * 1; 
+canvas.height = window.innerHeight * 1;
 
-const canvas = new Canvas(ctx);
-console.log(canvas);
-canvas.objects.push(new Entity(new Point(5,5),[new Point(2,5),new Point(2,2)],0,"#FFFFFF"));
-canvas.startPaintingAsync();
+const painter = new Canvas(ctx,canvas);
+console.log(ctx);
+painter.objects.push(new Entity());
+
+const runner = new Game(painter);
+
+runner.run();
 
 
 

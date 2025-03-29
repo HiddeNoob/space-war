@@ -19,12 +19,12 @@ class Vector{
      * @param {Vector} vector 
      */
     add(vector){
-        vector.data
         this.#checkIsLengthEqual(vector);
         this.data.forEach((value,index) => {
             this.data[index] += vector.data[index]; 
         })
     }
+
     
     /**
      * @param {Vector} vector 
