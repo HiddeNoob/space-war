@@ -23,6 +23,7 @@ class Vector{
         this.data.forEach((value,index) => {
             this.data[index] += vector.data[index]; 
         })
+        return this;
     }
 
     
@@ -34,6 +35,7 @@ class Vector{
         this.data.forEach((value,index) => {
             this.data[index] *= vector.data[index]; 
         })
+        return this;
     }
     
     /**

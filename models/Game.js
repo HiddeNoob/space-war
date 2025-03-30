@@ -3,6 +3,9 @@ class Game{
     canvasObject
     /** @type {Player} */
     player
+    
+    /** @type {PlayerLocationUpdater} */
+    playerLocationUpdater
 
     settings = {
         "showFPS" : true
@@ -10,16 +13,20 @@ class Game{
 
     constructor(canvasObject){
         this.canvasObject = canvasObject;
+        this.player = new Player();
+        this.playerLocationUpdater = new PlayerLocationUpdater(this.player);
+        console.log(this.player);
     }
 
     run(){
         const task = (timestamp) => {
             this.canvasObject.clearCanvas();
-            this.showFPS(timestamp);
+            this.settings.showFPS && this.showFPS(timestamp);
+            this.playerLocationUpdater.update();
             this.canvasObject.drawObjects(timestamp);
-            window.requestAnimationFrame(task); 
+            self.requestAnimationFrame(task);
         }
-        window.requestAnimationFrame(task);
+        self.requestAnimationFrame(task);
     }
 
     showFPS(timestamp){
