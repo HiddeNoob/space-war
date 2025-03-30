@@ -73,7 +73,9 @@ class PlayerLocationUpdater {
     const mouseY = this.latestClientMouseLocation.y;
     const playerX = this.player.drawOptions.location.x;
     const playerY = this.player.drawOptions.location.y; 
-    const angle = Math.atan((mouseY - playerY) / (mouseX - playerX)) * 180 / (Math.PI);
+    
+
+    const angle = - Math.atan2((mouseX - playerX),(mouseY - playerY));
     this.player.drawOptions.angle = angle;
   }
 }
