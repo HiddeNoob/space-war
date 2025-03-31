@@ -26,5 +26,31 @@ class Line{
         this.lineColor = color;
     }
 
+    /** @param {Line} line */
+    isIntersectsWith(line){
+        const intersectPoint = Line.getIntersectPoint(this,line);
+
+        /** @param {Point} p1 * @param {Point} p2 * @param {Point} checkPoint */
+        const isBetweenTheTwoPoints = (p1,p2,checkPoint) => {
+            return ((p1.y > checkPoint.y && p2.y < checkPoint.y) || (p1.y < checkPoint.y && p2.y > checkPoint.y))
+        }
+
+        return isBetweenTheTwoPoints(this.startPoint,this.endPoint,intersectPoint) && isBetweenTheTwoPoints(line.startPoint,line.endPoint,intersectPoint);
+    }
+
+    /** @param {Line} l1 * @param {Line} l2 */
+    static getIntersectPoint(l1,l2){ // y = ax + b
+
+        /** @param {Line} line */
+        const calculateA = (line) => (line.endPoint.y - line.startPoint.y) / (line.endPoint.x - line.startPoint.x);
+        /** @param {Line} line */
+        const calculateB = (line) => (line.endPoint.y - calculateB(line) - line.endPoint.x)
+
+        const intersectX = (calculateB(l1) - calculateB(l2)) / (calculateA(l2) - calculateA(l1))
+        const intersectY = calculateA(l1) * intersectX + calculateB(l1);
+
+        return new Point(intersectX,intersectY);
+    }
+
 
 }
