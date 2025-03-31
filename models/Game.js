@@ -19,7 +19,7 @@ class Game{
         this.canvasObject = canvasObject;
         this.player = new Player();
         console.log(this.player)
-        this.canvasObject.objects.push(this.player);
+        this.canvasObject.grid.addEntity(this.player);
         this.userActionHandler = new UserActionHandler(this.player,this.canvasObject);
         this.entityLocationUpdater = new EntityLocationUpdater(this.canvasObject);
     }

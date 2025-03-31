@@ -3,8 +3,8 @@ class Canvas{
     canvasHTMLElement;
     /** @type {CanvasRenderingContext2D} */
     #ctx;
-    /** @type {Entity[]} */
-    objects = [];
+    /** @type {Grid} */
+    grid = new Grid(50); // 50px partition
 
     /** @type {number} */
     lastPaintTimestamp;
@@ -20,12 +20,11 @@ class Canvas{
         ctx.fillStyle = "white";
     }
 
-
+    /** @param {number} timestamp */
     drawObjects(timestamp){
         this.lastPaintTimestamp = timestamp;
-
-        this.objects.forEach( (object) => {
-            object.draw(this.#ctx);
+        this.grid.cells.forEach( (setOfEntity) => {
+            setOfEntity.forEach((entity) => entity.draw(this.#ctx));
         })
     }
 
@@ -36,5 +35,5 @@ class Canvas{
     writeText(text,x,y){
         this.#ctx.fillText(text,x,y);
     }
-
+    
 }
