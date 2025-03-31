@@ -19,10 +19,12 @@ class Line{
      * @param {number} thickness 
      * @param {string} color 
      */
-    constructor(x1,y1,x2,y2,thickness = 2,color = "#FFFFFF"){
+    constructor(x1,y1,x2,y2,thickness = 1,color = "#FFFFFF"){
         this.startPoint = new Point(x1,y1);
         this.endPoint = new Point(x2,y2);
         this.lineWidth = thickness;
         this.lineColor = color;
     }
+
+
 }

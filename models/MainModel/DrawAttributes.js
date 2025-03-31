@@ -9,13 +9,16 @@ class DrawAttributes{
      * @param {number} angle 
      * @param {string} color 
      */
-    constructor(polygon,location = new Point(0,0), angle = 0, color  = "#ffffff"){
+    constructor(polygon,location = new Point(50,50), angle = 0, color  = "#ffffff"){
         this.location = location;
         this.polygon = polygon;
         this.angle = angle;
         this.color = color;
     }
-
+    
+    copy(){
+        return new DrawAttributes(this.polygon,this.location.copy(),this.angle,this.color)
+    }
 
 
 

@@ -1,24 +1,27 @@
 class MotionAttributes{
+    
     /** @type {Vector} */
-    speed;
+    speed = new Vector([0,0]);
+
     /** @type {Vector} */
-    acceleration;
+    acceleration = new Vector([0,0]);
+
     /** @type {Vector} */
-    force;
+    force = new Vector([0,0]);
+
     /** @type {number} */
     mass;
+    
+    /** @type {number} */
+    maxSpeed
 
     /**
-     * @param {Vector} speed 
-     * @param {Vector} acceleration 
-     * @param {Vector} force 
      * @param {number} mass 
+     * @param {number} maxSpeed 
      */
-    constructor(speed = new Vector([0,0]),acceleration = new Vector([0,0]),force = new Vector([0,0]),mass = 10){
-        this.speed = speed;
-        this.acceleration = acceleration;
-        this.force = force;
+    constructor(maxSpeed = 1,mass = 1000){
         this.mass = mass;
+        this.maxSpeed = maxSpeed;
     }
 
     resetInstantVectors(){

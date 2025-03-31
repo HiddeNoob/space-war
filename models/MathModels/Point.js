@@ -1,4 +1,6 @@
-class Point{ // immutable
+class Point{
+
+
     x;
     y;
 
@@ -12,18 +14,41 @@ class Point{ // immutable
         this.y = y;
     }
 
+    copy(){
+        return new Point(this.x,this.y);
+    }
+
     /** @param {Point} point */
-    add(point){
-        this.x += point.x;
-        this.y += point.y;
-        return this;
+    set(point){
+        this.x = point.x;
+        this.y = point.y;
+    }
+
+
+    /** @param {Point | number} object */
+    add(object){
+        if(object instanceof Point){
+            this.x += object.x;
+            this.y += object.y;
+            return this;
+        }else{
+            this.x += object;
+            this.y += object;
+        }
     }
     
-    /** @param {Point} point */
-    multiply(point){
-        this.x *= point.x;
-        this.y *= point.y;
+    /** @param {Point | number} object */
+    multiply(object){
+        if(object instanceof Point){
+            this.x *= object.x;
+            this.y *= object.y;
+        }
+        else{
+            this.x *= object;
+            this.y *= object;
+        }
         return this;
+
     }
 
     /**

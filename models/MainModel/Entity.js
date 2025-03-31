@@ -1,13 +1,17 @@
 class Entity{
     /** @type {number} */
     health
-
+    /** @type {MotionAttributes} */
+    motionAttributes
+    /** @type {DrawAttributes} */
+    drawAttributes
     /**
      * @param {number} health 
-     * @param {DrawAttributes} drawOptions
+     * @param {DrawAttributes} drawAttributes
      */
-    constructor(health = 100,drawOptions = EntityShapes.PLAYER_PAINT_OPTIONS){
-        this.drawOptions = drawOptions;
+    constructor(health = 100,drawAttributes = new DrawAttributes(GlobalShapes.RECTANGLE),motionAttributes = new MotionAttributes()){
+        this.drawAttributes = drawAttributes;
+        this.motionAttributes = motionAttributes;
         this.health = health;
     }
 
@@ -15,7 +19,7 @@ class Entity{
      * @param {CanvasRenderingContext2D} ctx
      */
     draw(ctx){
-        this.#drawPolygon(ctx,this.drawOptions.polygon,this.drawOptions.location);
+        this.#drawPolygon(ctx,this.drawAttributes.polygon,this.drawAttributes.location);
     }
     
     /**
@@ -24,12 +28,10 @@ class Entity{
      * @param {Point} startPoint
      */
     #drawPolygon(ctx,polygon,startPoint){
-        ctx.fillText(this.drawOptions.angle.toString(),10,200)
         ctx.translate(startPoint.x,startPoint.y);
-        ctx.rotate(this.drawOptions.angle)
+        ctx.rotate(this.drawAttributes.angle)
         ctx.beginPath();
-        ctx.arc(0,0,10,0,360)
-        for(let i = 0; i < polygon.lines.length; i++){
+            for(let i = 0; i < polygon.lines.length; i++){
             const currentLine = polygon.lines[i]
             
             let point1 = currentLine.startPoint
@@ -37,12 +39,14 @@ class Entity{
 
             ctx.lineWidth = currentLine.lineWidth;
             ctx.strokeStyle = currentLine.lineColor;
+                
+            ctx.moveTo(Math.floor(point1.x),Math.floor(point1.y)); // Math.floor for optimization
+            ctx.lineTo(Math.floor(point2.x),Math.floor(point2.y)); // see the link for details https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Optimizing_canvas#avoid_floating-point_coordinates_and_use_integers_instead
 
-            ctx.moveTo(point1.x,point1.y);
-            ctx.lineTo(point2.x,point2.y);
         }
         ctx.stroke();
-        ctx.rotate(-this.drawOptions.angle);
+        ctx.rotate(-this.drawAttributes.angle);
         ctx.translate(-startPoint.x,-startPoint.y);
     }
+
 }

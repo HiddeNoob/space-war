@@ -5,8 +5,6 @@ canvas.width = window.innerHeight * 1;
 canvas.height = window.innerHeight * 1;
 
 const painter = new Canvas(ctx,canvas);
-console.log(ctx);
-painter.objects.push(new Entity());
 
 const runner = new Game(painter);
 

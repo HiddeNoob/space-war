@@ -2,11 +2,6 @@ class Vector{
 
     /** @type {number[]} */
     data;
-    /** @type {Date} */
-    constructTime;
-
-    /** @type {Object} */
-    belongsTo;
 
     /**
      * @param {number[]} array 
@@ -16,26 +11,53 @@ class Vector{
     }
 
     /**
-     * @param {Vector} vector 
+     * @param {Vector | number} object 
      */
-    add(vector){
-        this.#checkIsLengthEqual(vector);
-        this.data.forEach((value,index) => {
-            this.data[index] += vector.data[index]; 
-        })
+    add(object){
+        if(object instanceof Vector){
+            this.#checkIsLengthEqual(object);
+            this.data.forEach((value,index) => {
+                this.data[index] += object.data[index]; 
+            })
+        }else{
+            this.data.forEach((value,index) => {
+                this.data[index] += object;
+            })
+        }
+
         return this;
     }
 
     
     /**
-     * @param {Vector} vector 
+     * @param {Vector | number} object 
      */
-    multiply(vector){
-        this.#checkIsLengthEqual(vector);
-        this.data.forEach((value,index) => {
-            this.data[index] *= vector.data[index]; 
-        })
+    multiply(object){
+
+        if(object instanceof Vector){
+            this.#checkIsLengthEqual(object);
+            this.data.forEach((value,index) => {
+                this.data[index] *= object.data[index]; 
+            })
+        }else{
+            this.data.forEach((value,index) => {
+                this.data[index] *= object
+            })
+        }
+         
+
         return this;
+    }
+
+    getUnitVector(){
+        const hipotenus = this.toScalar()
+        const newX = this.data[0] / hipotenus
+        const newY = this.data[1] / hipotenus
+        return new Vector([newX,newY])
+    }
+
+    toScalar(){
+        return Math.sqrt(this.data[0]**2 + this.data[1]**2);
     }
     
     /**

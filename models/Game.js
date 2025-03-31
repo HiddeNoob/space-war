@@ -1,11 +1,15 @@
 class Game{
     /** @type {Canvas} */
     canvasObject
+
     /** @type {Player} */
     player
     
-    /** @type {PlayerLocationUpdater} */
-    playerLocationUpdater
+    /** @type {UserActionHandler} */
+    userActionHandler
+
+    /** @type {EntityLocationUpdater} */
+    entityLocationUpdater
 
     settings = {
         "showFPS" : true
@@ -14,15 +18,18 @@ class Game{
     constructor(canvasObject){
         this.canvasObject = canvasObject;
         this.player = new Player();
-        this.playerLocationUpdater = new PlayerLocationUpdater(this.player);
-        console.log(this.player);
+        console.log(this.player)
+        this.canvasObject.objects.push(this.player);
+        this.userActionHandler = new UserActionHandler(this.player,this.canvasObject);
+        this.entityLocationUpdater = new EntityLocationUpdater(this.canvasObject);
     }
 
-    run(){
+    run(){  
         const task = (timestamp) => {
             this.canvasObject.clearCanvas();
             this.settings.showFPS && this.showFPS(timestamp);
-            this.playerLocationUpdater.update();
+            this.userActionHandler.update();
+            this.entityLocationUpdater.update();
             this.canvasObject.drawObjects(timestamp);
             self.requestAnimationFrame(task);
         }
