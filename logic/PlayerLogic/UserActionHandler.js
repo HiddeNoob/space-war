@@ -74,7 +74,7 @@ class UserActionHandler {
       createdBullet.drawAttributes.location.set(this.player.drawAttributes.location);
       createdBullet.drawAttributes.angle = bulletAngle;
 
-      this.canvas.objects.push(createdBullet);
+      this.canvas.grid.addEntity(createdBullet);
 
       this.player.motionAttributes.speed.add(
         new Vector([
