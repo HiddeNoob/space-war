@@ -58,7 +58,7 @@ class UserActionHandler {
       this.#latestClientMouseLocation = new Point(e.offsetX, e.offsetY);
     });
 
-    window.addEventListener("mousemove",(e) => { // create Bullet object and add vector that same angle with user direction angle 
+    window.addEventListener("mousedown",(e) => { // create Bullet object and add vector that same angle with user direction angle 
       // get speed with player momentum power
       console.log(this.player.weapon.bulletObject.motionAttributes);
       console.log(this.canvas.grid)

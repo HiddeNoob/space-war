@@ -52,5 +52,9 @@ class Line{
         return new Point(intersectX,intersectY);
     }
 
+    copy(){
+        return new Line(this.startPoint.x,this.startPoint.y,this.endPoint.x,this.endPoint.y,this.lineWidth,this.lineColor);
+    }
+
 
 }
