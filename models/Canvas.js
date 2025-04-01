@@ -1,6 +1,6 @@
 class Canvas{
     /** @type {HTMLCanvasElement} */
-    canvasHTMLElement;
+    #canvasHTMLElement;
     /** @type {CanvasRenderingContext2D} */
     #ctx;
     
@@ -17,7 +17,7 @@ class Canvas{
      */
     constructor(ctx,canvasHTMLElement){
         this.#ctx = ctx;
-        this.canvasHTMLElement = canvasHTMLElement;
+        this.#canvasHTMLElement = canvasHTMLElement;
         ctx.font = "12px serif";
         ctx.fillStyle = "white";
     }
@@ -26,12 +26,12 @@ class Canvas{
     drawObjects(timestamp){
         this.lastPaintTimestamp = timestamp;
         this.grid.cells.forEach( (setOfEntity) => {
-            setOfEntity.forEach((entity) => entity.draw(this.#ctx));
+            setOfEntity.forEach((entity) => this.drawEntity(entity));
         })
     }
 
     clearCanvas(){
-        this.#ctx.clearRect(0,0,this.canvasHTMLElement.width,this.canvasHTMLElement.height);
+        this.#ctx.clearRect(0,0,this.#canvasHTMLElement.width,this.#canvasHTMLElement.height);
     }
 
     writeText(text,x,y){
@@ -41,8 +41,8 @@ class Canvas{
     showGrid(){
         this.#ctx.lineWidth = 1;
         this.#ctx.beginPath();
-        for(let i = 0; i < this.canvasHTMLElement.height / this.cellSize ; i++){
-            for(let j = 0; j < this.canvasHTMLElement.width / this.cellSize ; j++){
+        for(let i = 0; i < this.#canvasHTMLElement.height / this.cellSize ; i++){
+            for(let j = 0; j < this.#canvasHTMLElement.width / this.cellSize ; j++){
                 const x = j * this.cellSize;
                 const y = i * this.cellSize;
                 const selectedEntities = this.grid.cells.get(this.grid.getCellKey(x,y));
@@ -56,6 +56,35 @@ class Canvas{
             }
         }
         this.#ctx.stroke()
+    }
+
+    /** @param {Entity} entity */
+    drawEntity(entity){
+        ctx.translate(entity.drawAttributes.location.x,entity.drawAttributes.location.y);
+        ctx.rotate(entity.drawAttributes.angle)
+        this.#drawPolygon(entity.drawAttributes.shell.breakableLines);
+        ctx.rotate(-entity.drawAttributes.angle);
+        ctx.translate(-entity.drawAttributes.location.x,-entity.drawAttributes.location.y);
+    }
+
+    /** @param {Polygon | Line[]} polygon */
+    #drawPolygon(polygon){
+        ctx.beginPath();
+        for(let i = 0; i < (polygon instanceof Polygon ? polygon.lines.length : polygon.length); i++){
+            const currentLine = polygon instanceof Polygon ? polygon.lines[i] : polygon[i];
+            
+            let point1 = currentLine.startPoint
+            let point2 = currentLine.endPoint
+
+            ctx.lineWidth = currentLine.lineWidth;
+            ctx.strokeStyle = currentLine.lineColor;
+                
+            ctx.moveTo(Math.floor(point1.x),Math.floor(point1.y)); // Math.floor for optimization
+            ctx.lineTo(Math.floor(point2.x),Math.floor(point2.y)); // see the link for details https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Optimizing_canvas#avoid_floating-point_coordinates_and_use_integers_instead
+
+        }
+        ctx.stroke();
+
     }
     
 }

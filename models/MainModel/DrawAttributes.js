@@ -1,6 +1,8 @@
 class DrawAttributes{
     location;
-    polygon; 
+
+
+    shell; 
     angle;
 
     /**
@@ -11,13 +13,13 @@ class DrawAttributes{
      */
     constructor(polygon,location = new Point(50,50), angle = 0, color  = "#ffffff"){
         this.location = location;
-        this.polygon = polygon;
+        this.shell = new EntityShell(polygon);
         this.angle = angle;
         this.color = color;
     }
     
     copy(){
-        return new DrawAttributes(this.polygon,this.location.copy(),this.angle,this.color)
+        return new DrawAttributes(new Polygon(this.shell.breakableLines),this.location.copy(),this.angle,this.color)
     }
 
 
