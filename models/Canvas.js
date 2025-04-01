@@ -3,8 +3,10 @@ class Canvas{
     canvasHTMLElement;
     /** @type {CanvasRenderingContext2D} */
     #ctx;
+    
+    cellSize = 100;
     /** @type {Grid} */
-    grid = new Grid(50); // 50px partition
+    grid = new Grid(this.cellSize); // 50px partition
 
     /** @type {number} */
     lastPaintTimestamp;
@@ -34,6 +36,26 @@ class Canvas{
 
     writeText(text,x,y){
         this.#ctx.fillText(text,x,y);
+    }
+
+    showGrid(){
+        this.#ctx.lineWidth = 1;
+        this.#ctx.beginPath();
+        for(let i = 0; i < this.canvasHTMLElement.height / this.cellSize ; i++){
+            for(let j = 0; j < this.canvasHTMLElement.width / this.cellSize ; j++){
+                const x = j * this.cellSize;
+                const y = i * this.cellSize;
+                const selectedEntities = this.grid.cells.get(this.grid.getCellKey(x,y));
+                
+                this.#ctx.moveTo(x,y);
+                this.writeText(selectedEntities ? selectedEntities.size : "0",x + 5,y + 10)
+                this.#ctx.lineTo(x + this.cellSize,y);
+                this.#ctx.moveTo(x,y + this.cellSize);
+                this.#ctx.lineTo(x,y);
+
+            }
+        }
+        this.#ctx.stroke()
     }
     
 }

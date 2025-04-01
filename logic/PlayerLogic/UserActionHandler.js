@@ -58,9 +58,10 @@ class UserActionHandler {
       this.#latestClientMouseLocation = new Point(e.offsetX, e.offsetY);
     });
 
-    window.addEventListener("mousedown",(e) => { // create Bullet object and add vector that same angle with user direction angle 
+    window.addEventListener("mousemove",(e) => { // create Bullet object and add vector that same angle with user direction angle 
       // get speed with player momentum power
       console.log(this.player.weapon.bulletObject.motionAttributes);
+      console.log(this.canvas.grid)
       const bulletStartSpeed = this.player.weapon.bulletEjectPower / this.player.weapon.bulletObject.motionAttributes.mass;
       const playerThrustbackSpeed = this.player.weapon.bulletEjectPower / this.player.motionAttributes.mass;
 

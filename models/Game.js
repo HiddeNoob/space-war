@@ -30,6 +30,8 @@ class Game{
             this.settings.showFPS && this.showFPS(timestamp);
             this.userActionHandler.update();
             this.entityLocationUpdater.update();
+            this.canvasObject.grid.refreshGrid();
+            this.canvasObject.showGrid();
             this.canvasObject.drawObjects(timestamp);
             self.requestAnimationFrame(task);
         }
