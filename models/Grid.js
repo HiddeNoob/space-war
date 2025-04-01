@@ -59,4 +59,10 @@ class Grid {
         }
         return Array.from(nearbyEntities);
     }
+
+    refreshGrid(){
+        const oldCells = this.cells
+        this.cells = new Map();
+        oldCells.forEach((entities) => entities.forEach((entity) => this.addEntity(entity)))
+    }
 }
