@@ -5,8 +5,8 @@ class UserActionHandler {
   /** @type {Canvas} */
   canvas
 
-  /** @type {Point} */
-  #latestClientMouseLocation = new Point(0, 0);
+  /** @type {Vector} */
+  #latestClientMouseLocation = new Vector([0, 0]);
 
   #isPressed = {
     w: false,
@@ -55,7 +55,7 @@ class UserActionHandler {
       if (e.key in this.#isPressed) this.#isPressed[e.key] = false;
     });
     canvas.addEventListener("mousemove", (e) => {
-      this.#latestClientMouseLocation = new Point(e.offsetX, e.offsetY);
+      this.#latestClientMouseLocation = new Vector([e.offsetX, e.offsetY]);
     });
 
     window.addEventListener("mousedown",(e) => { // create Bullet object and add vector that same angle with user direction angle 
@@ -72,7 +72,7 @@ class UserActionHandler {
       const bulletYSpeed = Math.sin(bulletAngle) * bulletStartSpeed;
 
       createdBullet.motionAttributes.speed.add(new Vector([bulletXSpeed,bulletYSpeed]));
-      createdBullet.drawAttributes.location.set(this.player.drawAttributes.location);
+      createdBullet.drawAttributes.location= this.player.drawAttributes.location.copy();
       createdBullet.drawAttributes.angle = bulletAngle;
 
       this.canvas.grid.addEntity(createdBullet);
@@ -86,10 +86,10 @@ class UserActionHandler {
   })
   }
   #updatePlayerAngle() {
-    const mouseX = this.#latestClientMouseLocation.x;
-    const mouseY = this.#latestClientMouseLocation.y;
-    const playerX = this.player.drawAttributes.location.x;
-    const playerY = this.player.drawAttributes.location.y;
+    const mouseX = this.#latestClientMouseLocation.data[0];
+    const mouseY = this.#latestClientMouseLocation.data[1];
+    const playerX = this.player.drawAttributes.location.data[0];
+    const playerY = this.player.drawAttributes.location.data[1];
 
     const angle = -Math.atan2(mouseX - playerX, mouseY - playerY) + Math.PI / 2;
     this.player.drawAttributes.angle = angle;

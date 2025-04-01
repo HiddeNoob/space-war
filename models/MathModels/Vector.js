@@ -28,6 +28,16 @@ class Vector{
         return this;
     }
 
+    /** @param {Vector} vector */
+    dot(vector) {
+        this.#checkIsLengthEqual(vector);
+        let result = 0;
+        for (let i = 0; i < this.data.length; i++) {
+            result += this.data[i] * vector.data[i];
+        }
+        return result;
+    }
+
     
     /**
      * @param {Vector | number} object 
@@ -65,6 +75,10 @@ class Vector{
      */
     #checkIsLengthEqual(vector){
         if(this.data.length != vector.data.length) throw Error("Vector size is not equal");
+    }
+
+    copy(){
+        return new Vector([...this.data])
     }
 
 }

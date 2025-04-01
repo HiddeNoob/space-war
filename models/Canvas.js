@@ -6,7 +6,7 @@ class Canvas{
     
     cellSize = 100;
     /** @type {Grid} */
-    grid = new Grid(this.cellSize); // 50px partition
+    grid
 
     /** @type {number} */
     lastPaintTimestamp;
@@ -18,6 +18,7 @@ class Canvas{
     constructor(ctx,canvasHTMLElement){
         this.#ctx = ctx;
         this.#canvasHTMLElement = canvasHTMLElement;
+        this.grid = new Grid(this.cellSize,this.#canvasHTMLElement.height,this.#canvasHTMLElement.width);
         ctx.font = "12px serif";
         ctx.fillStyle = "white";
     }
@@ -60,31 +61,35 @@ class Canvas{
 
     /** @param {Entity} entity */
     drawEntity(entity){
-        ctx.translate(entity.drawAttributes.location.x,entity.drawAttributes.location.y);
-        ctx.rotate(entity.drawAttributes.angle)
+        ctx.translate(
+            entity.drawAttributes.location.data[0],
+            entity.drawAttributes.location.data[1]
+        );
+        ctx.rotate(entity.drawAttributes.angle);
         this.#drawPolygon(entity.drawAttributes.shell.breakableLines);
         ctx.rotate(-entity.drawAttributes.angle);
-        ctx.translate(-entity.drawAttributes.location.x,-entity.drawAttributes.location.y);
+        ctx.translate(
+            -entity.drawAttributes.location.data[0],
+            -entity.drawAttributes.location.data[1]
+        );
     }
 
     /** @param {Polygon | Line[]} polygon */
-    #drawPolygon(polygon){
+    #drawPolygon(polygon) {
         ctx.beginPath();
-        for(let i = 0; i < (polygon instanceof Polygon ? polygon.lines.length : polygon.length); i++){
+        for (let i = 0; i < (polygon instanceof Polygon ? polygon.lines.length : polygon.length); i++) {
             const currentLine = polygon instanceof Polygon ? polygon.lines[i] : polygon[i];
-            
-            let point1 = currentLine.startPoint
-            let point2 = currentLine.endPoint
+
+            let point1 = currentLine.startPoint;
+            let point2 = currentLine.endPoint;
 
             ctx.lineWidth = currentLine.lineWidth;
             ctx.strokeStyle = currentLine.lineColor;
-                
-            ctx.moveTo(Math.floor(point1.x),Math.floor(point1.y)); // Math.floor for optimization
-            ctx.lineTo(Math.floor(point2.x),Math.floor(point2.y)); // see the link for details https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Optimizing_canvas#avoid_floating-point_coordinates_and_use_integers_instead
 
+            ctx.moveTo(Math.floor(point1.data[0]), Math.floor(point1.data[1])); // Use data[0] and data[1]
+            ctx.lineTo(Math.floor(point2.data[0]), Math.floor(point2.data[1])); // Use data[0] and data[1]
         }
         ctx.stroke();
-
     }
     
 }
