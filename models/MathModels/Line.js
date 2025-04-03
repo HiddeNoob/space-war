@@ -19,8 +19,8 @@ class Line {
      * @param {string} color 
      */
     constructor(x1, y1, x2, y2, thickness = 1, color = "#FFFFFF") {
-        this.startPoint = new Vector([x1, y1]);
-        this.endPoint = new Vector([x2, y2]);
+        this.startPoint = new Vector(x1, y1);
+        this.endPoint = new Vector(x2, y2);
         this.lineWidth = thickness;
         this.lineColor = color;
     }
@@ -31,8 +31,8 @@ class Line {
 
         /** @param {Vector} p1 * @param {Vector} p2 * @param {Vector} checkPoint */
         const isBetweenTheTwoPoints = (p1, p2, checkPoint) => {
-            return ((p1.data[1] > checkPoint.data[1] && p2.data[1] < checkPoint.data[1]) || 
-                    (p1.data[1] < checkPoint.data[1] && p2.data[1] > checkPoint.data[1]));
+            return ((p1.y >= checkPoint.y && p2.y <= checkPoint.y) || 
+                    (p1.y <= checkPoint.y && p2.y >= checkPoint.y));
         };
 
         return isBetweenTheTwoPoints(this.startPoint, this.endPoint, intersectPoint) && 
@@ -42,23 +42,45 @@ class Line {
     /** @param {Line} l1 * @param {Line} l2 */
     static getIntersectPoint(l1, l2) { // y = ax + b
         /** @param {Line} line */
-        const calculateA = (line) => (line.endPoint.data[1] - line.startPoint.data[1]) / 
-                                     (line.endPoint.data[0] - line.startPoint.data[0]);
+        const calculateA = (line) => (line.endPoint.y - line.startPoint.y) / 
+                                     (line.endPoint.x - line.startPoint.x);
         /** @param {Line} line */
-        const calculateB = (line) => line.endPoint.data[1] - calculateA(line) * line.endPoint.data[0];
+        const calculateB = (line) => line.endPoint.y - calculateA(line) * line.endPoint.x;
 
         const intersectX = (calculateB(l1) - calculateB(l2)) / (calculateA(l2) - calculateA(l1));
         const intersectY = calculateA(l1) * intersectX + calculateB(l1);
 
-        return new Vector([intersectX, intersectY]);
+        return new Vector(intersectX, intersectY);
+    }
+
+    /** @param {number} dx * @param {number} dy */
+    moveLine(dx,dy){
+        this.startPoint.x += dx
+        this.startPoint.y += dy
+        this.endPoint.x += dx
+        this.endPoint.y += dy
+        return this;
+    }
+
+    /**
+     * @param {number} angle
+     */
+    rotateLine(angle, pivot = new Vector(0, 0)) {
+        this.startPoint = this.startPoint.subtract(pivot).rotate(angle).add(pivot);
+        this.endPoint = this.endPoint.subtract(pivot).rotate(angle).add(pivot);
+        return this;
+    }
+
+    centerPoint(){
+        return this.startPoint.copy().add(this.endPoint.copy()).multiply(1/2);
     }
 
     copy() {
         return new Line(
-            this.startPoint.data[0],
-            this.startPoint.data[1],
-            this.endPoint.data[0],
-            this.endPoint.data[1],
+            this.startPoint.x,
+            this.startPoint.y,
+            this.endPoint.x,
+            this.endPoint.y,
             this.lineWidth,
             this.lineColor
         );

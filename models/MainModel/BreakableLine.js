@@ -9,9 +9,18 @@ class BreakableLine extends Line{
      * @param {Line} line
      * @param {number} health
      */
-    constructor(line, health = 10,durability = 100) {
-        super(line.startPoint.data[0], line.startPoint.data[1], line.endPoint.data[0], line.endPoint.data[1]);
+    constructor(line,health = 10,durability = 100) {
+        super(line.startPoint.x, line.startPoint.y, line.endPoint.x, line.endPoint.y,line.lineWidth,line.lineColor);
         this.health = health;
+        this.durability = durability;
+    }
+
+    copy() {
+        return new BreakableLine(
+            super.copy(),
+            this.health,
+            this.durability
+        );
     }
 
 }

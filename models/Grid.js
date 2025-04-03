@@ -22,10 +22,7 @@ class Grid {
 
     /** @param {Entity} entity */
     addEntity(entity) {
-        const key = this.getCellKey(
-            entity.drawAttributes.location.data[0], // Replace .x with data[0]
-            entity.drawAttributes.location.data[1]  // Replace .y with data[1]
-        );
+        const key = this.getCellKey(entity.drawAttributes.location.x, entity.drawAttributes.location.y);
         if (!this.cells.has(key)) {
             this.cells.set(key, new Set());
         }
@@ -34,10 +31,7 @@ class Grid {
 
     /** @param {Entity} entity */   
     removeEntity(entity) {
-        const key = this.getCellKey(
-            entity.drawAttributes.location.data[0], // Replace .x with data[0]
-            entity.drawAttributes.location.data[1]  // Replace .y with data[1]
-        );
+        const key = this.getCellKey(entity.drawAttributes.location.x, entity.drawAttributes.location.y);
         if (this.cells.has(key)) {
             const cell = this.cells.get(key);
             cell.delete(entity);
@@ -50,10 +44,7 @@ class Grid {
     /** @param {Entity} entity * @param {number} oldX * @param {number} oldY */  
     updateEntity(entity, oldX, oldY) {
         const oldKey = this.getCellKey(oldX, oldY);
-        const newKey = this.getCellKey(
-            entity.drawAttributes.location.data[0], // Replace .x with data[0]
-            entity.drawAttributes.location.data[1]  // Replace .y with data[1]
-        );
+        const newKey = this.getCellKey(entity.drawAttributes.location.x, entity.drawAttributes.location.y);
         
         if (oldKey !== newKey) {
             this.removeEntity(entity);
@@ -83,10 +74,10 @@ class Grid {
         oldCells.forEach((entities) =>
             entities.forEach((entity) => {
                 if (
-                    0 - this.destructRange * this.cellSize < entity.drawAttributes.location.data[0] && // Replace .x with data[0]
-                    this.maxWidth + this.destructRange * this.cellSize > entity.drawAttributes.location.data[0] && // Replace .x with data[0]
-                    0 - this.destructRange * this.cellSize < entity.drawAttributes.location.data[1] && // Replace .y with data[1]
-                    this.maxHeight + this.destructRange * this.cellSize > entity.drawAttributes.location.data[1] // Replace .y with data[1]
+                    0 - this.destructRange * this.cellSize < entity.drawAttributes.location.x &&
+                    this.maxWidth + this.destructRange * this.cellSize > entity.drawAttributes.location.x &&
+                    0 - this.destructRange * this.cellSize < entity.drawAttributes.location.y &&
+                    this.maxHeight + this.destructRange * this.cellSize > entity.drawAttributes.location.y
                 )
                     this.addEntity(entity);
             })

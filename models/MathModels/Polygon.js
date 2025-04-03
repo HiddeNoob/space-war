@@ -12,7 +12,7 @@ class Polygon {
 
     /** @param {Line[]} lines */
     getCenter(lines) {
-        let center = new Vector([0, 0]);
+        let center = new Vector(0, 0);
         for (let i = 0; i < lines.length; i++) {
             center.add(lines[i].startPoint);   
             center.add(lines[i].endPoint);   
@@ -37,5 +37,14 @@ class Polygon {
             line.endPoint.multiply(size);
         });
         return this;
+    }
+
+    setColor(color){
+        this.lines.forEach((line) => line.lineColor = color);
+        return this;
+    }
+
+    copy(){
+        return new Polygon(this.lines.map((line) => line.copy()));
     }
 }

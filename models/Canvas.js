@@ -4,7 +4,7 @@ class Canvas{
     /** @type {CanvasRenderingContext2D} */
     #ctx;
     
-    cellSize = 100;
+    cellSize = 50;
     /** @type {Grid} */
     grid
 
@@ -41,6 +41,7 @@ class Canvas{
 
     showGrid(){
         this.#ctx.lineWidth = 1;
+        this.#ctx.strokeStyle= "white";
         this.#ctx.beginPath();
         for(let i = 0; i < this.#canvasHTMLElement.height / this.cellSize ; i++){
             for(let j = 0; j < this.#canvasHTMLElement.width / this.cellSize ; j++){
@@ -62,15 +63,15 @@ class Canvas{
     /** @param {Entity} entity */
     drawEntity(entity){
         ctx.translate(
-            entity.drawAttributes.location.data[0],
-            entity.drawAttributes.location.data[1]
+            entity.drawAttributes.location.x,
+            entity.drawAttributes.location.y
         );
         ctx.rotate(entity.drawAttributes.angle);
         this.#drawPolygon(entity.drawAttributes.shell.breakableLines);
         ctx.rotate(-entity.drawAttributes.angle);
         ctx.translate(
-            -entity.drawAttributes.location.data[0],
-            -entity.drawAttributes.location.data[1]
+            -entity.drawAttributes.location.x,
+            -entity.drawAttributes.location.y
         );
     }
 
@@ -86,8 +87,8 @@ class Canvas{
             ctx.lineWidth = currentLine.lineWidth;
             ctx.strokeStyle = currentLine.lineColor;
 
-            ctx.moveTo(Math.floor(point1.data[0]), Math.floor(point1.data[1])); // Use data[0] and data[1]
-            ctx.lineTo(Math.floor(point2.data[0]), Math.floor(point2.data[1])); // Use data[0] and data[1]
+            ctx.moveTo(Math.floor(point1.x), Math.floor(point1.y)); 
+            ctx.lineTo(Math.floor(point2.x), Math.floor(point2.y)); 
         }
         ctx.stroke();
     }

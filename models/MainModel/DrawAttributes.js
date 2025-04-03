@@ -10,7 +10,7 @@ class DrawAttributes {
      * @param {number} angle 
      * @param {string} color 
      */
-    constructor(polygon, location = new Vector([50, 50]), angle = 0, color = "#ffffff") {
+    constructor(polygon, location = new Vector(50, 50), angle = 0, color = "#ffffff") {
         this.location = location;
         this.shell = new EntityShell(polygon);
         this.angle = angle;

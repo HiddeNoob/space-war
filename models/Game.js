@@ -20,6 +20,9 @@ class Game{
         this.player = new Player();
         console.log(this.player)
         this.canvasObject.grid.addEntity(this.player);
+        this.canvasObject.grid.addEntity(new Entity(new DrawAttributes(GlobalShapes.TRIANGLE,new Vector(150,150),30),));
+
+        this.collisionDetector = new CollisionDetector(this.canvasObject.grid)
         this.userActionHandler = new UserActionHandler(this.player,this.canvasObject);
         this.entityLocationUpdater = new EntityLocationUpdater(this.canvasObject);
     }
@@ -28,6 +31,7 @@ class Game{
         const task = (timestamp) => {
             this.canvasObject.clearCanvas();
             this.settings.showFPS && this.showFPS(timestamp);
+            this.collisionDetector.makeCollisions();
             this.userActionHandler.update();
             this.entityLocationUpdater.update();
             this.canvasObject.grid.refreshGrid();
