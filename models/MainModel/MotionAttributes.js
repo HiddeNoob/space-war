@@ -21,14 +21,15 @@ class MotionAttributes {
     angularAcceleration = 0;
 
     /** @type {number} */
-    momentOfInertia = 50;
+    momentOfInertia;
 
     /**
      * @param {number} mass 
      * @param {number} maxSpeed 
      */
-    constructor(maxSpeed = 1, mass = 10) {
+    constructor(maxSpeed = 1, mass = 10,momentOfInertia = 500) {
         this.mass = mass;
+        this.momentOfInertia = momentOfInertia;
         this.maxSpeed = maxSpeed;
     }
 

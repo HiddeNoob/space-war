@@ -87,12 +87,12 @@ class CollisionDetector {
                             let impulse = carpismaNormali.copy().multiply(j);
                             this.drawVector(impulse,collidePoint);
                             // hiz degisimi
-                            // entity1.motionAttributes.speed.subtract(impulse.copy().multiply((1 / entity1.motionAttributes.mass)));
-                            // entity2.motionAttributes.speed.add(impulse.copy().multiply((1 / entity2.motionAttributes.mass)));
+                            entity1.motionAttributes.speed.subtract(impulse.copy().multiply((1 / entity1.motionAttributes.mass)));
+                            entity2.motionAttributes.speed.add(impulse.copy().multiply((1 / entity2.motionAttributes.mass)));
 
-                            // //tork degisimi
-                            // entity1.motionAttributes.angularVelocity += yaricap1.crossProduct(impulse) / entity1.motionAttributes.momentOfInertia
-                            // entity2.motionAttributes.angularVelocity -= yaricap2.crossProduct(impulse) / entity2.motionAttributes.momentOfInertia
+                            //tork degisimi
+                            entity1.motionAttributes.angularVelocity -= yaricap1.crossProduct(impulse) / (entity1.motionAttributes.momentOfInertia * 100)
+                            entity2.motionAttributes.angularVelocity += yaricap2.crossProduct(impulse) / (entity2.motionAttributes.momentOfInertia * 100)
 
 
 
