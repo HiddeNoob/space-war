@@ -3,6 +3,9 @@ class Entity{
     motionAttributes
     /** @type {DrawAttributes} */
     drawAttributes
+    
+    /** @type {boolean} */
+    isAlive = true
     /**
      * @param {DrawAttributes} drawAttributes
      */

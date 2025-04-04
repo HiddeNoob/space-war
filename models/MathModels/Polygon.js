@@ -7,11 +7,11 @@ class Polygon {
      */
     constructor(lines) {
         this.lines = lines;
-        this.#moveCenterToZeroPoint(this.getCenter(lines));
+        this.#moveCenterToZeroPoint(this.#getCenter(lines));
     }
 
     /** @param {Line[]} lines */
-    getCenter(lines) {
+    #getCenter(lines) {
         let center = new Vector(0, 0);
         for (let i = 0; i < lines.length; i++) {
             center.add(lines[i].startPoint);   

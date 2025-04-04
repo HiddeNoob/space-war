@@ -75,6 +75,10 @@ class Line {
         return this.startPoint.copy().add(this.endPoint.copy()).multiply(1/2);
     }
 
+    normalVector(){
+        return new Vector(this.endPoint.x - this.startPoint.x , this.endPoint.y - this.startPoint.y).rotate(Math.PI / 2).normalize()
+    }
+
     copy() {
         return new Line(
             this.startPoint.x,

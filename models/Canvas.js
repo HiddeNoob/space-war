@@ -75,22 +75,28 @@ class Canvas{
         );
     }
 
-    /** @param {Polygon | Line[]} polygon */
+    /** @param {Polygon | Line[] | BreakableLine[]} polygon */
     #drawPolygon(polygon) {
-        ctx.beginPath();
         for (let i = 0; i < (polygon instanceof Polygon ? polygon.lines.length : polygon.length); i++) {
+            ctx.beginPath();
             const currentLine = polygon instanceof Polygon ? polygon.lines[i] : polygon[i];
 
             let point1 = currentLine.startPoint;
             let point2 = currentLine.endPoint;
 
             ctx.lineWidth = currentLine.lineWidth;
-            ctx.strokeStyle = currentLine.lineColor;
+            if(currentLine instanceof BreakableLine){
+                const health = 50 + (currentLine.health / currentLine.maxHealth )  * 50;
+                ctx.strokeStyle = `hsl(0 100% ${health}%)`;
+            }else{
+                ctx.strokeStyle = currentLine.lineColor;
+            }
+
 
             ctx.moveTo(Math.floor(point1.x), Math.floor(point1.y)); 
             ctx.lineTo(Math.floor(point2.x), Math.floor(point2.y)); 
+            ctx.stroke();
         }
-        ctx.stroke();
     }
     
 }

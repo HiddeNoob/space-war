@@ -1,9 +1,9 @@
 class UserActionHandler {
   /** @type {Player} */
   player;
-
-  /** @type {Canvas} */
-  canvas
+  
+  /** @type {Grid} */
+  grid
 
   /** @type {Vector} */
   #latestClientMouseLocation = new Vector(0,0);
@@ -24,19 +24,18 @@ class UserActionHandler {
 
   /**
    * @param {Player} player
-   * @param {Canvas} canvas
+   * @param {Grid} player
    */
-  constructor(player, canvas) {
-    this.#addEventListener();
+  constructor(player,grid) {
     this.player = player;
-    this.canvas = canvas;
+    this.#addEventListener();
+    this.grid = grid;
   }
 
   update() {
     this.player.motionAttributes.resetInstantVectors(); 
     this.#applyForce();
     this.#applyTorque();
-    this.#updatePlayerAngle();
   }
 
   #applyForce() {
@@ -47,30 +46,6 @@ class UserActionHandler {
     });
   }
 
-  calculateTorque() {
-    const mouseX = this.#latestClientMouseLocation.x;
-    const mouseY = this.#latestClientMouseLocation.y;
-    const playerX = this.player.drawAttributes.location.x;
-    const playerY = this.player.drawAttributes.location.y;
-    
-    const rotateVector = new Vector(mouseX - playerX, mouseY - playerY).normalize();
-    
-    const forceDirection = new Vector(-Math.cos(this.player.drawAttributes.angle), -Math.sin(this.player.drawAttributes.angle));
-    
-    const torque = rotateVector.crossProduct(forceDirection) * this.player.rotatePower;
-    
-    return torque;
-  }
-
-  #applyTorque() {
-
-
-    const torque = this.calculateTorque();
-    const angularAcceleration = torque / this.player.motionAttributes.momentOfInertia;
-
-    this.player.motionAttributes.angularVelocity += angularAcceleration;
-    this.player.motionAttributes.angularVelocity *= 0.8; // dalgalanmayi azaltmak icin
-  }
 
   #addEventListener() {
     window.addEventListener("keypress", (e) => {
@@ -98,7 +73,7 @@ class UserActionHandler {
       createdBullet.drawAttributes.location= this.player.drawAttributes.location.copy().add(new Vector(Math.cos(bulletAngle),Math.sin(bulletAngle)).multiply(50));
       createdBullet.drawAttributes.angle = bulletAngle;
 
-      this.canvas.grid.addEntity(createdBullet);
+      this.grid.addEntity(createdBullet);
 
       this.player.motionAttributes.speed.add(
         new Vector(
@@ -107,10 +82,34 @@ class UserActionHandler {
         ).multiply(playerThrustbackSpeed)
       );
   })
-  }
-  #updatePlayerAngle() {
-    this.player.drawAttributes.angle += this.player.motionAttributes.angularVelocity;
 
+  }
+
+
+  
+  #calculateTorque() {
+    const mouseX = this.#latestClientMouseLocation.x;
+    const mouseY = this.#latestClientMouseLocation.y;
+    const playerX = this.player.drawAttributes.location.x;
+    const playerY = this.player.drawAttributes.location.y;
+    
+    const rotateVector = new Vector(mouseX - playerX, mouseY - playerY).normalize();
+    
+    const forceDirection = new Vector(-Math.cos(this.player.drawAttributes.angle), -Math.sin(this.player.drawAttributes.angle));
+    
+    const torque = rotateVector.crossProduct(forceDirection) * this.player.rotatePower;
+    
+    return torque;
+  }
+
+  #applyTorque() {
+
+
+    const torque = this.#calculateTorque();
+    const angularAcceleration = torque / this.player.motionAttributes.momentOfInertia;
+
+    this.player.motionAttributes.angularVelocity += angularAcceleration;
+    this.player.motionAttributes.angularVelocity *= 0.8; // dalgalanmayi azaltmak icin
   }
 
 

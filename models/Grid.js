@@ -5,7 +5,7 @@ class Grid {
      * @param {number} maxWidth
      * @param {number} destructRange
      */
-    constructor(cellSize, maxHeight, maxWidth, destructRange = 1) {
+    constructor(cellSize, maxHeight, maxWidth, destructRange = 2) {
         this.cellSize = cellSize;
         this.destructRange = destructRange;
         this.maxHeight = maxHeight;
@@ -77,7 +77,8 @@ class Grid {
                     0 - this.destructRange * this.cellSize < entity.drawAttributes.location.x &&
                     this.maxWidth + this.destructRange * this.cellSize > entity.drawAttributes.location.x &&
                     0 - this.destructRange * this.cellSize < entity.drawAttributes.location.y &&
-                    this.maxHeight + this.destructRange * this.cellSize > entity.drawAttributes.location.y
+                    this.maxHeight + this.destructRange * this.cellSize > entity.drawAttributes.location.y &&
+                    entity.isAlive
                 )
                     this.addEntity(entity);
             })

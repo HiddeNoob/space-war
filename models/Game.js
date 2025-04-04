@@ -5,12 +5,6 @@ class Game{
     /** @type {Player} */
     player
     
-    /** @type {UserActionHandler} */
-    userActionHandler
-
-    /** @type {EntityLocationUpdater} */
-    entityLocationUpdater
-
     settings = {
         "showFPS" : true
     }
@@ -19,21 +13,21 @@ class Game{
         this.canvasObject = canvasObject;
         this.player = new Player();
         console.log(this.player)
+        this.gameLogic = new GameLogic(this.canvasObject.grid,this.player);
         this.canvasObject.grid.addEntity(this.player);
-        this.canvasObject.grid.addEntity(new Entity(new DrawAttributes(GlobalShapes.TRIANGLE,new Vector(150,150),30),));
-
-        this.collisionDetector = new CollisionDetector(this.canvasObject.grid)
-        this.userActionHandler = new UserActionHandler(this.player,this.canvasObject);
-        this.entityLocationUpdater = new EntityLocationUpdater(this.canvasObject);
+        const motion1 = new MotionAttributes(100,100);
+        motion1.speed = new Vector(0,0);
+        const motion2 = new MotionAttributes(100,100);
+        motion2.speed = new Vector(0,0);
+        this.canvasObject.grid.addEntity(new Entity(new DrawAttributes(GlobalShapes.TRIANGLE,new Vector(150,150),30),motion1));
+        this.canvasObject.grid.addEntity(new Entity(new DrawAttributes(GlobalShapes.TRIANGLE,new Vector(500,150),160),motion2));
     }
 
     run(){  
         const task = (timestamp) => {
             this.canvasObject.clearCanvas();
             this.settings.showFPS && this.showFPS(timestamp);
-            this.collisionDetector.makeCollisions();
-            this.userActionHandler.update();
-            this.entityLocationUpdater.update();
+            this.gameLogic.update();
             this.canvasObject.grid.refreshGrid();
             this.canvasObject.showGrid();
             this.canvasObject.drawObjects(timestamp);
