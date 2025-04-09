@@ -1,9 +1,4 @@
-class UserActionHandler {
-  /** @type {Player} */
-  player;
-  
-  /** @type {Grid} */
-  grid
+class UserActionHandler extends Handler {
 
   /** @type {Vector} */
   #latestClientMouseLocation = new Vector(0,0);
@@ -27,12 +22,11 @@ class UserActionHandler {
    * @param {Grid} player
    */
   constructor(player,grid) {
-    this.player = player;
+    super(grid,player);
     this.#addEventListener();
-    this.grid = grid;
   }
 
-  update() {
+  update = () => {
     this.player.motionAttributes.resetInstantVectors(); 
     this.#applyForce();
     this.#applyTorque();
@@ -69,13 +63,15 @@ class UserActionHandler {
       const bulletXSpeed = Math.cos(bulletAngle) * bulletStartSpeed;
       const bulletYSpeed = Math.sin(bulletAngle) * bulletStartSpeed;
 
-      createdBullet.motionAttributes.speed.add(new Vector(bulletXSpeed, bulletYSpeed));
-      createdBullet.drawAttributes.location= this.player.drawAttributes.location.copy().add(new Vector(Math.cos(bulletAngle),Math.sin(bulletAngle)).multiply(50));
+      createdBullet.motionAttributes.velocity.add(new Vector(bulletXSpeed, bulletYSpeed));
+      
+      const tipOfPlayer = this.player.drawAttributes.shell.breakableLines[0].startPoint;
+      createdBullet.drawAttributes.location= this.player.drawAttributes.location.copy().add(tipOfPlayer.copy().rotate(bulletAngle).multiply(2));
       createdBullet.drawAttributes.angle = bulletAngle;
 
       this.grid.addEntity(createdBullet);
 
-      this.player.motionAttributes.speed.add(
+      this.player.motionAttributes.velocity.add(
         new Vector(
           Math.cos(bulletAngle - Math.PI),
           Math.sin(bulletAngle - Math.PI),

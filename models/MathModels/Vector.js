@@ -55,6 +55,7 @@ class Vector {
         return Math.sqrt(this.x ** 2 + this.y ** 2);
     }
 
+    /** gets unit vector */
     normalize() {
         let mag = this.magnitude();
         return mag !== 0 ? this.divide(mag) : this;
@@ -83,9 +84,6 @@ class Vector {
         return Math.sqrt((this.x - vector.x) ** 2 + (this.y - vector.y) ** 2);
     }
 
-    heading() {
-        return Math.atan2(this.y, this.x);
-    }
 
     /**
      * @param {number} angle

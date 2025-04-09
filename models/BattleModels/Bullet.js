@@ -13,7 +13,7 @@ class Bullet extends Entity{
 
 
     copy(){
-        return new Bullet(this.damage,this.drawAttributes.copy());
+        return new Bullet(this.damage,this.drawAttributes.copy(),this.motionAttributes.copy());
     }
 
 }

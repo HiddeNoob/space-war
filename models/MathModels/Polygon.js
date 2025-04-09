@@ -44,6 +44,18 @@ class Polygon {
         return this;
     }
 
+    /**
+     * @param {Vector} vector 
+     */
+    move(vector){
+        this.lines.forEach((line) => line.moveLine(vector.x,vector.y));
+        return this;
+    }
+    rotate(angle){
+        this.lines.forEach((line) => line.rotateLine(angle));
+        return this;
+    }
+
     copy(){
         return new Polygon(this.lines.map((line) => line.copy()));
     }

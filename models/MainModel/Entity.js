@@ -3,7 +3,7 @@ class Entity{
     motionAttributes
     /** @type {DrawAttributes} */
     drawAttributes
-    
+    isStatic = false;
     /** @type {boolean} */
     isAlive = true
     /**
