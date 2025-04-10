@@ -62,14 +62,14 @@ class Canvas{
 
     /** @param {Entity} entity */
     drawEntity(entity){
-        ctx.translate(
+        this.#ctx.translate(
             entity.drawAttributes.location.x,
             entity.drawAttributes.location.y
         );
-        ctx.rotate(entity.drawAttributes.angle);
+        this.#ctx.rotate(entity.drawAttributes.angle);
         this.#drawPolygon(entity.drawAttributes.shell.breakableLines);
-        ctx.rotate(-entity.drawAttributes.angle);
-        ctx.translate(
+        this.#ctx.rotate(-entity.drawAttributes.angle);
+        this.#ctx.translate(
             -entity.drawAttributes.location.x,
             -entity.drawAttributes.location.y
         );
