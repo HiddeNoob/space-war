@@ -8,6 +8,7 @@ const painter = new Canvas(ctx,canvas);
 
 const runner = new Game(painter);
 
+const debug = true;
 runner.run();
 
 

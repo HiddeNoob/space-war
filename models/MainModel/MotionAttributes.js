@@ -1,32 +1,49 @@
-class MotionAttributes{
-    
+class MotionAttributes {
     /** @type {Vector} */
-    speed = new Vector([0,0]);
+    velocity = new Vector(0, 0);
 
     /** @type {Vector} */
-    acceleration = new Vector([0,0]);
+    acceleration = new Vector(0, 0);
 
     /** @type {Vector} */
-    force = new Vector([0,0]);
+    force = new Vector(0, 0);
 
     /** @type {number} */
     mass;
     
     /** @type {number} */
-    maxSpeed
+    maxVelocity;
+
+    /** @type {number} */
+    maxAngularVelocity;
+
+    /** @type {number} */
+    angularVelocity = 0;
+
+    /** @type {number} */
+    angularAcceleration = 0;
+
+    /** @type {number} */
+    momentOfInertia;
 
     /**
      * @param {number} mass 
-     * @param {number} maxSpeed 
+     * @param {number} maxVelocity 
      */
-    constructor(maxSpeed = 1,mass = 1000){
+    constructor(maxAngularVelocity = 0.001,maxVelocity = 0.5, mass = 1e5,momentOfInertia = 1e4) {
         this.mass = mass;
-        this.maxSpeed = maxSpeed;
+        this.maxAngularVelocity = maxAngularVelocity;
+        this.momentOfInertia = momentOfInertia;
+        this.maxVelocity = maxVelocity;
     }
 
-    resetInstantVectors(){
-        // this.speed.multiply(new Vector([0,0])); hız önceki kareden veri taşımalı
-        this.acceleration.multiply(new Vector([0,0])); // kuvvet ise her karede değişebilir
-        this.force.multiply(new Vector([0,0]));
+    resetInstantVectors() {
+        this.acceleration.multiply(0);
+        this.force.multiply(0);
+        this.angularAcceleration = 0;
+    }
+
+    copy(){
+        return new MotionAttributes(this.maxAngularVelocity,this.maxVelocity,this.mass,this.momentOfInertia)
     }
 }

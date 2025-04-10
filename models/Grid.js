@@ -1,7 +1,15 @@
 class Grid {
-    /** @param {number} cellSize */
-    constructor(cellSize) {
+    /**
+     * @param {number} cellSize
+     * @param {number} maxHeight
+     * @param {number} maxWidth
+     * @param {number} destructRange
+     */
+    constructor(cellSize, maxHeight, maxWidth, destructRange = 2) {
         this.cellSize = cellSize;
+        this.destructRange = destructRange;
+        this.maxHeight = maxHeight;
+        this.maxWidth = maxWidth;
 
         /** @type {Map<string, Set<Entity>>} */
         this.cells = new Map();
@@ -46,23 +54,34 @@ class Grid {
 
     /** @param {number} x * @param {number} y * @param {number} range */  
     getEntitiesNearby(x, y, range = 1) {
-        const nearbyEntities = new Set();
+        const nearbyEntities = [];
         for (let dx = -range; dx <= range; dx++) {
             for (let dy = -range; dy <= range; dy++) {
                 const key = this.getCellKey(x + dx * this.cellSize, y + dy * this.cellSize);
                 if (this.cells.has(key)) {
                     for (let entity of this.cells.get(key)) {
-                        nearbyEntities.add(entity);
+                        nearbyEntities.push(entity);
                     }
                 }
             }
         }
-        return Array.from(nearbyEntities);
+        return nearbyEntities;
     }
 
-    refreshGrid(){
-        const oldCells = this.cells
+    refreshGrid() {
+        const oldCells = this.cells;
         this.cells = new Map();
-        oldCells.forEach((entities) => entities.forEach((entity) => this.addEntity(entity)))
+        oldCells.forEach((entities) =>
+            entities.forEach((entity) => {
+                if (
+                    0 - this.destructRange * this.cellSize < entity.drawAttributes.location.x &&
+                    this.maxWidth + this.destructRange * this.cellSize > entity.drawAttributes.location.x &&
+                    0 - this.destructRange * this.cellSize < entity.drawAttributes.location.y &&
+                    this.maxHeight + this.destructRange * this.cellSize > entity.drawAttributes.location.y &&
+                    entity.isAlive
+                )
+                    this.addEntity(entity);
+            })
+        );
     }
 }
