@@ -34,7 +34,7 @@ class Game{
         const blockMotion = new MotionAttributes(0.05, 20,blockMass ,blockMoment );
 
         this.player = new Player(0,1,5,globalMass / 10,globalMoment / 10,new DrawAttributes(GlobalShapes.TRIANGLE.copy().scaleBy(playerScale)),playerMotion);
-        this.player.weapon = new Weapon("deagle",bulletMass * 10,10,10,new Bullet(5,new DrawAttributes(GlobalShapes.RECTANGLE.scaleBy(bulletScale)),bulletMotion))
+        this.player.weapon = new Weapon("deagle",bulletMass,10,10,new Bullet(5,new DrawAttributes(GlobalShapes.RECTANGLE.copy().scaleBy(bulletScale)),bulletMotion))
         
         this.player.drawAttributes.location = new Vector(100,100)
 
