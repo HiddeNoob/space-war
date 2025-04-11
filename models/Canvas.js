@@ -29,9 +29,11 @@ class Canvas{
         this.grid.cells.forEach( (setOfEntity) => {
             setOfEntity.forEach((entity) => {
                 this.drawEntity(entity);
-                this.drawVector(entity.motionAttributes.force.copy().multiply(1e4),entity.drawAttributes.location,"red",2);
-                this.drawVector(entity.motionAttributes.acceleration.copy().multiply(1e4),entity.drawAttributes.location,"green",2);
-                this.drawVector(entity.motionAttributes.velocity.copy().multiply(10),entity.drawAttributes.location,"blue",2);
+                if(debug){
+                    this.drawVector(entity.motionAttributes.force.copy().multiply(1e1),entity.drawAttributes.location,"red",2);
+                    this.drawVector(entity.motionAttributes.acceleration.copy().multiply(1e1),entity.drawAttributes.location,"green",2);
+                    this.drawVector(entity.motionAttributes.velocity.copy().multiply(1e1),entity.drawAttributes.location,"blue",2);
+                }
             });
         })
     }

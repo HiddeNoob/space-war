@@ -13,6 +13,12 @@ class MotionAttributes {
     
     /** @type {number} */
     maxVelocity;
+    
+    /** @type {number} */
+    velocitySlowdownRate = 1;
+
+    /** @type {number} */
+    angularSlowdownRate = 1;
 
     /** @type {number} */
     maxAngularVelocity;
@@ -30,7 +36,7 @@ class MotionAttributes {
      * @param {number} mass 
      * @param {number} maxVelocity 
      */
-    constructor(maxAngularVelocity = 0.001,maxVelocity = 0.5, mass = 1e5,momentOfInertia = 1e4) {
+    constructor(maxAngularVelocity = 10,maxVelocity = 10, mass = 1e5,momentOfInertia = 1e8) {
         this.mass = mass;
         this.maxAngularVelocity = maxAngularVelocity;
         this.momentOfInertia = momentOfInertia;

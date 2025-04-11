@@ -8,6 +8,7 @@ class Coin extends Entity{
      */
     constructor(drawAttributes,motionAttributes){
         super(drawAttributes,motionAttributes);
+        this.motionAttributes.velocitySlowdownRate = 0.99
         this.canCollide = false;
     }
 }

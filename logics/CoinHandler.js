@@ -40,7 +40,7 @@ class CoinHandler extends Handler{
         const playerPos = this.player.drawAttributes.location;
 
         const relativePos = playerPos.copy().subtract(coinPos); // coin to player
-        const multiplier = 1e-1 * (this.player.motionAttributes.mass * coin.motionAttributes.mass) /  relativePos.magnitude();
+        const multiplier = 1e1 * (this.player.motionAttributes.mass * coin.motionAttributes.mass) /  relativePos.magnitude();
         coin.motionAttributes.force.add(relativePos.normalize().multiply(multiplier));
 
 

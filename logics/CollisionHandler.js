@@ -12,6 +12,13 @@ class CollisionHandler extends Handler {
             if(!(entity1.canCollide && entity2.canCollide)) return;
             this.#makeCollisions(entity1,entity2);
             this.#resolvePenetration(entity1,entity2);
+
+            if(debug){
+                this.#getNormals(new Polygon(entity1.drawAttributes.shell.breakableLines),entity1.drawAttributes.angle).forEach((vector) => {
+                    Handler.drawVector(vector.multiply(20),entity1.drawAttributes.location)
+                });
+            }
+
         });
     }
 
@@ -56,7 +63,7 @@ class CollisionHandler extends Handler {
 
                 const n1Dot = goreceliHiz.copy().normalize().dot(n1);
                 const n2Dot = goreceliHiz.copy().normalize().dot(n2);
-                let carpismaNormali = n1Dot > n2Dot ? n1 : n2;
+                let carpismaNormali = n1Dot > n2Dot ? n2 : n1;
                 
 
 
@@ -83,6 +90,7 @@ class CollisionHandler extends Handler {
                 entity2.motionAttributes.angularVelocity += yaricap2.crossProduct(impulse) / entity2.motionAttributes.momentOfInertia;
                 
                 // for debugging
+
                 Handler.showPoint(collidePoint);
                 Handler.drawVector(yaricap1,merkez1)
                 Handler.drawVector(yaricap2,merkez2)

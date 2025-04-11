@@ -140,7 +140,7 @@ class Line {
     }
 
     normalVector(){
-            return new Vector(this.endPoint.x - this.startPoint.x , this.endPoint.y - this.startPoint.y).rotate(Math.PI / 2).normalize()
+            return new Vector(this.endPoint.x - this.startPoint.x , this.endPoint.y - this.startPoint.y).rotate(-Math.PI / 2).normalize()
     }
 
     copy() {
