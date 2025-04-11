@@ -9,11 +9,15 @@ class GameLogic extends Handler{
      */
     constructor(grid,player){
         super(grid,player)
-        this.handlers.push(new EntityPhysicHandler(grid,player))
-        this.handlers.push(new EntityTerminater(grid,player))
+        this.handlers.push(new CoinHandler(grid,player));
         this.handlers.push(new CollisionHandler(grid,player))
         this.handlers.push(new UserActionHandler(player,grid))
+        this.handlers.push(new EntityPhysicHandler(grid,player))
+        this.handlers.push(new EntityTerminater(grid,player))
     }
 
-    update = () => this.handlers.forEach((handler) => handler.update());
+    update = () => {
+        this.grid.getAllEntities().forEach((e) => e.motionAttributes.resetInstantVectors());
+        this.handlers.forEach((handler) => handler.update())
+    };
 }

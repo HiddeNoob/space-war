@@ -55,7 +55,7 @@ class Handler{
     }
 
     /** @param {Vector} vector */
-    drawVector(vector,startVector = new Vector(0,0),color = "white",kalinlik = 1){
+    static drawVector(vector,startVector = new Vector(0,0),color = "white",kalinlik = 1){
         if (!debug) return;
         ctx.strokeStyle = color;
         ctx.lineWidth = kalinlik;
@@ -66,7 +66,7 @@ class Handler{
     }
     
     /** @param {Vector} vector */
-    showPoint(vector){
+    static showPoint(vector){
         if (!debug) return;
         ctx.beginPath();
         ctx.arc(vector.x,vector.y,1,0,2 * Math.PI);

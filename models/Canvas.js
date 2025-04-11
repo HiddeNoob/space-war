@@ -27,7 +27,12 @@ class Canvas{
     drawObjects(timestamp){
         this.lastPaintTimestamp = timestamp;
         this.grid.cells.forEach( (setOfEntity) => {
-            setOfEntity.forEach((entity) => this.drawEntity(entity));
+            setOfEntity.forEach((entity) => {
+                this.drawEntity(entity);
+                this.drawVector(entity.motionAttributes.force.copy().multiply(1e4),entity.drawAttributes.location,"red",2);
+                this.drawVector(entity.motionAttributes.acceleration.copy().multiply(1e4),entity.drawAttributes.location,"green",2);
+                this.drawVector(entity.motionAttributes.velocity.copy().multiply(10),entity.drawAttributes.location,"blue",2);
+            });
         })
     }
 
@@ -69,6 +74,7 @@ class Canvas{
         this.#ctx.rotate(entity.drawAttributes.angle);
         this.#drawPolygon(entity.drawAttributes.shell.breakableLines);
         this.#ctx.rotate(-entity.drawAttributes.angle);
+
         this.#ctx.translate(
             -entity.drawAttributes.location.x,
             -entity.drawAttributes.location.y
@@ -97,6 +103,26 @@ class Canvas{
             ctx.lineTo(Math.floor(point2.x), Math.floor(point2.y)); 
             ctx.stroke();
         }
+    }
+
+    /** @param {Vector} vector */
+    drawVector(vector,startVector = new Vector(0,0),color = "white",kalinlik = 4){
+        if (!debug) return;
+        
+        ctx.strokeStyle = color;
+        ctx.lineWidth = kalinlik;
+        ctx.beginPath();
+        ctx.moveTo(startVector.x,startVector.y)
+        ctx.lineTo(vector.x + startVector.x,vector.y + startVector.y);
+        ctx.stroke();
+    }
+    
+    /** @param {Vector} vector */
+    showPoint(vector){
+        if (!debug) return;
+        ctx.beginPath();
+        ctx.arc(vector.x,vector.y,1,0,2 * Math.PI);
+        ctx.stroke();
     }
     
 }

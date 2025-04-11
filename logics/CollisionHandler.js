@@ -9,6 +9,7 @@ class CollisionHandler extends Handler {
 
     update = () => {
         this.applyToEntityPairs((entity1,entity2) => {
+            if(!(entity1.canCollide && entity2.canCollide)) return;
             this.#makeCollisions(entity1,entity2);
             this.#resolvePenetration(entity1,entity2);
         });
@@ -27,7 +28,7 @@ class CollisionHandler extends Handler {
                 const collidePoint = new Vector();
                 
                 collidingLines.forEach((array) => {
-                    this.showPoint(array[2]);
+                    Handler.showPoint(array[2]);
                     collidePoint.add(array[2])
                 })
                 collidePoint.multiply(1 / collidingLines.length);
@@ -82,11 +83,11 @@ class CollisionHandler extends Handler {
                 entity2.motionAttributes.angularVelocity += yaricap2.crossProduct(impulse) / entity2.motionAttributes.momentOfInertia;
                 
                 // for debugging
-                this.showPoint(collidePoint);
-                this.drawVector(yaricap1,merkez1)
-                this.drawVector(yaricap2,merkez2)
-                this.drawVector(carpismaNormali.copy().multiply(20),collidePoint,"green",6)
-                this.drawVector(impulse.copy().multiply(50),collidePoint,"red",2);
+                Handler.showPoint(collidePoint);
+                Handler.drawVector(yaricap1,merkez1)
+                Handler.drawVector(yaricap2,merkez2)
+                Handler.drawVector(carpismaNormali.copy().multiply(20),collidePoint,"green",6)
+                Handler.drawVector(impulse.copy().multiply(50),collidePoint,"red",2);
         }
 
     }
