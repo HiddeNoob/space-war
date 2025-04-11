@@ -27,7 +27,6 @@ class UserActionHandler extends Handler {
   }
 
   update = () => {
-    this.player.motionAttributes.resetInstantVectors(); 
     this.#applyForce();
     this.#applyTorque();
   }

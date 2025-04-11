@@ -52,20 +52,36 @@ class Grid {
         }
     }
 
-    /** @param {number} x * @param {number} y * @param {number} range */  
+    /**
+     * @param {number} x 
+     * @param {number} y 
+     * @param {number} range
+     * @returns {Set<Entity>}
+     */  
     getEntitiesNearby(x, y, range = 1) {
-        const nearbyEntities = [];
+        const nearbyEntities = new Set();
         for (let dx = -range; dx <= range; dx++) {
             for (let dy = -range; dy <= range; dy++) {
                 const key = this.getCellKey(x + dx * this.cellSize, y + dy * this.cellSize);
                 if (this.cells.has(key)) {
                     for (let entity of this.cells.get(key)) {
-                        nearbyEntities.push(entity);
+                        nearbyEntities.add(entity);
                     }
                 }
             }
         }
         return nearbyEntities;
+    }
+
+    /**
+     * @returns {Set<Entity>} 
+     */
+    getAllEntities(){
+        const allEntites = new Set();
+        for(let [_,set] of this.cells){
+                set.forEach((entity) => allEntites.add(entity));
+        }
+        return allEntites;
     }
 
     refreshGrid() {

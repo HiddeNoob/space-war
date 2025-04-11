@@ -39,6 +39,8 @@ class Game{
         this.player.drawAttributes.location = new Vector(100,100)
 
 
+        const coinMotion = new MotionAttributes(10,5,globalMass * 1e2,globalMoment * 1e2);
+        this.canvasObject.grid.addEntity(new Coin(new DrawAttributes(GlobalShapes.RECTANGLE.copy().scaleBy(2),new Vector(500,500)),coinMotion));
 
 
         // this.canvasObject.grid.addEntity(
