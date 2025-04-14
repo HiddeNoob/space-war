@@ -103,6 +103,8 @@ class Line {
         return (y - b)/a;
     }
 
+    
+
     /** @param {number} dx * @param {number} dy */
     moveLine(dx,dy){
         this.startPoint.x += dx
@@ -135,12 +137,22 @@ class Line {
         return this;
     }
 
-    centerPoint(){
-        return this.startPoint.copy().add(this.endPoint.copy()).multiply(1/2);
+    normalVector(pivot = new Vector(0, 0)) {
+        const vector = this.startPoint.copy().subtract(this.endPoint).rotate(Math.PI / 2).normalize();
+        const r = this.centerPoint().copy().subtract(pivot).normalize();
+        if(vector.dot(r) < 0){
+            vector.multiply(-1);
+        }
+        return vector;
+
     }
 
-    normalVector(){
-            return new Vector(this.endPoint.x - this.startPoint.x , this.endPoint.y - this.startPoint.y).rotate(-Math.PI / 2).normalize()
+    normalize(){
+        return new Vector(this.slope(),1).normalize();
+    }
+
+    centerPoint(){
+        return this.startPoint.copy().add(this.endPoint.copy()).multiply(1/2);
     }
 
     copy() {

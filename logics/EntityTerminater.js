@@ -21,11 +21,11 @@ class EntityTerminater extends Handler{
             deadEntity.isAlive = false;
 
             const entitySpeedVector = deadEntity.motionAttributes.velocity;
-            const bodyPartCount = deadEntity.drawAttributes.shell.breakableLines.length;
+            const bodyPartCount = deadEntity.drawAttributes.shell.lines.length;
             const unitVector = new Vector(1,0); // for not creating every iteration
 
             for(let i = 0; i < bodyPartCount ; i++){ // making explosin animation
-                const selectedLine = deadEntity.drawAttributes.shell.breakableLines[i];
+                const selectedLine = deadEntity.drawAttributes.shell.lines[i];
                 if(selectedLine.health <= 0) continue;
                 const angle = i * (2 * Math.PI) / bodyPartCount;
                 const location = deadEntity.drawAttributes.location;

@@ -68,6 +68,8 @@ class Handler{
     /** @param {Vector} vector */
     static showPoint(vector){
         if (!debug) return;
+        ctx.strokeStyle = "white";
+        ctx.lineWidth = 1;
         ctx.beginPath();
         ctx.arc(vector.x,vector.y,1,0,2 * Math.PI);
         ctx.stroke();

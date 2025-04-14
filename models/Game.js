@@ -43,12 +43,12 @@ class Game{
         this.canvasObject.grid.addEntity(new Coin(new DrawAttributes(GlobalShapes.RECTANGLE.copy().scaleBy(2),new Vector(500,500)),coinMotion));
 
 
-        // this.canvasObject.grid.addEntity(
-        // new Entity(
-        //     new DrawAttributes(GlobalShapes.RECTANGLE.copy().scaleBy(10), new Vector(420, 300),Math.PI / 2),
-        //     blockMotion1
-        // )
-        // );
+        this.canvasObject.grid.addEntity(
+        new Entity(
+            new DrawAttributes(GlobalShapes.createRegularPolygon(10,20), new Vector(420, 300),Math.PI / 2),
+            blockMotion.copy()
+        )
+        );
         this.canvasObject.grid.addEntity(
         new Entity(
             new DrawAttributes(GlobalShapes.RECTANGLE.copy().scaleBy(blockScale), new Vector(220, 180)),
@@ -62,14 +62,22 @@ class Game{
         this.canvasObject.grid.addEntity(this.player);
     }
 
-    run(){  
+    run(){
+        let timestampLast = 0;
         const task = (timestamp) => {
             this.canvasObject.clearCanvas();
+            this.canvasObject.writeText(`${(timestamp - timestampLast).toFixed(2)} frame`,80,20);
             this.settings.showFPS && this.showFPS(timestamp);
             this.canvasObject.grid.refreshGrid();
+
+            let a = Date.now();
             this.gameLogic.update();
+            let b = Date.now();
+            this.canvasObject.writeText(`${(b - a).toFixed(2)} gameLogic ms`,150,20);
+            
             this.canvasObject.showGrid();
             this.canvasObject.drawObjects(timestamp);
+            timestampLast = timestamp;
             self.requestAnimationFrame(task);
         }
         self.requestAnimationFrame(task);

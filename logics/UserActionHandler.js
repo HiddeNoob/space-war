@@ -64,7 +64,7 @@ class UserActionHandler extends Handler {
 
       createdBullet.motionAttributes.velocity.add(new Vector(bulletXSpeed, bulletYSpeed));
       
-      const tipOfPlayer = this.player.drawAttributes.shell.breakableLines[0].startPoint;
+      const tipOfPlayer = this.player.drawAttributes.shell.lines[0].startPoint;
       createdBullet.drawAttributes.location= this.player.drawAttributes.location.copy().add(tipOfPlayer.copy().rotate(bulletAngle).multiply(2));
       createdBullet.drawAttributes.angle = bulletAngle;
 

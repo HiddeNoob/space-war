@@ -19,8 +19,8 @@ class Entity{
 
     /** @param {Entity} entity */
     isCollidingWith(entity){
-        const e1L = this.drawAttributes.shell.breakableLines;
-        const e2L = entity.drawAttributes.shell.breakableLines;
+        const e1L = this.drawAttributes.shell.lines;
+        const e2L = entity.drawAttributes.shell.lines;
 
         for(let line1 of e1L){
             for(let line2 of e2L){

@@ -69,23 +69,13 @@ class Canvas{
 
     /** @param {Entity} entity */
     drawEntity(entity){
-        this.#ctx.translate(
-            entity.drawAttributes.location.x,
-            entity.drawAttributes.location.y
-        );
-        this.#ctx.rotate(entity.drawAttributes.angle);
-        this.#drawPolygon(entity.drawAttributes.shell.breakableLines);
-        this.#ctx.rotate(-entity.drawAttributes.angle);
 
-        this.#ctx.translate(
-            -entity.drawAttributes.location.x,
-            -entity.drawAttributes.location.y
-        );
+        this.#drawPolygon(entity.drawAttributes.getActualShell());
     }
 
     /** @param {Polygon | Line[] | BreakableLine[]} polygon */
     #drawPolygon(polygon) {
-        for (let i = 0; i < (polygon instanceof Polygon ? polygon.lines.length : polygon.length); i++) {
+        for (let i = 0; i < (polygon instanceof Polygon ? polygon.lineCount() : polygon.length); i++) {
             ctx.beginPath();
             const currentLine = polygon instanceof Polygon ? polygon.lines[i] : polygon[i];
 
@@ -101,8 +91,8 @@ class Canvas{
             }
 
 
-            ctx.moveTo(Math.floor(point1.x), Math.floor(point1.y)); 
-            ctx.lineTo(Math.floor(point2.x), Math.floor(point2.y)); 
+            ctx.lineTo(point1.x, point1.y); 
+            ctx.lineTo(point2.x, point2.y); 
             ctx.stroke();
         }
     }

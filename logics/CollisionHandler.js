@@ -12,13 +12,7 @@ class CollisionHandler extends Handler {
             if(!(entity1.canCollide && entity2.canCollide)) return;
             this.#makeCollisions(entity1,entity2);
             this.#resolvePenetration(entity1,entity2);
-
-            if(debug){
-                this.#getNormals(new Polygon(entity1.drawAttributes.shell.breakableLines),entity1.drawAttributes.angle).forEach((vector) => {
-                    Handler.drawVector(vector.multiply(20),entity1.drawAttributes.location)
-                });
-            }
-
+    
         });
     }
 
@@ -54,8 +48,10 @@ class CollisionHandler extends Handler {
                 
                 const yaricap1 = collidePoint.copy().subtract(merkez1);
                 const yaricap2 = collidePoint.copy().subtract(merkez2);
-                const v1 = entity1.motionAttributes.velocity.copy().add(yaricap1.copy().multiply(entity1.motionAttributes.angularVelocity));
-                const v2 = entity2.motionAttributes.velocity.copy().add(yaricap2.copy().multiply(entity2.motionAttributes.angularVelocity));
+                const acisal1 = yaricap1.copy().multiply(entity1.motionAttributes.angularVelocity).rotate(Math.PI / 2); // acisal hiz cross carpım yapılıp yaricapa dik olarak eklenmeli
+                const acisal2 = yaricap2.copy().multiply(entity2.motionAttributes.angularVelocity).rotate(Math.PI / 2);
+                const v1 = entity1.motionAttributes.velocity.copy().add(acisal1);
+                const v2 = entity2.motionAttributes.velocity.copy().add(acisal2);
                 const goreceliHiz = v2.copy().subtract(v1);
 
                 const n1 = e1L.copy().rotateLine(entity1.drawAttributes.angle).normalVector();
@@ -63,7 +59,8 @@ class CollisionHandler extends Handler {
 
                 const n1Dot = goreceliHiz.copy().normalize().dot(n1);
                 const n2Dot = goreceliHiz.copy().normalize().dot(n2);
-                let carpismaNormali = n1Dot > n2Dot ? n2 : n1;
+                let carpismaNormali = Math.abs(n1Dot) > Math.abs(n2Dot) ? n1 : n2; // hangi normal daha büyükse o normal kullanılır
+
                 
 
 
@@ -109,20 +106,20 @@ class CollisionHandler extends Handler {
     #getCollidingLines(e1, e2) {
         /** @type {Array[]} */
         const array = [];
-        for (let i = 0; i < e1.drawAttributes.shell.breakableLines.length; i++) {
-            let e1L = e1.drawAttributes.shell.breakableLines[i]
+        for (let i = 0; i < e1.drawAttributes.shell.lines.length; i++) {
+            let e1L = e1.drawAttributes.shell.lines[i]
                 .copy()
                 .rotateLine(e1.drawAttributes.angle)
                 .moveLine(e1.drawAttributes.location.x, e1.drawAttributes.location.y);
-            for (let j = 0; j < e2.drawAttributes.shell.breakableLines.length; j++) {
-                let e2L = e2.drawAttributes.shell.breakableLines[j]
+            for (let j = 0; j < e2.drawAttributes.shell.lines.length; j++) {
+                let e2L = e2.drawAttributes.shell.lines[j]
                     .copy()
                     .rotateLine(e2.drawAttributes.angle)
                     .moveLine(e2.drawAttributes.location.x, e2.drawAttributes.location.y);
 
                 const intersectPoint = e2L.getIntersectPoint(e1L);
                 if (intersectPoint) {
-                    array.push([e1.drawAttributes.shell.breakableLines[i], e2.drawAttributes.shell.breakableLines[j],intersectPoint]);
+                    array.push([e1.drawAttributes.shell.lines[i], e2.drawAttributes.shell.lines[j],intersectPoint]);
                 }
             }
         }
@@ -156,29 +153,26 @@ class CollisionHandler extends Handler {
      * @param {Entity} entity2
      */
     #resolvePenetration(entity1,entity2) {
-        const poly1 = new Polygon(entity1.drawAttributes.shell.breakableLines)
-        const poly2 = new Polygon(entity2.drawAttributes.shell.breakableLines)
-        const angle1 = entity1.drawAttributes.angle;
-        const angle2 = entity2.drawAttributes.angle;
+        const poly1 = entity1.drawAttributes.getActualShell();
+        const poly2 = entity2.drawAttributes.getActualShell();
         const pos1 = entity1.drawAttributes.location;
         const pos2 = entity2.drawAttributes.location;
         const mass1 = entity1.motionAttributes.mass;
         const mass2 = entity2.motionAttributes.mass;
 
-        const axes = this.#getNormals(poly1, angle1).concat(this.#getNormals(poly2, angle2));
+        const axes = poly1.getNormals().concat(poly2.getNormals());
         let minOverlap = Infinity;
         let smallestAxis = null;
-
         for (const axis of axes) {
-            const proj1 = this.#projectPolygon(poly1, axis, pos1, angle1);
-            const proj2 = this.#projectPolygon(poly2, axis, pos2, angle2);
+            const proj1 = this.#projectPolygon(poly1, axis);
+            const proj2 = this.#projectPolygon(poly2, axis);
 
             const overlap = this.#getOverlap(proj1, proj2);
             if (overlap === 0) return; // Ayrı eksen bulunduysa çarpışma yok
 
             if (overlap < minOverlap) {
                 minOverlap = overlap;
-                smallestAxis = axis.copy();
+                smallestAxis = axis;
             }
         }
         const centerDelta = pos2.copy().subtract(pos1);
@@ -192,32 +186,21 @@ class CollisionHandler extends Handler {
         pos2.add(correction.copy().multiply(mass1 / totalMass));
     }
 
-    /**
-     * @param {Polygon} poly
-     * @returns {Vector[]}
-     */
-    #getNormals(poly, angle) {
-        return poly.lines.map(line => {
-            const rotatedLine = line.copy().rotateLine(angle);
-            return rotatedLine.normalVector();
-        });
-    }
+
     
     
 
     /**
      * @param {Polygon} poly
      * @param {Vector} axis
-     * @param {Vector} position
      * @returns {[number, number]}
      */
-    #projectPolygon(poly, axis, position, angle) {
+    #projectPolygon(poly, axis) {
         let dots = [];
     
         for (let line of poly.lines) {
-            const rotatedLine = line.copy().rotateLine(angle);
-            const p1 = rotatedLine.startPoint.copy().add(position);
-            const p2 = rotatedLine.endPoint.copy().add(position);
+            const p1 = line.startPoint;
+            const p2 = line.endPoint;
             dots.push(axis.dot(p1), axis.dot(p2));
         }
     
@@ -238,7 +221,7 @@ class CollisionHandler extends Handler {
 }
 
 
-    
 
 
-    
+
+

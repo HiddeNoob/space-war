@@ -14,15 +14,20 @@ class DrawAttributes {
         this.location = location;
         this.shell = new EntityShell(polygon);
         this.angle = angle;
+        console.log(this.getActualShell())
         this.color = color;
     }
     
     copy() {
         return new DrawAttributes(
-            new Polygon(this.shell.breakableLines),
+            new Polygon(this.shell.lines),
             this.location.copy(),
             this.angle,
             this.color
         );
+    }
+
+    getActualShell(){
+        return this.shell.copy().rotate(this.angle).move(this.location);
     }
 }
