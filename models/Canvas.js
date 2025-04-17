@@ -4,7 +4,6 @@ class Canvas{
     /** @type {CanvasRenderingContext2D} */
     #ctx;
     
-    cellSize = 50;
     /** @type {Grid} */
     grid
 
@@ -18,7 +17,7 @@ class Canvas{
     constructor(ctx,canvasHTMLElement){
         this.#ctx = ctx;
         this.#canvasHTMLElement = canvasHTMLElement;
-        this.grid = new Grid(this.cellSize,this.#canvasHTMLElement.height,this.#canvasHTMLElement.width);
+        this.grid = new Grid(Settings.default.gridCellSize,this.#canvasHTMLElement.height,this.#canvasHTMLElement.width);
         ctx.font = "12px serif";
         ctx.fillStyle = "white";
     }
@@ -26,16 +25,30 @@ class Canvas{
     /** @param {number} timestamp */
     drawObjects(timestamp){
         this.lastPaintTimestamp = timestamp;
-        this.grid.cells.forEach( (setOfEntity) => {
-            setOfEntity.forEach((entity) => {
-                this.drawEntity(entity);
-                if(debug){
-                    this.drawVector(entity.motionAttributes.force.copy().multiply(1e1),entity.drawAttributes.location,"red",2);
-                    this.drawVector(entity.motionAttributes.acceleration.copy().multiply(1e1),entity.drawAttributes.location,"green",2);
-                    this.drawVector(entity.motionAttributes.velocity.copy().multiply(1e1),entity.drawAttributes.location,"blue",2);
-                }
-            });
-        })
+        this.grid.applyToAllEntities((entity) => {
+            this.drawEntity(entity);
+
+            if (debug) {
+                this.drawVector(
+                    entity.motionAttributes.force.copy().multiply(1e1),
+                    entity.drawAttributes.location,
+                    "red",
+                    2
+                );
+                this.drawVector(
+                    entity.motionAttributes.acceleration.copy().multiply(1e1),
+                    entity.drawAttributes.location,
+                    "green",
+                    2
+                );
+                this.drawVector(
+                    entity.motionAttributes.velocity.copy().multiply(1e1),
+                    entity.drawAttributes.location,
+                    "blue",
+                    2
+                );
+            }
+        });
     }
 
     clearCanvas(){
@@ -47,19 +60,22 @@ class Canvas{
     }
 
     showGrid(){
+        const cellSize = this.grid.cellSize
         this.#ctx.lineWidth = 1;
         this.#ctx.strokeStyle= "white";
         this.#ctx.beginPath();
-        for(let i = 0; i < this.#canvasHTMLElement.height / this.cellSize ; i++){
-            for(let j = 0; j < this.#canvasHTMLElement.width / this.cellSize ; j++){
-                const x = j * this.cellSize;
-                const y = i * this.cellSize;
-                const selectedEntities = this.grid.cells.get(this.grid.getCellKey(x,y));
+        for(let i = 0; i < this.#canvasHTMLElement.height / cellSize ; i++){
+            for(let j = 0; j < this.#canvasHTMLElement.width / cellSize ; j++){
+                const x = j * cellSize;
+                const y = i * cellSize;
+                let totalEntities = 0;
+                const selectedEntities = this.grid.cells.get(this.grid.getCellKey(x, y));
+                selectedEntities?.forEach((set) => totalEntities += set.size);
                 
                 this.#ctx.moveTo(x,y);
-                this.writeText(selectedEntities ? selectedEntities.size : "0",x + 5,y + 10)
-                this.#ctx.lineTo(x + this.cellSize,y);
-                this.#ctx.moveTo(x,y + this.cellSize);
+                this.writeText(totalEntities,x + 5,y + 10)
+                this.#ctx.lineTo(x + cellSize,y);
+                this.#ctx.moveTo(x,y + cellSize);
                 this.#ctx.lineTo(x,y);
 
             }
@@ -75,7 +91,7 @@ class Canvas{
 
     /** @param {Polygon | Line[] | BreakableLine[]} polygon */
     #drawPolygon(polygon) {
-        for (let i = 0; i < (polygon instanceof Polygon ? polygon.lineCount() : polygon.length); i++) {
+        for (let i = 0; i < (polygon instanceof Polygon ? polygon.lines.length : polygon.length); i++) {
             ctx.beginPath();
             const currentLine = polygon instanceof Polygon ? polygon.lines[i] : polygon[i];
 

@@ -1,70 +1,71 @@
-class EntityPhysicHandler extends Handler{
-
+class EntityPhysicHandler extends Handler {
     /**
      * @param {Grid} grid
      * @param {Player} player
      */
-    constructor(grid,player){
-        super(grid,player);
+    constructor(grid, player) {
+        super(grid, player);
     }
-  
+
     update = () => {
-        this.#updateAngle()
+        this.#updateAngle();
         this.#applyAcceleration(); // if there is a force
         this.#applySpeed();
         this.#updateLocation();
-    }
-    
-  
+    };
+
     #applyAcceleration() {
-        this.grid.cells.forEach((cell) => {
-            cell.forEach((entity) => {
-                entity.motionAttributes.acceleration.add(
-                    entity.motionAttributes.force.copy().divide(entity.motionAttributes.mass)
-                );
-            });
+        this.grid.applyToAllEntities((entity) => {
+            const acceleration = entity.motionAttributes.force
+                .copy()
+                .divide(entity.motionAttributes.mass);
+            entity.motionAttributes.acceleration.add(acceleration);
         });
     }
-  
+
     #applySpeed() {
-        this.grid.cells.forEach((cell) => {
-            cell.forEach((entity) => {
-                const slowdownRate = entity.motionAttributes.velocitySlowdownRate;
-                entity.motionAttributes.velocity.add(entity.motionAttributes.acceleration);
-                entity.motionAttributes.velocity.multiply(slowdownRate);
-                if (entity.motionAttributes.velocity.magnitude() > entity.motionAttributes.maxVelocity) {
-                    entity.motionAttributes.velocity = entity.motionAttributes.velocity
-                        .normalize()
-                        .multiply(entity.motionAttributes.maxVelocity);
-                }
-            });
+        this.grid.applyToAllEntities((entity) => {
+            const motion = entity.motionAttributes;
+            const slowdownRate = motion.velocitySlowdownRate;
+
+            motion.velocity.add(motion.acceleration);
+            motion.velocity.multiply(slowdownRate);
+
+            if (motion.velocity.magnitude() > motion.maxVelocity) {
+                motion.velocity = motion.velocity
+                    .normalize()
+                    .multiply(motion.maxVelocity);
+            }
         });
     }
-  
+
     #updateLocation() {
-        this.grid.cells.forEach((cell) => {
-            cell.forEach((entity) => {
-                entity.drawAttributes.location.x += entity.motionAttributes.velocity.x;
-                entity.drawAttributes.location.y += entity.motionAttributes.velocity.y;
-            });
+        this.grid.applyToAllEntities((entity) => {
+            const location = entity.drawAttributes.location;
+            const velocity = entity.motionAttributes.velocity;
+
+            location.x += velocity.x;
+            location.y += velocity.y;
         });
     }
 
     #updateAngle() {
-        this.grid.cells.forEach((cell) => {
-            cell.forEach((entity) => {
-                const angularVelocity = entity.motionAttributes.angularVelocity;
-                const maxAngularVelocity = 0.1;
-                const slowdownRate = entity.motionAttributes.angularSlowdownRate
-                if(maxAngularVelocity < Math.abs(angularVelocity)){
-                    entity.motionAttributes.angularVelocity = angularVelocity > 0 ? maxAngularVelocity : -maxAngularVelocity;
-                }
+        this.grid.applyToAllEntities((entity) => {
+            const motion = entity.motionAttributes;
+            const draw = entity.drawAttributes;
 
-                entity.motionAttributes.angularVelocity *= slowdownRate;
-                entity.drawAttributes.angle += angularVelocity;
-            });
+            const maxAngularVelocity = 0.1;
+            const slowdownRate = motion.angularSlowdownRate;
+
+            if (Math.abs(motion.angularVelocity) > maxAngularVelocity) {
+                motion.angularVelocity =
+                    motion.angularVelocity > 0
+                        ? maxAngularVelocity
+                        : -maxAngularVelocity;
+            }
+
+            motion.angularVelocity *= slowdownRate;
+            draw.angle += motion.angularVelocity;
         });
-
-    
-      }
+    }
 }

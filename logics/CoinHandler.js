@@ -7,31 +7,31 @@ class CoinHandler extends Handler{
         super(grid,player);
     }
 
-    update = () => { 
-        const entities = this.grid.getAllEntities();
-        entities.forEach((entity) => entity instanceof Coin && this.#applyForceToCoin(entity))
-        const coin = this.#isCollidingWithCoin(this.player);
-        if(coin){
-            this.player.money += coin.value; 
-            coin.isAlive = false;
-        }
-    }
+    update = () => {
+        let a = Date.now();
+        this.grid.applyToCertainEntities(Coin.name,(entity) => {
+            this.#applyForceToCoin(/** @type {Coin} */ (entity));
+        });
+        let b = Date.now();
+        this.#catchCoin();
+        let c = Date.now();
+        
 
-    /**
-     * 
-     * @param {Entity} player 
-     * @returns {Coin | null}
-     */
-    #isCollidingWithCoin(player){
-        const pos = player.drawAttributes.location;
-        const entites = this.grid.getEntitiesNearby(pos.x,pos.y);
-        for(let e of entites){
-            if(e instanceof Coin && e.isCollidingWith(player)){
-                console.log(e.isCollidingWith(player))
-                return e;
+    };
+
+    #catchCoin(){
+        const playerDraw = this.player.drawAttributes;
+        const entitesMap = this.grid.getEntitiesNearby(playerDraw.location.x,playerDraw.location.y);
+        if(entitesMap.has(Coin.name)){
+            const coinsNearby = entitesMap.get(Coin.name);
+            for(let coin of coinsNearby){
+                if(CollisionHandler.isPolygonsPenetrating(playerDraw.getActualShell(),coin.drawAttributes.getActualShell())){
+                    this.player.money += /** @type {Coin} */ (coin).value;
+                    coin.isAlive = false;
+                }
             }
+
         }
-        return null;
     }
 
     /** @param {Coin} coin */
@@ -40,10 +40,10 @@ class CoinHandler extends Handler{
         const playerPos = this.player.drawAttributes.location;
 
         const relativePos = playerPos.copy().subtract(coinPos); // coin to player
-        const multiplier = 1e1 * (this.player.motionAttributes.mass * coin.motionAttributes.mass) /  relativePos.magnitude();
+        const multiplier = 1e-3 * (this.player.motionAttributes.mass * coin.motionAttributes.mass) /  relativePos.magnitude();
         coin.motionAttributes.force.add(relativePos.normalize().multiply(multiplier));
 
 
     }
 
-} 
+}

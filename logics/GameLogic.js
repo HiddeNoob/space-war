@@ -17,14 +17,25 @@ class GameLogic extends Handler{
     }
 
     update = () => {
-        this.grid.getAllEntities().forEach((e) => {
-            e.motionAttributes.resetInstantVectors()
-            if(debug){
-                let vector = e.drawAttributes.getActualShell().lines[0].normalVector(e.drawAttributes.location);
-                Handler.drawVector(vector.multiply(20),e.drawAttributes.location);
+        this.grid.applyToAllEntities((entity) => {
+            entity.motionAttributes.resetInstantVectors();
+            if (debug) {
+                const vector = entity.drawAttributes
+                    .getActualShell()
+                    .lines[0].normalVector(entity.drawAttributes.location);
+                Handler.drawVector(vector.multiply(20), entity.drawAttributes.location);
             }
         });
-        this.handlers.forEach((handler) => handler.update())
 
+        let i = 1;
+        this.handlers.forEach((handler) => {
+            let a = Date.now();
+            handler.update()
+            let b = Date.now();
+            if(debug){
+                ctx.fillText(`${handler.constructor.name}: ${(b-a).toFixed(2)} ms`,10,i * 30 + 20);
+                i+= 1
+            }
+        });
     };
 }

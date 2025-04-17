@@ -1,6 +1,9 @@
 class Line {
     static #tolerans = 1e-2;
 
+    /** @type {Entity} */
+    belongsTo
+
     /** @type {Vector} */
     startPoint;
     /** @type {Vector} */

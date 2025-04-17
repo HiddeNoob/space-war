@@ -1,4 +1,7 @@
 class CollisionHandler extends Handler {
+
+    static lineGridCellSize = Settings.default.gridLineCellSize;
+
     /**
      * @param {Grid} grid
      * @param {Player} player
@@ -8,13 +11,15 @@ class CollisionHandler extends Handler {
     }
 
     update = () => {
-        this.applyToEntityPairs((entity1,entity2) => {
-            if(!(entity1.canCollide && entity2.canCollide)) return;
-            this.#makeCollisions(entity1,entity2);
-            this.#resolvePenetration(entity1,entity2);
-    
+
+        this.grid.applyToCloseEntityPairs((entity1, entity2) => {
+            if (!(entity1.canCollide && entity2.canCollide)) return;
+
+            this.#makeCollisions(entity1, entity2);
+            this.#resolvePenetration(entity1, entity2);
         });
-    }
+
+    };
 
     /**
      * @param {Entity} entity1 
@@ -54,8 +59,8 @@ class CollisionHandler extends Handler {
                 const v2 = entity2.motionAttributes.velocity.copy().add(acisal2);
                 const goreceliHiz = v2.copy().subtract(v1);
 
-                const n1 = e1L.copy().rotateLine(entity1.drawAttributes.angle).normalVector();
-                const n2 = e2L.copy().rotateLine(entity2.drawAttributes.angle).normalVector();
+                const n1 = e1L.normalVector();
+                const n2 = e2L.normalVector();
 
                 const n1Dot = goreceliHiz.copy().normalize().dot(n1);
                 const n2Dot = goreceliHiz.copy().normalize().dot(n2);
@@ -147,6 +152,17 @@ class CollisionHandler extends Handler {
         if(collidingBulletLine.health <= 0) EntityTerminater.deadEntitiesQueue.push(bullet);
     }
 
+    static isPolygonsPenetrating(poly1,poly2){
+        const axes = poly1.getNormals().concat(poly2.getNormals());
+        for (const axis of axes) {
+            const proj1 = CollisionHandler.#projectPolygon(poly1, axis);
+            const proj2 = CollisionHandler.#projectPolygon(poly2, axis);
+            const overlap = CollisionHandler.#getOverlap(proj1, proj2);
+            if (overlap === 0) return false;
+        }
+        return true;
+    }
+
     /**
      * SAT teoremi ile ayırma işlemi yapar
      * @param {Entity} entity1
@@ -164,10 +180,10 @@ class CollisionHandler extends Handler {
         let minOverlap = Infinity;
         let smallestAxis = null;
         for (const axis of axes) {
-            const proj1 = this.#projectPolygon(poly1, axis);
-            const proj2 = this.#projectPolygon(poly2, axis);
+            const proj1 = CollisionHandler.#projectPolygon(poly1, axis);
+            const proj2 = CollisionHandler.#projectPolygon(poly2, axis);
 
-            const overlap = this.#getOverlap(proj1, proj2);
+            const overlap = CollisionHandler.#getOverlap(proj1, proj2);
             if (overlap === 0) return; // Ayrı eksen bulunduysa çarpışma yok
 
             if (overlap < minOverlap) {
@@ -195,7 +211,7 @@ class CollisionHandler extends Handler {
      * @param {Vector} axis
      * @returns {[number, number]}
      */
-    #projectPolygon(poly, axis) {
+    static #projectPolygon(poly, axis) {
         let dots = [];
     
         for (let line of poly.lines) {
@@ -214,7 +230,7 @@ class CollisionHandler extends Handler {
      * @param {[number, number]} proj2
      * @returns {number}
      */
-    #getOverlap([min1, max1], [min2, max2]) {
+    static #getOverlap([min1, max1], [min2, max2]) {
         return Math.max(0, Math.min(max1, max2) - Math.max(min1, min2));
     }
 

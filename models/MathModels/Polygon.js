@@ -1,12 +1,12 @@
 class Polygon {
     /** @type {Line[] | BreakableLine[]} */
-    #lines
-   
+    #lines;
+
     /**
      * @param {Line[]} lines 
      */
     constructor(lines) {
-        this.#lines = lines
+        this.#lines = lines;
         this.move(this.#getCenter().multiply(-1));
     }
 
@@ -22,21 +22,24 @@ class Polygon {
         center.multiply(1 / this.#lines.length);
         return center;
     }
-
-    lineCount() {
-        return this.#lines.length;
-    }
     
-    /** @param {number} size */
+    /** 
+     * @param {number} size 
+     * @returns {Polygon}
+     */
     scaleBy(size) {
         this.#lines.forEach((line) => {
             line.startPoint.multiply(size);
             line.endPoint.multiply(size);
         });
+
+        const maxLineLength = Settings.default.maxLineLength;
+        this.#lines = ShapeFactory.enforceMaxLineLength(this.#lines, maxLineLength);
+        console.log(this);
         return this;
     }
 
-    setColor(color){
+    setColor(color) {
         this.#lines.forEach((line) => line.lineColor = color);
         return this;
     }
@@ -44,21 +47,22 @@ class Polygon {
     /**
      * @param {Vector} vector 
      */
-    move(vector){
-        this.#lines.forEach((line) => line.moveLine(vector.x,vector.y));
-        return this;
-    }
-    rotate(angle){
-        const center = this.#getCenter();
-        this.#lines.forEach((line) => line.rotateLine(angle,center));
+    move(vector) {
+        this.#lines.forEach((line) => line.moveLine(vector.x, vector.y));
         return this;
     }
 
-    copy(){
+    rotate(angle) {
+        const center = this.#getCenter();
+        this.#lines.forEach((line) => line.rotateLine(angle, center));
+        return this;
+    }
+
+    copy() {
         return new Polygon(this.#lines.map((line) => line.copy()));
     }
 
-    getMaxPoints(){
+    getMaxPoints() {
         const points = {
             maxX: -Infinity,
             minX: Infinity,
@@ -77,7 +81,8 @@ class Polygon {
             points.minY = Math.min(points.minY, y1, y2);
         });
         return points;
-    };
+    }
+    
 
     /**
      * @returns {Vector[]}
