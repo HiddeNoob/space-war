@@ -70,7 +70,7 @@ class Grid {
      * @returns {Map<string,Set<Entity>>}
      */
     getEntitiesNearby(x, y, range = 1) {
-        /** @type {Map<string,Set<Entity>} */
+        /** @type {Map<string,Set<Entity>>} */
         const nearbyEntities = new Map();
         for (let dx = -range; dx <= range; dx++) {
             for (let dy = -range; dy <= range; dy++) {

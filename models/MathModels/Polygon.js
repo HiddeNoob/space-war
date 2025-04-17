@@ -32,10 +32,6 @@ class Polygon {
             line.startPoint.multiply(size);
             line.endPoint.multiply(size);
         });
-
-        const maxLineLength = Settings.default.maxLineLength;
-        this.#lines = ShapeFactory.enforceMaxLineLength(this.#lines, maxLineLength);
-        console.log(this);
         return this;
     }
 
