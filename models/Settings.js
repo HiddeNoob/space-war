@@ -3,7 +3,7 @@ class Settings{
         maxLineLength : 30,
         gridCellSize : 50,
         gridLineCellSize : 10,
-        debug : true,
+        debug : false,
         showFPS : true,
     }
 }

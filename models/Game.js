@@ -40,14 +40,15 @@ class Game{
 
     run(){
         const task = (timestamp) => {
+            globalGameVariables.previousLatestPaintTimestamp = globalGameVariables.latestPaintTimestamp;
+            globalGameVariables.latestPaintTimestamp = timestamp;
             this.canvasObject.clearCanvas();
-            this.canvasObject.writeText(`${(timestamp - latestFrameTime).toFixed(2)} frame`,80,20);
+            this.canvasObject.writeText(`${(globalGameVariables.latestPaintTimestamp - globalGameVariables.previousLatestPaintTimestamp).toFixed(2)} frame`,80,20);
             Settings.default.showFPS && this.showFPS(timestamp);
             this.canvasObject.grid.refreshGrid();
             this.gameLogic.update();
             Settings.default.debug && this.canvasObject.showGrid();
             this.canvasObject.drawObjects(timestamp);
-            latestFrameTime = timestamp;
             self.requestAnimationFrame(task);
         }
         self.requestAnimationFrame(task);

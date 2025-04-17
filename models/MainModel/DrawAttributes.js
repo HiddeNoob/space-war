@@ -30,7 +30,7 @@ class DrawAttributes {
     }
 
     getActualShell(){
-        if(latestFrameTime != DrawAttributes.calculatedTimestamp)
+        if(globalGameVariables.latestPaintTimestamp != DrawAttributes.calculatedTimestamp)
             DrawAttributes.calculatedShells = new Map();
         if(DrawAttributes.calculatedShells.has(this))
             return DrawAttributes.calculatedShells.get(this);
