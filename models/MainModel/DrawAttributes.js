@@ -1,6 +1,9 @@
 class DrawAttributes {
-    location;
 
+    static calculatedTimestamp = 0; 
+    static calculatedShells = new Map();
+
+    location;
     shell; 
     angle;
 
@@ -14,7 +17,6 @@ class DrawAttributes {
         this.location = location;
         this.shell = new EntityShell(polygon);
         this.angle = angle;
-        console.log(this.getActualShell())
         this.color = color;
     }
     
@@ -28,6 +30,14 @@ class DrawAttributes {
     }
 
     getActualShell(){
-        return this.shell.copy().rotate(this.angle).move(this.location);
+        if(latestFrameTime != DrawAttributes.calculatedTimestamp)
+            DrawAttributes.calculatedShells = new Map();
+        if(DrawAttributes.calculatedShells.has(this))
+            return DrawAttributes.calculatedShells.get(this);
+        else{
+            const calculated = this.shell.copy().rotate(this.angle).move(this.location)
+            DrawAttributes.calculatedShells.set(this,calculated);
+            return calculated;
+        }
     }
 }

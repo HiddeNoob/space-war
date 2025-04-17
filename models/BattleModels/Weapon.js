@@ -29,5 +29,6 @@ class Weapon extends Entity{
         this.maxBulletPerMagazine = maxBulletPerMagazine;
         this.remainingBullet = remainingBullet;
         this.bulletObject = bulletObject;
+        this.bulletEjectPower = this.bulletObject.motionAttributes.mass;
     }
 }

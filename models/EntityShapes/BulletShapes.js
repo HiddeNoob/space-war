@@ -1,4 +1,5 @@
-class BulletShapes{
-    static DEFAULT_BULLET = new Polygon([new Line(0,0,10,0,2)])
-    static EXPLOSIVE_BULLET = new Polygon([new Line(0,0,0,10,1,"#FF5555")])
+class BulletShapes {
+    static DEFAULT_BULLET = GlobalShapes.RECTANGLE.copy().scaleBy(0.1)
+    // static DEFAULT_BULLET = ShapeFactory.createPolygon([new Line(0,0,0,1),new Line(0,1,-5,1),new Line(-5,1,-5,0),new Line(-5,0,0,0)]).scaleBy(3);
+
 }
