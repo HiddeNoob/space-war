@@ -1,4 +1,7 @@
-let latestFrameTime = -1;
+const globalGameVariables = {
+    previousLatestPaintTimestamp : 0,
+    latestPaintTimestamp : 1,
+}
 const canvas = /** @type {HTMLCanvasElement} */ (document.getElementById('canvas'));
 /** @type {CanvasRenderingContext2D} */
 const ctx = canvas.getContext('2d');
