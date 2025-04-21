@@ -1,101 +1,121 @@
-class MenuManager{
+class MenuManager {
+    /** @type {Player} */
+    #player;
 
     /** @type {HTMLElement} */
-    #rootNode
+    #rootNode;
+
     /** @type {Menu[]} */
-    #state = []
+    #state = [];
 
-    #onLeft = []
-    #onRight = []
-    #onUp = []
-    #onDown = []
-    #onSelect = []
-    #onCancel = []
+    #handler;
 
-    /** @param {HTMLElement} rootElement */
-    constructor(rootElement){
+    /**
+     * @param {HTMLElement} rootElement
+     * @param {Player} player
+     */
+    constructor(rootElement, player) {
+        this.#player = player;
         this.#rootNode = rootElement;
 
-        document.addEventListener("keydown",(e) => {
+        this.#handler = (e) => {
             const currMenu = this.peek();
-            const key = e.key;
+            const selectedComponent = currMenu.currentSelectedComponent;
+            const key = e.key.toLowerCase();
             let isUpdated = true;
-            if (key === "w"  || key === "W") {
-                currMenu.decreaseIndex();
-                this.#onUp.forEach((f) => f(e, currMenu.currentSelectedComponent));
-            } else if (key === "s"  || key === "S") {
-                currMenu.increaseIndex();
-                this.#onDown.forEach((f) => f(e, currMenu.currentSelectedComponent));
-            } else if (key === "a"  || key === "A") {
-                this.#onLeft.forEach((f) => f(e, currMenu.currentSelectedComponent));
-            } else if (key === "d"  || key === "D") {
-                this.#onRight.forEach((f) => f(e, currMenu.currentSelectedComponent));
-            } else if (key === " "  || key === "Enter") {
-                this.#onSelect.forEach((f) => f(e, currMenu.currentSelectedComponent));
-                if (currMenu.currentSelectedComponent instanceof Menu) {
-                    this.push(currMenu.currentSelectedComponent); // yeni menuye gecis
-                }
-            } else if(key === "Backspace" || key === "Escape"){
-                this.#onCancel.forEach((f) => f(e,currMenu.currentSelectedComponent));
-                this.pop();
-            } else{
-                isUpdated = false; // rerender yapmaması için
+
+            switch (key) {
+                case "arrowup":
+                case "w":
+                    currMenu.decreaseIndex();
+                    selectedComponent?.actions.onUp?.();
+                    break;
+                case "arrowdown":
+                case "s":
+                    currMenu.increaseIndex();
+                    selectedComponent?.actions.onDown?.();
+                    break;
+                case "arrowleft":
+                case "a":
+                    selectedComponent?.actions.onLeft?.();
+                    break;
+                case "arrowright":   
+                case "d":
+                    selectedComponent?.actions.onRight?.();
+                    break
+                case " ":
+                case "enter":
+                    selectedComponent?.actions.onSelect?.();
+                    if (selectedComponent instanceof Menu) {
+                        this.push(selectedComponent);
+                    } else if (selectedComponent instanceof ItemComponent || selectedComponent instanceof UpgradableItem) {
+                        this.#attemptPurchase(selectedComponent);
+                    }
+                    break;
+                case "backspace":
+                case "escape":
+                    if (this.#state.length > 1) {
+                        this.pop();
+                    }
+                    selectedComponent?.actions.onReturn?.();
+                    break;
+                default:
+                    isUpdated = false;
             }
-            
-            isUpdated && this.drawCurrentState();
-        })
 
-    }
+            isUpdated && this.updateOnChange();
+        };
 
-    /** @param {(event : KeyboardEvent,component : Component) => void} callback */
-    onCancel(callback){
-        this.#onCancel.push(callback);
+        document.addEventListener("keydown", this.#handler);
     }
 
-    /** @param {(event : KeyboardEvent,component : Component) => void} callback */
-    onSelect(callback){
-        this.#onSelect.push(callback);
-    }
-
-    /** @param {(event : KeyboardEvent,component : Component) => void} callback */
-    onLeft(callback){
-        this.#onLeft.push(callback);
-    }
-    
-    /** @param {(event : KeyboardEvent,component : Component) => void} callback */
-    onRight(callback){
-        this.#onRight.push(callback);
-    }
-    
-    /** @param {(event : KeyboardEvent,component : Component) => void} callback */
-    onUp(callback){
-        this.#onUp.push(callback);
-    }
-    
-    /** @param {(event : KeyboardEvent,component : Component) => void} callback */
-    onDown(callback){
-        this.#onDown.push(callback);
-    }
-    
     /** @returns {Menu} */
-    peek(){
+    peek() {
         return this.#state[this.#state.length - 1];
     }
 
     /** @returns {Menu} */
-    pop(){
-        return this.#state.pop();
+    pop() {
+        const lastState = this.#state.pop();
+        this.#drawCurrentState();
+        return lastState
     }
 
     /** @param {Menu} menu */
-    push(menu){
-        this.#state.push(menu)
+    push(menu) {
+        this.#state.push(menu);
+        this.#drawCurrentState();
     }
 
-    drawCurrentState(){
+    #drawCurrentState() {
         this.#rootNode.innerHTML = "";
         this.peek().options.forEach((element) => {
             this.#rootNode.appendChild(element.HTMLComponent);
-        } )
+        });
+    }
+
+    updateOnChange(){
+        this.peek().options.forEach((element) => {
+            this.#rootNode.classList.remove("selected");
+        });
+        this.peek().currentSelectedComponent.HTMLComponent.classList.add("selected");
+    }
+
+    /**
+     * @param {ItemComponent | UpgradableItem} component
+     */
+    #attemptPurchase(component) {
+        const cost = component.cost;
+
+        if (cost <= this.#player.money) {
+            this.#player.money -= cost;
+            component.actions.onSelect?.();
+        }
+    }
+
+    terminate() {
+        document.removeEventListener("keydown", this.#handler);
+        this.#rootNode.innerHTML = "";
+        this.#rootNode.parentElement.removeChild(this.#rootNode);
     }
 }

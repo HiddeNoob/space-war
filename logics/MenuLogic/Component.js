@@ -1,5 +1,14 @@
 class Component{
     #HTMLComponent;
+    actions = {
+        "onRight" : null,
+        "onLeft" : null,
+        "onUp" : null,
+        "onDown" : null,
+        "onSelect" : null,
+        "onReturn" : null,
+        "onUpdate" : null
+    }
     /**
      * 
      * @param {HTMLElement} HTMLComponent 
@@ -8,10 +17,12 @@ class Component{
         this.#HTMLComponent = HTMLComponent;
     }
 
-    static create(innerText){
+    static create(innerText, onSelect){
         const element = document.createElement("div");
         element.innerText = innerText;
-        return new Component(element);
+        const comp = new Component(element)
+        comp.actions.onSelect = onSelect;
+        return comp;
     }
 
     get HTMLComponent(){

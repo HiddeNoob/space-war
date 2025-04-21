@@ -3,7 +3,6 @@ class Menu extends Component{
     /** @type {Component[]} */
     #options = []
     #index = 0
-    #parentMenu;
 
     constructor(menuName){
         const htmlElement = document.createElement("div")
@@ -13,8 +12,6 @@ class Menu extends Component{
 
     /** @param {Component} component */
     addOption(component){
-        if(component instanceof Menu)
-            component.#parentMenu = this;
         this.#options.push(component);
     }
 

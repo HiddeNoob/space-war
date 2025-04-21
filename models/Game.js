@@ -5,17 +5,16 @@ class Game{
     /** @type {Player} */
     player
     
+    #isPaused = false;
 
 
-    constructor(canvasObject){
+    constructor(canvasObject,player){
         this.canvasObject = canvasObject;
 
 
 
-        this.player = new Player(0,1,5);
-        this.player.weapon = new Weapon("deagle")
+        this.player = player
         
-        this.player.drawAttributes.location = new Vector(100,100)
 
         for(let i = 0; i < 50; i++){
             this.canvasObject.grid.addEntity(Coin.create(Math.random() * 500 + 300,Math.random() * 500 + 300,20));
@@ -40,6 +39,7 @@ class Game{
 
     run(){
         const task = (timestamp) => {
+            if(this.#isPaused) return;
             globalGameVariables.previousLatestPaintTimestamp = globalGameVariables.latestPaintTimestamp;
             globalGameVariables.latestPaintTimestamp = timestamp;
             this.canvasObject.clearCanvas();
@@ -52,6 +52,15 @@ class Game{
             self.requestAnimationFrame(task);
         }
         self.requestAnimationFrame(task);
+    }
+
+    pause(){
+        this.#isPaused = true;
+    }
+
+    continue(){
+        this.#isPaused = false;
+        this.run();
     }
 
     showFPS(timestamp){
