@@ -1,14 +1,14 @@
 class GlobalShapes {
-  static TRIANGLE = new Polygon([
-    new Line(0, 0, -30, 10),
-    new Line(-30, 10, -30, -10),
-    new Line(-30, -10, 0, 0),
-  ]);
+    static TRIANGLE = ShapeFactory.createPolygon([
+        new Line(0, 0, -3, 1),
+        new Line(-3, 1, -3, -1),
+        new Line(-3, -1, 0, 0),
+    ]).scaleBy(20);
 
-  static RECTANGLE = new Polygon([
-    new Line(0, 0, 30, 0),
-    new Line(30, 0, 30, 10),
-    new Line(30, 10, 0, 10),
-    new Line(0, 10, 0, 0),
-  ]);
+    static RECTANGLE = ShapeFactory.createPolygon([
+        new Line(0, 0, 5, 0),
+        new Line(5, 0, 5, 4),
+        new Line(5, 4, 0, 4),
+        new Line(0, 4, 0, 0, 1, "#FF00FF"),
+    ]).scaleBy(20);
 }

@@ -22,12 +22,13 @@ class Weapon extends Entity{
      * @param {number} remainingBullet
      * @param {Bullet} bulletObject
      */
-    constructor(weaponName = "Weapon", bulletEjectPower = 70, maxBulletPerMagazine = 30, remainingBullet = 30, bulletObject = new Bullet(1)) {
+    constructor(weaponName = "Weapon", bulletEjectPower = 1, maxBulletPerMagazine = 30, remainingBullet = 30, bulletObject = new Bullet()) {
         super();
         this.weaponName = weaponName;
         this.bulletEjectPower = bulletEjectPower;
         this.maxBulletPerMagazine = maxBulletPerMagazine;
         this.remainingBullet = remainingBullet;
         this.bulletObject = bulletObject;
+        this.bulletEjectPower = this.bulletObject.motionAttributes.mass;
     }
 }

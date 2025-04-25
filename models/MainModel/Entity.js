@@ -1,52 +1,59 @@
 class Entity{
-    /** @type {number} */
-    health
     /** @type {MotionAttributes} */
     motionAttributes
     /** @type {DrawAttributes} */
     drawAttributes
+    /** @type {boolean} */
+    isStatic = false;
+    /** @type {boolean} */
+    isAlive = true
+    /** @type {boolean} */
+    canCollide = true;
     /**
-     * @param {number} health 
      * @param {DrawAttributes} drawAttributes
      */
-    constructor(health = 100,drawAttributes = new DrawAttributes(GlobalShapes.RECTANGLE),motionAttributes = new MotionAttributes()){
+    constructor(drawAttributes = new DrawAttributes(GlobalShapes.RECTANGLE),motionAttributes = new MotionAttributes()){
         this.drawAttributes = drawAttributes;
         this.motionAttributes = motionAttributes;
-        this.health = health;
+        this.drawAttributes.shell.lines.forEach((line) => line.belongsTo = this);
+        this.#calculateAttributes();
+        console.log(this);
     }
 
-    /**
-     * @param {CanvasRenderingContext2D} ctx
-     */
-    draw(ctx){
-        this.#drawPolygon(ctx,this.drawAttributes.polygon,this.drawAttributes.location);
-    }
-    
-    /**
-     * @param {CanvasRenderingContext2D} ctx
-     * @param {Polygon} polygon
-     * @param {Point} startPoint
-     */
-    #drawPolygon(ctx,polygon,startPoint){
-        ctx.translate(startPoint.x,startPoint.y);
-        ctx.rotate(this.drawAttributes.angle)
-        ctx.beginPath();
-            for(let i = 0; i < polygon.lines.length; i++){
-            const currentLine = polygon.lines[i]
-            
-            let point1 = currentLine.startPoint
-            let point2 = currentLine.endPoint
-
-            ctx.lineWidth = currentLine.lineWidth;
-            ctx.strokeStyle = currentLine.lineColor;
-                
-            ctx.moveTo(Math.floor(point1.x),Math.floor(point1.y)); // Math.floor for optimization
-            ctx.lineTo(Math.floor(point2.x),Math.floor(point2.y)); // see the link for details https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Optimizing_canvas#avoid_floating-point_coordinates_and_use_integers_instead
-
+    #calculateAttributes(){
+        const motion = this.motionAttributes;
+        const draw = this.drawAttributes;
+        const center = this.drawAttributes.location
+        let total = 0;
+        for(let line of draw.shell.lines){
+            total += (line.startPoint.x*line.endPoint.y - line.endPoint.x*line.startPoint.y);
         }
-        ctx.stroke();
-        ctx.rotate(-this.drawAttributes.angle);
-        ctx.translate(-startPoint.x,-startPoint.y);
+        Math.abs(total);
+        total *= 1 / 2;
+        motion.mass = total;
+        motion.momentOfInertia = 0;
+        for(let line of draw.shell.lines){
+            let distance = center.distanceTo(line.centerPoint())
+            motion.momentOfInertia += (distance**2) * (motion.mass / draw.shell.lines.length);
+        }
+        motion.momentOfInertia *= 1e-2
+
+    }
+
+    /** @param {Entity} entity */
+    isCollidingWith(entity){
+        const e1L = this.drawAttributes.shell.lines;
+        const e2L = entity.drawAttributes.shell.lines;
+
+        for(let line1 of e1L){
+            for(let line2 of e2L){
+                line1 = line1.copy().rotateLine(this.drawAttributes.angle).moveLine(this.drawAttributes.location.x,this.drawAttributes.location.y);
+                line2 = line2.copy().rotateLine(entity.drawAttributes.angle).moveLine(entity.drawAttributes.location.x,entity.drawAttributes.location.y);
+                const point = line1.getIntersectPoint(line2);
+                if(point) return true;
+            }
+        }
+        return false;
     }
 
 }
