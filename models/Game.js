@@ -38,6 +38,7 @@ class Game{
     }
 
     run(){
+        globalGameVariables.latestPaintTimestamp = Date.now() - globalGameVariables.latestPaintTimestamp;
         const task = (timestamp) => {
             if(this.#isPaused) return;
             globalGameVariables.previousLatestPaintTimestamp = globalGameVariables.latestPaintTimestamp;

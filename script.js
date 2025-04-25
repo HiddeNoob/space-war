@@ -18,7 +18,6 @@ function showMainMenu(){
     mainMenu.addOption(Component.create("Start Game",() => {
         const painter = new Canvas(ctx,canvas);
         const runner = new Game(painter,player);
-        globalGameVariables.latestPaintTimestamp = Date.now() - globalGameVariables.latestPaintTimestamp;
         runner.run();
         menuManager.terminate();
     }));
