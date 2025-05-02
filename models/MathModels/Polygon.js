@@ -32,6 +32,8 @@ class Polygon {
             line.startPoint.multiply(size);
             line.endPoint.multiply(size);
         });
+        // Kenar uzunluklarını kontrol et ve böl
+        this.#lines = ShapeFactory.splitPolygonLinesIfNeeded(this.#lines);
         return this;
     }
 
@@ -85,5 +87,71 @@ class Polygon {
     */
     getNormals() {
         return this.#lines.map(line => line.normalVector(this.#getCenter()));
+    }
+
+    /**
+     * iki poligon arasında en küçük çakışmayı bulur.
+     * çakışma eksenini ve çakışma miktarını döner.
+     * @param {Polygon} other
+     * @returns {{minOverlap: number, smallestAxis: Vector} | null}
+     */
+    minOverlapping(other) {
+        const axes = this.getNormals().concat(other.getNormals());
+        let minOverlap = Infinity;
+        let smallestAxis = null;
+        for (const axis of axes) {
+            const proj1 = Polygon.#projectPolygon(this, axis);
+            const proj2 = Polygon.#projectPolygon(other, axis);
+            const overlap = Polygon.#getOverlap(proj1, proj2);
+            if (overlap === 0) return null; // No collision
+            if (overlap < minOverlap) {
+                minOverlap = overlap;
+                smallestAxis = axis;
+            }
+        }
+        return { minOverlap, smallestAxis };
+    }
+
+    /**
+     * Checks if this polygon and another polygon are penetrating (colliding) using SAT.
+     * @param {Polygon} other
+     * @returns {boolean}
+     */
+    isPenetrating(other) {
+        const axes = this.getNormals().concat(other.getNormals());
+        for (const axis of axes) {
+            const proj1 = Polygon.#projectPolygon(this, axis);
+            const proj2 = Polygon.#projectPolygon(other, axis);
+            const overlap = Polygon.#getOverlap(proj1, proj2);
+            if (overlap === 0) return false;
+        }
+        return true;
+    }
+
+    /**
+     * polygonu belirli bir axis için izdüşümünü alır.
+     * @param {Polygon} poly
+     * @param {Vector} axis
+     * @returns {[number, number]}
+     */
+    static #projectPolygon(poly, axis) {
+        let dots = [];
+        for (let line of poly.lines) {
+            const p1 = line.startPoint;
+            const p2 = line.endPoint;
+            dots.push(axis.dot(p1), axis.dot(p2));
+        }
+        return [Math.min(...dots), Math.max(...dots)];
+    }
+
+    /**
+     * @description iki iz düşümden çakışmayı getirir.
+     * @description çakışma yoksa 0 döner.
+     * @param {[number, number]} proj1
+     * @param {[number, number]} proj2
+     * @returns {number}
+     */
+    static #getOverlap([min1, max1], [min2, max2]) {
+        return Math.max(0, Math.min(max1, max2) - Math.max(min1, min2));
     }
 }

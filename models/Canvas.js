@@ -7,8 +7,14 @@ class Canvas{
     /** @type {Grid} */
     grid
 
+    width = 0;
+    height = 0;
+
     /** @type {number} */
     lastPaintTimestamp;
+
+    /** @type {Camera} */
+    camera;
     
     /**
      * @param {CanvasRenderingContext2D} ctx
@@ -16,8 +22,12 @@ class Canvas{
      */
     constructor(ctx,canvasHTMLElement){
         this.#ctx = ctx;
+        this.width = canvasHTMLElement.width;
+        this.height = canvasHTMLElement.height;
         this.#canvasHTMLElement = canvasHTMLElement;
         this.grid = new Grid(Settings.default.gridCellSize,this.#canvasHTMLElement.height,this.#canvasHTMLElement.width);
+        this.camera = new Camera(this.#canvasHTMLElement.width, this.#canvasHTMLElement.height);
+        Debugger.setup(ctx, this.camera, Settings.default.debug);
         ctx.font = "12px serif";
         ctx.fillStyle = "white";
     }
@@ -25,29 +35,34 @@ class Canvas{
     /** @param {number} timestamp */
     drawObjects(timestamp){
         this.lastPaintTimestamp = timestamp;
+        // Kamera player'ı takip etsin
+        if (global && global.game && global.game.player) {
+            this.camera.update(global.game.player.drawAttributes.location);
+        }
         this.grid.applyToAllEntities((entity) => {
             this.drawEntity(entity);
 
-            if (debug) {
-                this.drawVector(
-                    entity.motionAttributes.force.copy().multiply(1e1),
-                    entity.drawAttributes.location,
-                    "red",
-                    2
-                );
-                this.drawVector(
-                    entity.motionAttributes.acceleration.copy().multiply(1e1),
-                    entity.drawAttributes.location,
-                    "green",
-                    2
-                );
-                this.drawVector(
-                    entity.motionAttributes.velocity.copy().multiply(1e1),
-                    entity.drawAttributes.location,
-                    "blue",
-                    2
-                );
-            }
+            entity.drawAttributes.getActualShell().lines.forEach((line) => {
+                Debugger.showPoint(line.startPoint);
+            });
+            Debugger.drawVector(
+                entity.motionAttributes.force.copy().multiply(1e1),
+                entity.drawAttributes.location,
+                "red",
+                2
+            );
+            Debugger.drawVector(
+                entity.motionAttributes.acceleration.copy().multiply(1e1),
+                entity.drawAttributes.location,
+                "green",
+                2
+            );
+            Debugger.drawVector(
+                entity.motionAttributes.velocity.copy().multiply(1e1),
+                entity.drawAttributes.location,
+                "blue",
+                2
+            );
         });
     }
 
@@ -59,44 +74,25 @@ class Canvas{
         this.#ctx.fillText(text,x,y);
     }
 
-    showGrid(){
-        const cellSize = this.grid.cellSize
-        this.#ctx.lineWidth = 1;
-        this.#ctx.strokeStyle= "white";
-        this.#ctx.beginPath();
-        for(let i = 0; i < this.#canvasHTMLElement.height / cellSize ; i++){
-            for(let j = 0; j < this.#canvasHTMLElement.width / cellSize ; j++){
-                const x = j * cellSize;
-                const y = i * cellSize;
-                let totalEntities = 0;
-                const selectedEntities = this.grid.cells.get(this.grid.getCellKey(x, y));
-                selectedEntities?.forEach((set) => totalEntities += set.size);
-                
-                this.#ctx.moveTo(x,y);
-                this.writeText(totalEntities,x + 5,y + 10)
-                this.#ctx.lineTo(x + cellSize,y);
-                this.#ctx.moveTo(x,y + cellSize);
-                this.#ctx.lineTo(x,y);
-
-            }
-        }
-        this.#ctx.stroke()
-    }
 
     /** @param {Entity} entity */
     drawEntity(entity){
-
-        this.#drawPolygon(entity.drawAttributes.getActualShell());
+        // Kamera offsetini uygula
+        this.#drawPolygon(entity.drawAttributes.getActualShell(), this.camera);
     }
 
     /** @param {Polygon | Line[] | BreakableLine[]} polygon */
-    #drawPolygon(polygon) {
+    #drawPolygon(polygon, camera = null) {
         for (let i = 0; i < (polygon instanceof Polygon ? polygon.lines.length : polygon.length); i++) {
             ctx.beginPath();
             const currentLine = polygon instanceof Polygon ? polygon.lines[i] : polygon[i];
 
             let point1 = currentLine.startPoint;
             let point2 = currentLine.endPoint;
+
+            // oyuncunun offsetini uygula
+            point1 = camera.worldToScreen(point1.x, point1.y);
+            point2 = camera.worldToScreen(point2.x, point2.y);
 
             ctx.lineWidth = currentLine.lineWidth;
             if(currentLine instanceof BreakableLine){
@@ -106,31 +102,11 @@ class Canvas{
                 ctx.strokeStyle = currentLine.lineColor;
             }
 
-
-            ctx.lineTo(point1.x, point1.y); 
+            ctx.moveTo(point1.x, point1.y); 
             ctx.lineTo(point2.x, point2.y); 
             ctx.stroke();
         }
     }
 
-    /** @param {Vector} vector */
-    drawVector(vector,startVector = new Vector(0,0),color = "white",kalinlik = 4){
-        if (!debug) return;
-        
-        ctx.strokeStyle = color;
-        ctx.lineWidth = kalinlik;
-        ctx.beginPath();
-        ctx.moveTo(startVector.x,startVector.y)
-        ctx.lineTo(vector.x + startVector.x,vector.y + startVector.y);
-        ctx.stroke();
-    }
-    
-    /** @param {Vector} vector */
-    showPoint(vector){
-        if (!debug) return;
-        ctx.beginPath();
-        ctx.arc(vector.x,vector.y,1,0,2 * Math.PI);
-        ctx.stroke();
-    }
     
 }

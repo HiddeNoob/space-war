@@ -19,7 +19,7 @@ class GameLogic extends Handler{
     update = () => {
         this.grid.applyToAllEntities((entity) => {
             entity.motionAttributes.resetInstantVectors();
-            if (debug) {
+            if (debug.showPoint) {
                 const vector = entity.drawAttributes
                     .getActualShell()
                     .lines[0].normalVector(entity.drawAttributes.location);
@@ -32,10 +32,18 @@ class GameLogic extends Handler{
             let a = Date.now();
             handler.update()
             let b = Date.now();
-            if(debug){
+            if(debug.showHandlerLatency){
                 ctx.fillText(`${handler.constructor.name}: ${(b-a).toFixed(2)} ms`,10,i * 30 + 20);
                 i+= 1
             }
+        });
+
+
+    };
+
+    init = () => {
+        this.handlers.forEach((handler) => {
+            handler.init()
         });
     };
 }

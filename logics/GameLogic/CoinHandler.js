@@ -8,13 +8,10 @@ class CoinHandler extends Handler{
     }
 
     update = () => {
-        let a = Date.now();
         this.grid.applyToCertainEntities(Coin.name,(entity) => {
             this.#applyForceToCoin(/** @type {Coin} */ (entity));
         });
-        let b = Date.now();
         this.#catchCoin();
-        let c = Date.now();
         
 
     };
@@ -25,7 +22,7 @@ class CoinHandler extends Handler{
         if(entitesMap.has(Coin.name)){
             const coinsNearby = entitesMap.get(Coin.name);
             for(let coin of coinsNearby){
-                if(CollisionHandler.isPolygonsPenetrating(playerDraw.getActualShell(),coin.drawAttributes.getActualShell())){
+                if(playerDraw.getActualShell().isPenetrating(coin.drawAttributes.getActualShell())){
                     this.player.money += /** @type {Coin} */ (coin).value;
                     coin.isAlive = false;
                 }

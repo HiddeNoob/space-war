@@ -130,23 +130,13 @@ class Grid {
         return allEntites;
     }
 
-    refreshGrid() {
+    refreshGrid(center = new Vector(0, 0)) {
         const oldCells = this.cells;
         this.cells = new Map();
         oldCells.forEach((partition) =>
             partition.forEach((entities) => {
                 entities.forEach((entity) => {
-                    if (
-                        0 - this.destructRange * this.cellSize <
-                        entity.drawAttributes.location.x &&
-                        this.maxWidth + this.destructRange * this.cellSize >
-                        entity.drawAttributes.location.x &&
-                        0 - this.destructRange * this.cellSize <
-                        entity.drawAttributes.location.y &&
-                        this.maxHeight + this.destructRange * this.cellSize >
-                        entity.drawAttributes.location.y &&
-                        entity.isAlive
-                    )
+                    if (global.game)
                         this.addEntity(entity);
                 });
             })
@@ -241,6 +231,59 @@ class Grid {
             }
         }
         
+    }
+
+    /**
+     * Sadece ekranda görünen grid hücrelerindeki entity çiftleri için çarpışma kontrolü yapar
+     * @param {(entity1: Entity, entity2: Entity) => void} callback
+     * @param {Camera} camera
+     * @param {string} class1
+     * @param {string} class2
+     */
+    applyToVisibleEntityPairs(callback, camera, class1 = null, class2 = null) {
+        const cellSize = this.cellSize;
+        // Ekranda görünen alanın world koordinatlarını bul
+        const topLeft = camera.screenToWorld(0, 0);
+        const bottomRight = camera.screenToWorld(global.game.screenWidth, global.game.screenHeight);
+        const minX = Math.floor(topLeft.x / cellSize);
+        const minY = Math.floor(topLeft.y / cellSize);
+        const maxX = Math.ceil(bottomRight.x / cellSize);
+        const maxY = Math.ceil(bottomRight.y / cellSize);
+        /** @type {Map<Entity, Set<Entity>>} */
+        const processedEntities = new Map();
+        for (let y = minY; y <= maxY; y++) {
+            for (let x = minX; x <= maxX; x++) {
+                const map = this.getEntitiesNearbyByCell(x, y);
+                if(class1 === null && class2 === null){
+                    const entities = [];
+                    map.forEach((entitiesFromCell) => entities.push(...entitiesFromCell));
+                    entities.forEach((entity1) => {
+                        entities.forEach((entity2) => {
+                            if (entity1 === entity2) return;
+                            if (processedEntities.has(entity1) && processedEntities.get(entity1).has(entity2)) return;
+                            callback(entity1, entity2);
+                            if (!processedEntities.has(entity1)) processedEntities.set(entity1, new Set());
+                            processedEntities.get(entity1).add(entity2);
+                            if (!processedEntities.has(entity2)) processedEntities.set(entity2, new Set());
+                            processedEntities.get(entity2).add(entity1);
+                        });
+                    });
+                } else if(class1 != null){
+                    const selectedEntities = map.get(class1);
+                    const remainedEntities = [];
+                    map.forEach((entitiesFromCell, key) => {
+                        if (key !== class1) {
+                            remainedEntities.push(...entitiesFromCell);
+                        }
+                    });
+                    remainedEntities.forEach((remainedEntity) => {
+                        selectedEntities?.forEach((selectedEntity) => {
+                            callback(remainedEntity, selectedEntity);
+                        });
+                    });
+                }
+            }
+        }
     }
 }
 

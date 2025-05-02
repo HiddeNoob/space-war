@@ -27,7 +27,7 @@ class MotionAttributes {
     angularVelocity = 0;
 
     /** @type {number} */
-    angularAcceleration = 0;
+    torque = 0;
 
     /** @type {number} */
     momentOfInertia;
@@ -46,7 +46,7 @@ class MotionAttributes {
     resetInstantVectors() {
         this.acceleration.multiply(0);
         this.force.multiply(0);
-        this.angularAcceleration = 0;
+        this.torque = 0;
     }
 
     copy(){

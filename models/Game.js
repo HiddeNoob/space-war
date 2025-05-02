@@ -4,21 +4,34 @@ class Game{
 
     /** @type {Player} */
     player
+
+    screenWidth = 0;
+    screenHeight = 0;
     
     #isPaused = false;
 
 
+    /**
+     * 
+     * @param {Canvas} canvasObject 
+     * @param {Player} player 
+     */
     constructor(canvasObject,player){
         this.canvasObject = canvasObject;
 
+        this.screenWidth = canvasObject.width;
+        this.screenHeight = canvasObject.height;
 
 
         this.player = player
         
+        this.canvasObject.grid.addEntity(new Entity(
+            new DrawAttributes(ShapeFactory.createRectangle(200,50), new Vector(100, 100), Math.PI / 2),
+        ));
 
-        for(let i = 0; i < 50; i++){
-            this.canvasObject.grid.addEntity(Coin.create(Math.random() * 500 + 300,Math.random() * 500 + 300,20));
-        }
+        // for(let i = 0; i < 50; i++){
+        //     this.canvasObject.grid.addEntity(Coin.create(Math.random() * 500 + 300,Math.random() * 500 + 300,20));
+        // }
 
 
         this.canvasObject.grid.addEntity(
@@ -38,17 +51,23 @@ class Game{
     }
 
     run(){
-        globalGameVariables.latestPaintTimestamp = Date.now() - globalGameVariables.latestPaintTimestamp;
+        global.latestPaintTimestamp = Date.now() - global.latestPaintTimestamp;
+        this.gameLogic.init();
         const task = (timestamp) => {
             if(this.#isPaused) return;
-            globalGameVariables.previousLatestPaintTimestamp = globalGameVariables.latestPaintTimestamp;
-            globalGameVariables.latestPaintTimestamp = timestamp;
+            global.previousLatestPaintTimestamp = global.latestPaintTimestamp;
+            global.latestPaintTimestamp = timestamp;
+
             this.canvasObject.clearCanvas();
-            this.canvasObject.writeText(`${(globalGameVariables.latestPaintTimestamp - globalGameVariables.previousLatestPaintTimestamp).toFixed(2)} frame`,80,20);
-            Settings.default.showFPS && this.showFPS(timestamp);
+            this.canvasObject.writeText(`${(global.latestPaintTimestamp - global.previousLatestPaintTimestamp).toFixed(2)} frame`,80,20);
+            if (Settings.default.debug.showFPS) {
+                Debugger.showFPS(timestamp, this.canvasObject.lastPaintTimestamp);
+            }
             this.canvasObject.grid.refreshGrid();
             this.gameLogic.update();
-            Settings.default.debug && this.canvasObject.showGrid();
+            if (Settings.default.debug.showGrid) {
+                Debugger.showGrid(this.canvasObject.grid, this.canvasObject.camera);
+            }
             this.canvasObject.drawObjects(timestamp);
             self.requestAnimationFrame(task);
         }

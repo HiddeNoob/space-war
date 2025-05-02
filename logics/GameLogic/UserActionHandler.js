@@ -1,111 +1,68 @@
 class UserActionHandler extends Handler {
+    /** @type {Vector} */
+    #latestClientMouseLocation = new Vector(0, 0);
 
-  /** @type {Vector} */
-  #latestClientMouseLocation = new Vector(0,0);
+    #isPressed = {
+        w: false,
+        s: false,
+        a: false,
+        d: false,
+    };
 
-  #isPressed = {
-    w: false,
-    s: false,
-    a: false,
-    d: false,
-  };
+    /**
+     * @param {Player} player
+     * @param {Grid} grid
+     */
+    constructor(player, grid) {
+        super(grid, player);
+        this.#addEventListener();
+    }
 
-  #forceAction = {
-    w: () => (this.player.motionAttributes.force.y -= this.player.thrustPower),
-    a: () => (this.player.motionAttributes.force.x -= this.player.thrustPower),
-    s: () => (this.player.motionAttributes.force.y += this.player.thrustPower),
-    d: () => (this.player.motionAttributes.force.x += this.player.thrustPower),
-  };
+    update = () => {
+        this.#applyMovement();
+        this.#applyRotation();
+    };
 
-  /**
-   * @param {Player} player
-   * @param {Grid} player
-   */
-  constructor(player,grid) {
-    super(grid,player);
-    this.#addEventListener();
-  }
+    #applyMovement() {
+        const movementVector = new Vector(0, 0);
 
-  update = () => {
-    this.#applyForce();
-    this.#applyTorque();
-  }
+        if (this.#isPressed.w) movementVector.y -= 1;
+        if (this.#isPressed.s) movementVector.y += 1;
+        if (this.#isPressed.a) movementVector.x -= 1;
+        if (this.#isPressed.d) movementVector.x += 1;
 
-  #applyForce() {
-    Object.keys(this.#isPressed).forEach((key) => {
-      if (this.#isPressed[key]) {
-        this.#forceAction[key]();
-      }
-    });
-  }
+        if (movementVector.magnitude() > 0) {
+            movementVector.normalize();
+            const targetLocation = this.player.drawAttributes.location.copy().add(movementVector.multiply(this.player.thrustPower));
+            this.player.moveTo(targetLocation);
+        }
+    }
 
+    #applyRotation() {
+        const mouseLocation = this.#latestClientMouseLocation;
+        this.player.rotateTo(mouseLocation);
+    }
 
-  #addEventListener() {
-    window.addEventListener("keypress", (e) => {
-      if (e.key in this.#isPressed) this.#isPressed[e.key] = true;
-    });
-    window.addEventListener("keyup", (e) => {
-      if (e.key in this.#isPressed) this.#isPressed[e.key] = false;
-    });
-    canvas.addEventListener("mousemove", (e) => {
-      this.#latestClientMouseLocation = new Vector(e.offsetX, e.offsetY);
-    });
+    #addEventListener() {
+        window.addEventListener("keydown", (e) => {
+            if (e.key.toLowerCase() in this.#isPressed) {
+                this.#isPressed[e.key.toLowerCase()] = true;
+            }
+        });
 
-    window.addEventListener("mousedown",(e) => { // create Bullet object and add vector that same angle with user direction angle 
-      // get speed with player momentum power
-      const bulletStartSpeed = this.player.weapon.bulletEjectPower / this.player.weapon.bulletObject.motionAttributes.mass;
-      const playerThrustbackSpeed = this.player.weapon.bulletEjectPower / this.player.motionAttributes.mass;
+        window.addEventListener("keyup", (e) => {
+            if (e.key.toLowerCase() in this.#isPressed) {
+                this.#isPressed[e.key.toLowerCase()] = false;
+            }
+        });
 
-      const createdBullet = this.player.weapon.bulletObject.copy();
-      const bulletAngle = this.player.drawAttributes.angle; //radian
+        canvas.addEventListener("mousemove", (e) => {
+            // Mouse ekran koordinatını world koordinatına çevir
+            this.#latestClientMouseLocation = Debugger.camera.screenToWorld(e.offsetX, e.offsetY);
+        });
 
-      const bulletXSpeed = Math.cos(bulletAngle) * bulletStartSpeed;
-      const bulletYSpeed = Math.sin(bulletAngle) * bulletStartSpeed;
-
-      createdBullet.motionAttributes.velocity.add(new Vector(bulletXSpeed, bulletYSpeed));
-      
-      const tipOfPlayer = this.player.drawAttributes.shell.lines[0].startPoint;
-      createdBullet.drawAttributes.location= this.player.drawAttributes.location.copy().add(tipOfPlayer.copy().rotate(bulletAngle).multiply(2));
-      createdBullet.drawAttributes.angle = bulletAngle;
-
-      this.grid.addEntity(createdBullet);
-
-      this.player.motionAttributes.velocity.add(
-        new Vector(
-          Math.cos(bulletAngle - Math.PI),
-          Math.sin(bulletAngle - Math.PI),
-        ).multiply(playerThrustbackSpeed)
-      );
-  })
-
-  }
-
-
-  
-  #calculateTorque() {
-    const mouseX = this.#latestClientMouseLocation.x;
-    const mouseY = this.#latestClientMouseLocation.y;
-    const playerX = this.player.drawAttributes.location.x;
-    const playerY = this.player.drawAttributes.location.y;
-    
-    const rotateVector = new Vector(mouseX - playerX, mouseY - playerY).normalize();
-    
-    const forceDirection = new Vector(-Math.cos(this.player.drawAttributes.angle), -Math.sin(this.player.drawAttributes.angle));
-    
-    const torque = rotateVector.crossProduct(forceDirection) * this.player.rotatePower;
-    
-    return torque;
-  }
-
-  #applyTorque() {
-
-
-    const torque = this.#calculateTorque();
-    const angularAcceleration = torque / this.player.motionAttributes.momentOfInertia;
-
-    this.player.motionAttributes.angularVelocity += angularAcceleration;
-    this.player.motionAttributes.angularVelocity *= 0.8; // dalgalanmayi azaltmak icin
-  }
-
-
+        window.addEventListener("mousedown", () => {
+            this.player.shoot();
+        });
+    }
 }

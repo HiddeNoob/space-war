@@ -17,7 +17,6 @@ class Entity{
         this.motionAttributes = motionAttributes;
         this.drawAttributes.shell.lines.forEach((line) => line.belongsTo = this);
         this.#calculateAttributes();
-        console.log(this);
     }
 
     #calculateAttributes(){
@@ -54,6 +53,26 @@ class Entity{
             }
         }
         return false;
+    }
+
+    /** @param {Vector} dVector */
+    move(dVector) {
+        this.drawAttributes.location.add(dVector);
+    }
+    
+    /** @param {Vector} vector */
+    moveTo(vector) {
+        this.drawAttributes.location = vector.copy();
+    }
+    
+    /** @param {number} angle */
+    rotate(angle) {
+        this.drawAttributes.angle += angle;
+    }
+
+    rotateTo(vector) {
+        const direction = vector.copy().subtract(this.drawAttributes.location);
+        this.drawAttributes.angle = direction.angle();
     }
 
 }

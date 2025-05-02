@@ -1,6 +1,6 @@
 class ItemComponent extends Component {
 
-    /** @type {string} */
+z    /** @type {string} */
     name;
 
     /** @type {number} */

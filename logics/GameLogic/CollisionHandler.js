@@ -11,14 +11,15 @@ class CollisionHandler extends Handler {
     }
 
     update = () => {
-
-        this.grid.applyToCloseEntityPairs((entity1, entity2) => {
-            if (!(entity1.canCollide && entity2.canCollide)) return;
-
-            this.#makeCollisions(entity1, entity2);
-            this.#resolvePenetration(entity1, entity2);
-        });
-
+        // Sadece ekranda görünen hücrelerde çarpışma kontrolü
+        this.grid.applyToVisibleEntityPairs(
+            (entity1, entity2) => {
+                if (!(entity1.canCollide && entity2.canCollide)) return;
+                this.#makeCollisions(entity1, entity2);
+                this.#resolvePenetration(entity1, entity2);
+            },
+            Debugger.camera,
+        );
     };
 
     /**
@@ -84,12 +85,16 @@ class CollisionHandler extends Handler {
                 let impulse = carpismaNormali.copy().multiply(j);
 
                 // hiz degisimi
-                entity1.motionAttributes.velocity.subtract(impulse.copy().multiply((1 / entity1.motionAttributes.mass)));
-                entity2.motionAttributes.velocity.add(impulse.copy().multiply((1 / entity2.motionAttributes.mass)));
+                if(!entity1.isStatic){
+                    entity1.motionAttributes.velocity.subtract(impulse.copy().multiply((1 / entity1.motionAttributes.mass)));
+                    entity1.motionAttributes.angularVelocity -= yaricap1.crossProduct(impulse) / entity1.motionAttributes.momentOfInertia;
+                }
+                if(!entity2.isStatic){
+                    entity2.motionAttributes.velocity.add(impulse.copy().multiply((1 / entity2.motionAttributes.mass)));
+                    entity2.motionAttributes.angularVelocity += yaricap2.crossProduct(impulse) / entity2.motionAttributes.momentOfInertia;
+                }
 
                 //tork degisimi
-                entity1.motionAttributes.angularVelocity -= yaricap1.crossProduct(impulse) / entity1.motionAttributes.momentOfInertia;
-                entity2.motionAttributes.angularVelocity += yaricap2.crossProduct(impulse) / entity2.motionAttributes.momentOfInertia;
                 
                 // for debugging
 
@@ -152,16 +157,8 @@ class CollisionHandler extends Handler {
         if(collidingBulletLine.health <= 0) EntityTerminater.deadEntitiesQueue.push(bullet);
     }
 
-    static isPolygonsPenetrating(poly1,poly2){
-        const axes = poly1.getNormals().concat(poly2.getNormals());
-        for (const axis of axes) {
-            const proj1 = CollisionHandler.#projectPolygon(poly1, axis);
-            const proj2 = CollisionHandler.#projectPolygon(poly2, axis);
-            const overlap = CollisionHandler.#getOverlap(proj1, proj2);
-            if (overlap === 0) return false;
-        }
-        return true;
-    }
+
+
 
     /**
      * SAT teoremi ile ayırma işlemi yapar
@@ -176,68 +173,29 @@ class CollisionHandler extends Handler {
         const mass1 = entity1.motionAttributes.mass;
         const mass2 = entity2.motionAttributes.mass;
 
-        const axes = poly1.getNormals().concat(poly2.getNormals());
-        let minOverlap = Infinity;
-        let smallestAxis = null;
-        for (const axis of axes) {
-            const proj1 = CollisionHandler.#projectPolygon(poly1, axis);
-            const proj2 = CollisionHandler.#projectPolygon(poly2, axis);
+        const result = poly1.minOverlapping(poly2);
+        if (!result) return; // No collision
+        let { minOverlap, smallestAxis } = result;
 
-            const overlap = CollisionHandler.#getOverlap(proj1, proj2);
-            if (overlap === 0) return; // Ayrı eksen bulunduysa çarpışma yok
 
-            if (overlap < minOverlap) {
-                minOverlap = overlap;
-                smallestAxis = axis;
-            }
-        }
         const centerDelta = pos2.copy().subtract(pos1);
         if (centerDelta.dot(smallestAxis) < 0) {
             smallestAxis.multiply(-1);
         }
         const totalMass = mass1 + mass2;
         const correction = smallestAxis.normalize().multiply(minOverlap);
-
-        pos1.subtract(correction.copy().multiply(mass2 / totalMass));
-        pos2.add(correction.copy().multiply(mass1 / totalMass));
-    }
-
-
-    
-    
-
-    /**
-     * @param {Polygon} poly
-     * @param {Vector} axis
-     * @returns {[number, number]}
-     */
-    static #projectPolygon(poly, axis) {
-        let dots = [];
-    
-        for (let line of poly.lines) {
-            const p1 = line.startPoint;
-            const p2 = line.endPoint;
-            dots.push(axis.dot(p1), axis.dot(p2));
+        if(entity1.isStatic && !entity2.isStatic){
+            pos2.add(correction);
+            return;
         }
-    
-        return [Math.min(...dots), Math.max(...dots)];
-    }
-    
-    
+        else if(!entity1.isStatic && entity2.isStatic){
+            pos1.subtract(correction);
+            return;
+        }else {
+            // iki objenin de hareketli olduğu durum
+            pos1.subtract(correction.copy().multiply(mass2 / totalMass));
+            pos2.add(correction.copy().multiply(mass1 / totalMass));
 
-    /**
-     * @param {[number, number]} proj1
-     * @param {[number, number]} proj2
-     * @returns {number}
-     */
-    static #getOverlap([min1, max1], [min2, max2]) {
-        return Math.max(0, Math.min(max1, max2) - Math.max(min1, min2));
+        }
     }
-
 }
-
-
-
-
-
-
