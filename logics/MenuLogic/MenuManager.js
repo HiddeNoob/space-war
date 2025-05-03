@@ -1,29 +1,28 @@
+// Menülerin yönetimini ve kullanıcı etkileşimini sağlayan ana sınıf
 class MenuManager {
-    /** @type {Player} */
-    #player;
 
     /** @type {HTMLElement} */
-    #rootNode;
+    #rootNode; // Menülerin çizileceği ana HTML node
 
     /** @type {Menu[]} */
-    #state = [];
+    #state = []; // Menü yığını (stack)
 
-    #handler;
+    #handler; // Klavye event handler'ı
 
     /**
-     * @param {HTMLElement} rootElement
-     * @param {Player} player
+     * MenuManager oluşturucu
+     * @param {HTMLElement} rootElement - Menülerin çizileceği ana HTML node
+     * @param {Player} player - Bağlı oyuncu
      */
     constructor(rootElement, player) {
-        this.#player = player;
         this.#rootNode = rootElement;
-
+        
+        // Klavye event handler'ı tanımlanır
         this.#handler = (e) => {
             const currMenu = this.peek();
             const selectedComponent = currMenu.currentSelectedComponent;
             const key = e.key.toLowerCase();
             let isUpdated = true;
-
             switch (key) {
                 case "arrowup":
                 case "w":
@@ -48,8 +47,6 @@ class MenuManager {
                     selectedComponent?.actions.onSelect?.();
                     if (selectedComponent instanceof Menu) {
                         this.push(selectedComponent);
-                    } else if (selectedComponent instanceof ItemComponent || selectedComponent instanceof UpgradableItem) {
-                        this.#attemptPurchase(selectedComponent);
                     }
                     break;
                 case "backspace":
@@ -62,31 +59,42 @@ class MenuManager {
                 default:
                     isUpdated = false;
             }
-
+            currMenu.changeSelectedComponentBackground();
             isUpdated && this.updateOnChange();
         };
-
         document.addEventListener("keydown", this.#handler);
     }
 
-    /** @returns {Menu} */
+    /**
+     * Menü yığınının en üstündeki menüyü döndürür
+     * @returns {Menu}
+     */
     peek() {
         return this.#state[this.#state.length - 1];
     }
 
-    /** @returns {Menu} */
+    /**
+     * Menü yığınının en üstündeki menüyü çıkarır ve ekrandan kaldırır
+     * @returns {Menu}
+     */
     pop() {
         const lastState = this.#state.pop();
         this.#drawCurrentState();
         return lastState
     }
 
-    /** @param {Menu} menu */
+    /**
+     * Menü yığınına yeni bir menü ekler ve ekranda gösterir
+     * @param {Menu} menu
+     */
     push(menu) {
         this.#state.push(menu);
         this.#drawCurrentState();
     }
 
+    /**
+     * Şu anki menüyü ekrana çizer
+     */
     #drawCurrentState() {
         this.#rootNode.innerHTML = "";
         this.peek().options.forEach((element) => {
@@ -94,6 +102,9 @@ class MenuManager {
         });
     }
 
+    /**
+     * Seçili component değiştiğinde arka planı günceller
+     */
     updateOnChange(){
         this.peek().options.forEach((element) => {
             this.#rootNode.classList.remove("selected");
@@ -102,17 +113,8 @@ class MenuManager {
     }
 
     /**
-     * @param {ItemComponent | UpgradableItem} component
+     * Menü yöneticisini ve eventleri temizler
      */
-    #attemptPurchase(component) {
-        const cost = component.cost;
-
-        if (cost <= this.#player.money) {
-            this.#player.money -= cost;
-            component.actions.onSelect?.();
-        }
-    }
-
     terminate() {
         document.removeEventListener("keydown", this.#handler);
         this.#rootNode.innerHTML = "";

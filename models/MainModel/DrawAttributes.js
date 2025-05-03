@@ -1,17 +1,18 @@
+// Bir entity'nin çizimle ilgili tüm özelliklerini (konum, açı, renk, kabuk) tutan sınıf
 class DrawAttributes {
+    static calculatedTimestamp = 0; // Son hesaplanan zaman
+    static calculatedShells = new Map(); // Ön belleğe alınmış shell'ler
 
-    static calculatedTimestamp = 0; 
-    static calculatedShells = new Map();
-
-    location;
-    shell; 
-    angle;
+    location; // Entity'nin konumu
+    shell; // Entity'nin kabuğu (Polygon)
+    angle; // Entity'nin açısı
 
     /**
-     * @param {Vector} location
-     * @param {Polygon} polygon
-     * @param {number} angle 
-     * @param {string} color 
+     * DrawAttributes oluşturucu
+     * @param {Polygon} polygon - Entity'nin şekli
+     * @param {Vector} location - Başlangıç konumu
+     * @param {number} angle - Başlangıç açısı
+     * @param {string} color - Renk
      */
     constructor(polygon, location = new Vector(50, 50), angle = 0, color = "#ffffff") {
         this.location = location;
@@ -20,6 +21,10 @@ class DrawAttributes {
         this.color = color;
     }
     
+    /**
+     * Çizim özelliklerinin kopyasını oluşturur
+     * @returns {DrawAttributes}
+     */
     copy() {
         return new DrawAttributes(
             new Polygon(this.shell.lines),
@@ -30,8 +35,8 @@ class DrawAttributes {
     }
 
     /**
-     * @description Shelli gerçek konumuna ve açısına göre döndürür ve taşır.
-     * @description Eğer shell daha önce hesaplandıysa, önbellekten alır.
+     * Shell'i gerçek konumuna ve açısına göre döndürür ve taşır.
+     * Eğer shell daha önce hesaplandıysa, önbellekten alır.
      * @returns {Polygon}
      */
     getActualShell(){

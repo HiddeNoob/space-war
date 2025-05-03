@@ -1,57 +1,67 @@
 // Debug işlemleri için merkezi bir sınıf
+// Oyun içi debug çizimleri ve FPS/grid gösterimi bu sınıf üzerinden yapılır
 class Debugger {
     /** @type {CanvasRenderingContext2D} */
-    static ctx = null;
+    static #ctx = null; // Çizim bağlamı (statik)
     /** @type {Camera} */
-    static camera = null;
-    /** @type {object} */
-    static debug = null;
+    static #camera = null; // Kamera referansı (statik)
+
+    static #debug = Settings.default.debug; // Debug ayarları (statik)
+    /** @type {Canvas} */
 
     /**
-     * Başlangıçta ctx, camera ve debug referanslarını ayarla
-     * @param {CanvasRenderingContext2D} ctx
-     * @param {Camera} camera
-     * @param {object} debug
+     * Başlangıçta canvas referansını ayarla
+     * @param {Canvas} canvas - Canvas nesnesi
      */
-    static setup(ctx, camera, debug) {
-        Debugger.ctx = ctx;
-        Debugger.camera = camera;
-        Debugger.debug = debug;
+    static setup(canvas,ctx) {
+        Debugger.#ctx = ctx;
+        Debugger.#camera = canvas.camera;
+        Debugger.#debug = Settings.default.debug;
     }
 
-    /** @param {Vector} vector */
+
+    /**
+     * Bir vektörün ekranda nokta olarak gösterilmesini sağlar
+     * @param {Vector} vector - Gösterilecek vektör
+     */
     static showPoint(vector) {
-        if (!Debugger.debug.showPoint) return;
+        if (!Debugger.#debug.point.show) return;
         let v = vector;
-        v = Debugger.camera.worldToScreen(vector.x, vector.y);
-        Debugger.ctx.beginPath();
-        Debugger.ctx.arc(v.x, v.y, 1, 0, 2 * Math.PI);
-        Debugger.ctx.stroke();
+        v = Debugger.#camera.worldToScreen(vector.x, vector.y);
+        Debugger.#ctx.beginPath();
+        Debugger.#ctx.arc(v.x, v.y, 1, 0, 2 * Math.PI);
+        Debugger.#ctx.stroke();
     }
 
-    /** @param {Vector} vector */
+    /**
+     * İki vektör arasında çizgi çizer
+     * @param {Vector} vector - Çizilecek vektör
+     * @param {Vector} [startVector] - Başlangıç noktası
+     * @param {string} [color] - Çizgi rengi
+     * @param {number} [kalinlik] - Çizgi kalınlığı
+     */
     static drawVector(vector, startVector = new Vector(0, 0), color = "white", kalinlik = 4) {
-        if (!Debugger.debug?.showPoint) return;
+        if (!Debugger.#debug?.showPoint) return;
         let s = startVector;
-        s = Debugger.camera.worldToScreen(startVector.x, startVector.y);
-        Debugger.ctx.strokeStyle = color;
-        Debugger.ctx.lineWidth = kalinlik;
-        Debugger.ctx.beginPath();
-        Debugger.ctx.moveTo(s.x, s.y);
-        Debugger.ctx.lineTo(vector.x + s.x, vector.y + s.y);
-        Debugger.ctx.stroke();
+        s = Debugger.#camera.worldToScreen(startVector.x, startVector.y);
+        Debugger.#ctx.strokeStyle = color;
+        Debugger.#ctx.lineWidth = kalinlik;
+        Debugger.#ctx.beginPath();
+        Debugger.#ctx.moveTo(s.x, s.y);
+        Debugger.#ctx.lineTo(vector.x + s.x, vector.y + s.y);
+        Debugger.#ctx.stroke();
     }
 
     /**
      * Grid hücrelerindeki entity sayılarını ve grid çizgilerini çizer
-     * @param {Grid} grid
-     * @param {Camera} camera
+     * @param {Grid} grid - Grid nesnesi
+     * @param {Camera} camera - Kamera
      */
     static showGrid(grid, camera) {
         const cellSize = grid.cellSize;
-        ctx.lineWidth = 1;
-        ctx.strokeStyle = "white";
-        ctx.beginPath();
+        Debugger.#ctx.lineWidth = 1;
+        Debugger.#ctx.strokeStyle = "white";
+        Debugger.#ctx.beginPath();
         // Ekranda görünen alanın world koordinatlarını bul
         const topLeft = camera.screenToWorld(0, 0);
         const bottomRight = camera.screenToWorld(grid.maxWidth, grid.maxHeight);
@@ -69,26 +79,32 @@ class Debugger {
                 selectedEntities?.forEach((set) => totalEntities += set.size);
                 // Kamera offsetini uygula
                 const screenPos = camera.worldToScreen(x, y);
-                ctx.fillText(totalEntities.toString(), screenPos.x + 5, screenPos.y + 10);
-                ctx.moveTo(screenPos.x, screenPos.y);
+                if (Debugger.#debug.grid.showObjectCount) {
+                    Debugger.#ctx.fillText(totalEntities.toString(), screenPos.x + 5, screenPos.y + 10);
+                }
+                Debugger.#ctx.moveTo(screenPos.x, screenPos.y);
                 const screenPosRight = camera.worldToScreen(x + cellSize, y);
-                ctx.lineTo(screenPosRight.x, screenPosRight.y);
+                Debugger.#ctx.lineTo(screenPosRight.x, screenPosRight.y);
                 const screenPosDown = camera.worldToScreen(x, y + cellSize);
-                ctx.moveTo(screenPosDown.x, screenPosDown.y);
-                ctx.lineTo(screenPos.x, screenPos.y);
+                Debugger.#ctx.moveTo(screenPosDown.x, screenPosDown.y);
+                Debugger.#ctx.lineTo(screenPos.x, screenPos.y);
             }
         }
-        ctx.stroke();
+        Debugger.#ctx.stroke();
     }
 
     /**
      * FPS bilgisini ekrana yazar
-     * @param {number} timestamp
-     * @param {number} lastPaintTimestamp
+     * @param {number} timestamp - Şu anki zaman
+     * @param {number} lastPaintTimestamp - Son çizim zamanı
      */
     static showFPS(timestamp, lastPaintTimestamp) {
-        ctx.font = "12px serif";
-        ctx.fillStyle = "white";
-        ctx.fillText((`${(1000 / (timestamp - lastPaintTimestamp)).toFixed(2)} FPS`), 10, 20);
+        Debugger.#ctx.font = "12px serif";
+        Debugger.#ctx.fillStyle = "white";
+        Debugger.#ctx.fillText((`${(1000 / (timestamp - lastPaintTimestamp)).toFixed(2)} FPS`), 10, 20);
+    }
+
+    static writeText(text, x, y) {
+        Debugger.#ctx.fillText(text, x, y);
     }
 }

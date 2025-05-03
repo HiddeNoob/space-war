@@ -1,27 +1,36 @@
+// Oyun dünyasını grid hücrelerine bölen ve entity yönetimini kolaylaştıran sınıf
 class Grid {
-    static cellSize = Settings.default.gridCellSize;
+    static cellSize = Settings.default.gridCellSize; // Varsayılan grid hücre boyutu
     /**
-     * @param {number} cellSize
-     * @param {number} maxHeight
-     * @param {number} maxWidth
-     * @param {number} destructRange
+     * Grid oluşturucu
+     * @param {number} cellSize - Hücre boyutu
+     * @param {number} maxHeight - Grid yüksekliği
+     * @param {number} maxWidth - Grid genişliği
+     * @param {number} destructRange - Yıkım aralığı (varsayılan: 2)
      */
     constructor(cellSize, maxHeight, maxWidth, destructRange = 2) {
         this.cellSize = cellSize;
         this.destructRange = destructRange;
         this.maxHeight = maxHeight;
         this.maxWidth = maxWidth;
-
         /** @type {Map<string, Map<string, Set<Entity>>>} */
-        this.cells = new Map();
+        this.cells = new Map(); // Grid hücreleri
     }
 
-    /** @param {number} x * @param {number} y  */
+    /**
+     * Hücre anahtarını hesaplar
+     * @param {number} x - X koordinatı
+     * @param {number} y - Y koordinatı
+     * @returns {string} Hücre anahtarı
+     */
     getCellKey(x, y) {
         return `${Math.floor(x / this.cellSize)},${Math.floor(y / this.cellSize)}`;
     }
 
-    /** @param {Entity} entity */
+    /**
+     * Entity'i grid'e ekler
+     * @param {Entity} entity - Eklenecek entity
+     */
     addEntity(entity) {
         const key = this.getCellKey(
             entity.drawAttributes.location.x,
@@ -37,7 +46,10 @@ class Grid {
         this.cells.get(key).get(entityClassName).add(entity);
     }
 
-    /** @param {Entity} entity */
+    /**
+     * Entity'i grid'den kaldırır
+     * @param {Entity} entity - Kaldırılacak entity
+     */
     removeEntity(entity) {
         const key = this.getCellKey(
             entity.drawAttributes.location.x,
@@ -49,7 +61,12 @@ class Grid {
         }
     }
 
-    /** @param {Entity} entity * @param {number} oldX * @param {number} oldY */
+    /**
+     * Entity'in konumunu günceller
+     * @param {Entity} entity - Güncellenecek entity
+     * @param {number} oldX - Eski X koordinatı
+     * @param {number} oldY - Eski Y koordinatı
+     */
     updateEntity(entity, oldX, oldY) {
         const oldKey = this.getCellKey(oldX, oldY);
         const newKey = this.getCellKey(
@@ -64,10 +81,11 @@ class Grid {
     }
 
     /**
-     * @param {number} x
-     * @param {number} y
-     * @param {number} range
-     * @returns {Map<string,Set<Entity>>}
+     * Belirli bir konum ve aralıkta bulunan entity'leri döndürür
+     * @param {number} x - X koordinatı
+     * @param {number} y - Y koordinatı
+     * @param {number} range - Aralık (varsayılan: 1)
+     * @returns {Map<string,Set<Entity>>} Yakındaki entity'ler
      */
     getEntitiesNearby(x, y, range = 1) {
         /** @type {Map<string,Set<Entity>>} */
@@ -90,11 +108,11 @@ class Grid {
     }
 
     /**
-     * 
-     * @param {number} x 
-     * @param {number} y 
-     * @param {number} range 
-     * @returns {Map<string,Entity[]>}
+     * Belirli bir hücre ve aralıkta bulunan entity'leri döndürür
+     * @param {number} x - Hücre X koordinatı
+     * @param {number} y - Hücre Y koordinatı
+     * @param {number} range - Aralık (varsayılan: 1)
+     * @returns {Map<string,Entity[]>} Yakındaki entity'ler
      */
     getEntitiesNearbyByCell(x,y,range = 1){
         const nearbyEntities = new Map();
@@ -116,7 +134,8 @@ class Grid {
     }
 
     /**
-     * @returns {Map<String,Set<Entity>>}
+     * Grid'deki tüm entity'leri döndürür
+     * @returns {Map<String,Set<Entity>>} Tüm entity'ler
      */
     getAllEntities() {
         /** @type {Map<String,Set<Entity>>}  */
@@ -130,6 +149,10 @@ class Grid {
         return allEntites;
     }
 
+    /**
+     * Grid'i yeniler
+     * @param {Vector} center - Yenileme merkezi (varsayılan: 0,0)
+     */
     refreshGrid(center = new Vector(0, 0)) {
         const oldCells = this.cells;
         this.cells = new Map();
@@ -144,7 +167,8 @@ class Grid {
     }
 
     /**
-     * @param {(entity: Entity) => void} callback
+     * Tüm entity'lere verilen callback'i uygular
+     * @param {(entity: Entity) => void} callback - Uygulanacak callback
      */
     applyToAllEntities(callback) {
         this.cells.forEach((map) => {
@@ -157,8 +181,9 @@ class Grid {
     }
 
     /**
-     * @param {(entity: Entity) => void} callback
-     * @param {string} className
+     * Belirli bir sınıfa ait entity'lere verilen callback'i uygular
+     * @param {string} className - Entity sınıfı adı
+     * @param {(entity: Entity) => void} callback - Uygulanacak callback
      */
     applyToCertainEntities(className,callback){
         this.cells.forEach((map) => {
@@ -172,11 +197,11 @@ class Grid {
     }
 
     /** 
-     * @param {(entity1: Entity, entity2: Entity) => void} callback 
-     * @param {string} class1
-     * @param {string} class2
-     * @description class verilirse isimleri eşleşen yakındakı objelere callbacki çalıştırır değilse her yakın olan obje ikilisi için yapar
-    */
+     * Yakındaki entity çiftlerine verilen callback'i uygular
+     * @param {(entity1: Entity, entity2: Entity) => void} callback - Uygulanacak callback
+     * @param {string} class1 - İlk entity sınıfı adı (opsiyonel)
+     * @param {string} class2 - İkinci entity sınıfı adı (opsiyonel)
+     */
     applyToCloseEntityPairs(callback, class1 = null, class2 = null) {
 
         if(class1 == null && class2 != null){
@@ -235,12 +260,11 @@ class Grid {
 
     /**
      * Sadece ekranda görünen grid hücrelerindeki entity çiftleri için çarpışma kontrolü yapar
-     * @param {(entity1: Entity, entity2: Entity) => void} callback
-     * @param {Camera} camera
-     * @param {string} class1
-     * @param {string} class2
+     * @param {(entity1: Entity, entity2: Entity) => void} callback - Uygulanacak callback
+     * @param {string} class1 - İlk entity sınıfı adı (opsiyonel)
+     * @param {string} class2 - İkinci entity sınıfı adı (opsiyonel)
      */
-    applyToVisibleEntityPairs(callback, camera, class1 = null, class2 = null) {
+    applyToVisibleEntityPairs(callback,camera,class1 = null, class2 = null) {
         const cellSize = this.cellSize;
         // Ekranda görünen alanın world koordinatlarını bul
         const topLeft = camera.screenToWorld(0, 0);

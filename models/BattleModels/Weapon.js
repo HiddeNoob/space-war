@@ -1,35 +1,39 @@
+// Oyunda kullanılan silahları ve mermi üretimini yöneten sınıf
 class Weapon {
     /** @type {string} */
-    weaponName;
+    weaponName; // Silahın adı
 
     /** @type {number} */
-    bulletEjectPower;
+    bulletEjectPower; // Mermi çıkış gücü
 
     /** @type {number} */
-    remainingBullet;
+    remainingBullet; // Kalan mermi sayısı
 
     /** @type {Bullet} */
-    bulletObject;
+    bulletObject; // Mermi şablonu
 
     /** @type {number} */
-    maxBulletPerMagazine;
+    maxBulletPerMagazine; // Şarjördeki maksimum mermi
 
     /** @type {number} */
-    reloadTime;
+    reloadTime; // Yeniden doldurma süresi
 
     /**
-     * @param {string} weaponName
-     * @param {number} bulletEjectPower
-     * @param {number} maxBulletPerMagazine
-     * @param {number} remainingBullet
-     * @param {Bullet} bulletObject
+     * Weapon oluşturucu
+     * @param {string} weaponName - Silah adı
+     * @param {number} bulletEjectPower - Mermi çıkış gücü
+     * @param {number} maxBulletPerMagazine - Şarjör kapasitesi
+     * @param {number} remainingBullet - Başlangıç mermi sayısı
+     * @param {Bullet} bulletObject - Mermi şablonu
      */
     constructor(
         weaponName = "Weapon",
-        bulletEjectPower = 100,
+        bulletEjectPower = 50,
         maxBulletPerMagazine = 30,
         remainingBullet = 30,
-        bulletObject = new Bullet()
+        bulletObject = new Bullet(1,
+            new DrawAttributes(ShapeFactory.createRectangle(10,3)),
+            new MotionAttributes(1,5))
     ) {
         this.weaponName = weaponName;
         this.bulletEjectPower = bulletEjectPower;
@@ -39,27 +43,24 @@ class Weapon {
     }
 
     /**
-     * @param {Vector} bulletLocation
-     * @param {number} angle
-     * @returns {Bullet | null} - ateş edildiyse bir mermi döner, aksi takdirde null döner
+     * Ateş etme işlemini gerçekleştirir
+     * @param {Vector} bulletLocation - Merminin çıkış noktası
+     * @param {number} angle - Ateş açısı (radyan)
+     * @returns {Bullet | null} - Ateş edildiyse mermi, yoksa null
      */
     shoot(bulletLocation, angle) {
         if (this.remainingBullet <= 0) {
             return null;
         }
-
         const bullet = this.bulletObject.copy();
+        console.log(this.bulletEjectPower, bullet.motionAttributes.mass);
         const bulletSpeed = this.bulletEjectPower / bullet.motionAttributes.mass;
-
-        // Calculate direction from bulletLocation to targetLocation
+        // Yön vektörü hesaplanır
         const direction = new Vector(1,0).rotate(angle);
         bullet.motionAttributes.velocity = direction.multiply(bulletSpeed);
-
         bullet.drawAttributes.location = bulletLocation.copy();
         bullet.drawAttributes.angle = angle;
-
         this.remainingBullet--;
-
         return bullet;
     }
 }

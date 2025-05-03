@@ -1,16 +1,19 @@
+// Sağlığı ve dayanıklılığı olan, kırılabilir çizgi sınıfı
 class BreakableLine extends Line{
     /** @type {number} */
-    maxHealth
+    maxHealth // Çizginin maksimum sağlığı
 
     /** @type {number} */
-    health
+    health // Çizginin mevcut sağlığı
 
     /** @type {number} */
-    durability
+    durability // Çizginin dayanıklılık katsayısı
 
     /**
-     * @param {Line} line
-     * @param {number} health
+     * BreakableLine oluşturucu
+     * @param {Line} line - Temel çizgi
+     * @param {number} health - Başlangıç sağlığı
+     * @param {number} durability - Dayanıklılık katsayısı
      */
     constructor(line,health = 10,durability = 100) {
         super(line.startPoint.x, line.startPoint.y, line.endPoint.x, line.endPoint.y,line.lineWidth,line.lineColor);
@@ -20,6 +23,10 @@ class BreakableLine extends Line{
         this.durability = durability;
     }
 
+    /**
+     * Kırılabilir çizginin kopyasını oluşturur
+     * @returns {BreakableLine}
+     */
     copy() {
         return new BreakableLine(
             super.copy(),
@@ -28,4 +35,5 @@ class BreakableLine extends Line{
         );
     }
 
+    
 }

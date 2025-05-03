@@ -1,50 +1,60 @@
+// Oyun ekranı ve çizim işlemlerini yöneten ana sınıf
+// Canvas, oyun içi tüm çizim işlemlerini kapsar ve kamera ile grid yönetimini içerir
 class Canvas{
     /** @type {HTMLCanvasElement} */
-    #canvasHTMLElement;
+    #canvasHTMLElement; // Canvas HTML elementi
     /** @type {CanvasRenderingContext2D} */
-    #ctx;
+    #ctx; // Çizim bağlamı
     
     /** @type {Grid} */
-    grid
+    grid // Oyun grid'i
 
-    width = 0;
-    height = 0;
+    width = 0; // Canvas genişliği
+    height = 0; // Canvas yüksekliği
 
     /** @type {number} */
-    lastPaintTimestamp;
+    lastPaintTimestamp; // Son çizim zamanı
 
     /** @type {Camera} */
-    camera;
+    camera; // Oyun kamerası
     
     /**
-     * @param {CanvasRenderingContext2D} ctx
-     * @param {HTMLCanvasElement} canvasHTMLElement
+     * Canvas nesnesi oluşturur
+     * @param {CanvasRenderingContext2D} ctx - Çizim bağlamı
+     * @param {HTMLCanvasElement} canvasHTMLElement - Canvas HTML elementi
      */
     constructor(ctx,canvasHTMLElement){
         this.#ctx = ctx;
         this.width = canvasHTMLElement.width;
         this.height = canvasHTMLElement.height;
         this.#canvasHTMLElement = canvasHTMLElement;
+        // Grid ve kamera başlatılır
         this.grid = new Grid(Settings.default.gridCellSize,this.#canvasHTMLElement.height,this.#canvasHTMLElement.width);
         this.camera = new Camera(this.#canvasHTMLElement.width, this.#canvasHTMLElement.height);
-        Debugger.setup(ctx, this.camera, Settings.default.debug);
+        // Debugger ile ilişkilendirme (Canvas objesini kullan)
         ctx.font = "12px serif";
         ctx.fillStyle = "white";
     }
 
-    /** @param {number} timestamp */
+    /**
+     * Tüm objeleri çizer ve debug vektörlerini gösterir
+     * @param {number} timestamp - Çizim zamanı
+     */
     drawObjects(timestamp){
         this.lastPaintTimestamp = timestamp;
         // Kamera player'ı takip etsin
         if (global && global.game && global.game.player) {
             this.camera.update(global.game.player.drawAttributes.location);
         }
+        // Griddeki tüm entity'ler için çizim ve debug işlemleri
         this.grid.applyToAllEntities((entity) => {
             this.drawEntity(entity);
 
+            // Her çizgi için debug noktası göster
             entity.drawAttributes.getActualShell().lines.forEach((line) => {
                 Debugger.showPoint(line.startPoint);
             });
+            // Kuvvet, ivme ve hız vektörlerini çiz
             Debugger.drawVector(
                 entity.motionAttributes.force.copy().multiply(1e1),
                 entity.drawAttributes.location,
@@ -66,22 +76,37 @@ class Canvas{
         });
     }
 
+    /**
+     * Canvas'ı temizler
+     */
     clearCanvas(){
         this.#ctx.clearRect(0,0,this.#canvasHTMLElement.width,this.#canvasHTMLElement.height);
     }
 
+    /**
+     * Ekrana metin yazar
+     * @param {string} text - Yazılacak metin
+     * @param {number} x - X koordinatı
+     * @param {number} y - Y koordinatı
+     */
     writeText(text,x,y){
         this.#ctx.fillText(text,x,y);
     }
 
-
-    /** @param {Entity} entity */
+    /**
+     * Bir entity'yi çizer
+     * @param {Entity} entity - Çizilecek entity
+     */
     drawEntity(entity){
         // Kamera offsetini uygula
         this.#drawPolygon(entity.drawAttributes.getActualShell(), this.camera);
     }
 
-    /** @param {Polygon | Line[] | BreakableLine[]} polygon */
+    /**
+     * Çokgen veya çizgi dizisini çizer
+     * @param {Polygon | Line[] | BreakableLine[]} polygon - Çizilecek şekil
+     * @param {Camera} camera - Kamera
+     */
     #drawPolygon(polygon, camera = null) {
         for (let i = 0; i < (polygon instanceof Polygon ? polygon.lines.length : polygon.length); i++) {
             ctx.beginPath();
@@ -107,6 +132,4 @@ class Canvas{
             ctx.stroke();
         }
     }
-
-    
 }

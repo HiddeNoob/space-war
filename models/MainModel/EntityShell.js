@@ -1,12 +1,13 @@
+// Bir entity'nin kabuğunu oluşturan ve çizgileri kırılabilir yapan sınıf
 class EntityShell extends Polygon {
-    
     /** @type {BreakableLine[]} */
-    #breakableLines;
+    #breakableLines; // Kırılabilir çizgiler
 
     /**
-     * @param {Line[] | Polygon} obj
-     * @param {number} health
-     * @param {number} durability
+     * EntityShell oluşturucu
+     * @param {Line[] | Polygon} obj - Çizgi dizisi veya Polygon
+     * @param {number} health - Çizgilerin başlangıç sağlığı
+     * @param {number} durability - Çizgilerin dayanıklılığı
      */
     constructor(obj, health = 100, durability = 10) {
         if(obj instanceof Polygon) {
@@ -19,20 +20,33 @@ class EntityShell extends Polygon {
         this.#breakableLines = breakableLines;
     }
 
-    /** @param {number} maxHealth */
+    /**
+     * Tüm çizgilerin maksimum sağlığını ayarlar
+     * @param {number} maxHealth
+     */
     setMaxHealth(maxHealth) {
         this.lines.forEach(line => line.maxHealth = maxHealth);
     }
 
+    /**
+     * Kırılabilir çizgileri döndürür
+     */
     get lines() {
         return this.#breakableLines;
     }
 
-    /** @param {number} durability */
+    /**
+     * Tüm çizgilerin dayanıklılığını ayarlar
+     * @param {number} durability
+     */
     setDurability(durability) {
         this.lines.forEach(line => line.durability = durability);
     }
 
+    /**
+     * EntityShell'in kopyasını oluşturur
+     * @returns {EntityShell}
+     */
     copy() {
         return new EntityShell(this.lines);
     }

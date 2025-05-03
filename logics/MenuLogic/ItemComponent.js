@@ -1,27 +1,28 @@
+// Menüde satın alınabilir bir öğeyi temsil eden bileşen sınıfı
 class ItemComponent extends Component {
-
-z    /** @type {string} */
-    name;
+    /** @type {string} */
+    name; // Öğenin adı
 
     /** @type {number} */
-    cost;
+    cost; // Öğenin maliyeti
 
     /** @type {boolean} */
-    isBuyed = false;
+    isBuyed = false; // Satın alındı mı?
 
     /**
-     * @param {string} name
-     * @param {number} cost
-     * @param {function} onBuy
+     * ItemComponent oluşturucu
+     * @param {string} name - Öğenin adı
+     * @param {number} cost - Öğenin maliyeti
+     * @param {any} item - İlgili item nesnesi
+     * @param {function} onBuy - Satın alındığında çağrılacak fonksiyon
      */
-    constructor(name, cost,item, onBuy) {
+    constructor(name, cost, item, onBuy) {
         const element = document.createElement("div");
         super(element);
-
         this.item = item;
         this.name = name;
         this.cost = cost;
-
+        // Satın alma işlemi
         this.actions.onSelect = () => {
             if (!this.isBuyed) {
                 this.isBuyed = true;
@@ -29,20 +30,19 @@ z    /** @type {string} */
                 this.#updateDisplay();
             }
         };
-
         this.#updateDisplay();
     }
 
+    /**
+     * Görsel güncellemeleri yapar (isim ve fiyat/purchased)
+     */
     #updateDisplay() {
         const item = this.HTMLComponent;
         item.innerHTML = "";
-
         const nameElement = document.createElement("p");
         nameElement.innerText = this.name;
-
         const costElement = document.createElement("p");
         costElement.innerText = this.isBuyed ? "Purchased" : `${this.cost} ₺`;
-
         item.appendChild(nameElement);
         item.appendChild(costElement);
     }

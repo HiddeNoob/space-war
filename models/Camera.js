@@ -1,8 +1,8 @@
 // Basit bir kamera sistemi. Player'ı ekranın ortasında tutmak için offset hesaplar.
 class Camera {
     /**
-     * @param {number} screenWidth
-     * @param {number} screenHeight
+     * @param {number} screenWidth - Ekranın genişliği.
+     * @param {number} screenHeight - Ekranın yüksekliği.
      */
     constructor(screenWidth, screenHeight) {
         this.screenWidth = screenWidth;
@@ -11,8 +11,9 @@ class Camera {
     }
 
     /**
-     * Player'ın konumuna göre offset'i günceller.
-     * @param {Vector} playerPosition
+     * Kameranın offset değerini günceller.
+     * @param {Vector} playerPosition - Oyuncunun dünya koordinatındaki pozisyonu.
+     * @returns {void}
      */
     update(playerPosition) {
         this.offset.x = this.screenWidth / 2 - playerPosition.x;
@@ -21,9 +22,9 @@ class Camera {
 
     /**
      * Gerçek dünya koordinatını ekrana çevirir.
-     * @param {number} worldX
-     * @param {number} worldY
-     * @returns {Vector}
+     * @param {number} worldX - Dünya koordinatında X değeri.
+     * @param {number} worldY - Dünya koordinatında Y değeri.
+     * @returns {Vector} - Ekran koordinatında Vector nesnesi.
      */
     worldToScreen(worldX, worldY) {
         return new Vector(
@@ -34,9 +35,9 @@ class Camera {
 
     /**
      * Ekran koordinatını dünya koordinatına çevirir.
-     * @param {number} screenX
-     * @param {number} screenY
-     * @returns {Vector}
+     * @param {number} screenX - Ekran koordinatında X değeri.
+     * @param {number} screenY - Ekran koordinatında Y değeri.
+     * @returns {Vector} - Dünya koordinatında Vector nesnesi.
      */
     screenToWorld(screenX, screenY) {
         return new Vector(

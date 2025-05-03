@@ -1,22 +1,29 @@
+// Menüde kullanılabilen temel bileşen (component) sınıfı
 class Component{
-    #HTMLComponent;
+    #HTMLComponent; // Bileşenin HTML elementi
     actions = {
-        "onRight" : null,
-        "onLeft" : null,
-        "onUp" : null,
-        "onDown" : null,
-        "onSelect" : null,
-        "onReturn" : null,
-        "onUpdate" : null
+        "onRight" : null, // Sağ tuş aksiyonu
+        "onLeft" : null, // Sol tuş aksiyonu
+        "onUp" : null, // Yukarı tuş aksiyonu
+        "onDown" : null, // Aşağı tuş aksiyonu
+        "onSelect" : null, // Seçim aksiyonu
+        "onReturn" : null, // Geri dönüş aksiyonu
+        "onUpdate" : null // Değişiklik olduğunda aksiyon
     }
     /**
-     * 
-     * @param {HTMLElement} HTMLComponent 
+     * Component oluşturucu
+     * @param {HTMLElement} HTMLComponent - Temel HTML elementi
      */ 
     constructor(HTMLComponent){
         this.#HTMLComponent = HTMLComponent;
     }
 
+    /**
+     * Kolayca bir component oluşturur
+     * @param {string} innerText - Bileşen metni
+     * @param {function} onSelect - Seçim callback'i
+     * @returns {Component}
+     */
     static create(innerText, onSelect){
         const element = document.createElement("div");
         element.innerText = innerText;
@@ -25,6 +32,9 @@ class Component{
         return comp;
     }
 
+    /**
+     * Bileşenin HTML elementini döndürür
+     */
     get HTMLComponent(){
         return this.#HTMLComponent;
     }

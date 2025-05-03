@@ -1,33 +1,30 @@
+// Oyun içi handler'ların temelini oluşturan soyut sınıf
 class Handler{
     /** @type {CallableFunction} */
-    update = () => {};
+    update = () => {}; // Her handler'ın güncelleme fonksiyonu
 
     /** @type {CallableFunction} */
-    init = () => {};
+    init = () => {}; // Her handler'ın başlatma fonksiyonu
 
     /** @type {Grid} */
-    grid
+    grid // Oyun grid'i
 
     /** @type {Player} */
-    player
+    player // Oyuncu
+
+    /** @type {Camera} */
+    camera
 
     /**
-     *  @param {Grid} grid 
-     *  @param {Player} player 
-    */
-    constructor(grid,player){
+     * Handler oluşturucu
+     * @param {Grid} grid - Oyun grid'i
+     * @param {Player} player - Oyuncu
+     */
+    constructor(grid,player,camera){
         this.grid = grid;
         this.player = player;
+        this.camera = camera;
     }
 
 
-    /** @param {Vector} vector */
-    static drawVector(vector,startVector = new Vector(0,0),color = "white",kalinlik = 1){
-        Debugger.drawVector(vector, startVector, color, kalinlik);
-    }
-    
-    /** @param {Vector} vector */
-    static showPoint(vector){
-        Debugger.showPoint(vector);
-    }
 }

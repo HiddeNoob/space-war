@@ -1,16 +1,19 @@
+// Oyun içindeki tüm varlıkların (entity) temelini oluşturan ana sınıf
 class Entity{
     /** @type {MotionAttributes} */
-    motionAttributes
+    motionAttributes // Fiziksel özellikler
     /** @type {DrawAttributes} */
-    drawAttributes
+    drawAttributes // Çizim özellikleri
     /** @type {boolean} */
-    isStatic = false;
+    isStatic = false; // Statik mi?
     /** @type {boolean} */
-    isAlive = true
+    isAlive = true // Canlı mı?
     /** @type {boolean} */
-    canCollide = true;
+    canCollide = true; // Çarpışabilir mi?
     /**
-     * @param {DrawAttributes} drawAttributes
+     * Entity oluşturucu
+     * @param {DrawAttributes} drawAttributes - Çizim özellikleri
+     * @param {MotionAttributes} motionAttributes - Fiziksel özellikler
      */
     constructor(drawAttributes = new DrawAttributes(GlobalShapes.RECTANGLE),motionAttributes = new MotionAttributes()){
         this.drawAttributes = drawAttributes;
@@ -19,6 +22,9 @@ class Entity{
         this.#calculateAttributes();
     }
 
+    /**
+     * Alan ve atalet momenti gibi fiziksel özellikleri hesaplar
+     */
     #calculateAttributes(){
         const motion = this.motionAttributes;
         const draw = this.drawAttributes;
@@ -36,17 +42,21 @@ class Entity{
             motion.momentOfInertia += (distance**2) * (motion.mass / draw.shell.lines.length);
         }
         motion.momentOfInertia *= 1e-2
-
     }
 
-    /** @param {Entity} entity */
+    /**
+     * İki entity'nin kabuk çizgileri arasında çarpışma olup olmadığını kontrol eder
+     * @param {Entity} entity
+     * @returns {boolean}
+     */
     isCollidingWith(entity){
         const e1L = this.drawAttributes.shell.lines;
         const e2L = entity.drawAttributes.shell.lines;
-
         for(let line1 of e1L){
             for(let line2 of e2L){
+                // @ts-ignore
                 line1 = line1.copy().rotateLine(this.drawAttributes.angle).moveLine(this.drawAttributes.location.x,this.drawAttributes.location.y);
+                // @ts-ignore
                 line2 = line2.copy().rotateLine(entity.drawAttributes.angle).moveLine(entity.drawAttributes.location.x,entity.drawAttributes.location.y);
                 const point = line1.getIntersectPoint(line2);
                 if(point) return true;
@@ -55,24 +65,36 @@ class Entity{
         return false;
     }
 
-    /** @param {Vector} dVector */
+    /**
+     * Entity'yi verilen vektör kadar taşır
+     * @param {Vector} dVector
+     */
     move(dVector) {
         this.drawAttributes.location.add(dVector);
     }
     
-    /** @param {Vector} vector */
+    /**
+     * Entity'yi verilen konuma taşır
+     * @param {Vector} vector
+     */
     moveTo(vector) {
         this.drawAttributes.location = vector.copy();
     }
     
-    /** @param {number} angle */
+    /**
+     * Entity'yi verilen açı kadar döndürür
+     * @param {number} angle
+     */
     rotate(angle) {
         this.drawAttributes.angle += angle;
     }
 
+    /**
+     * Entity'yi verilen vektöre doğru döndürür
+     * @param {Vector} vector
+     */
     rotateTo(vector) {
         const direction = vector.copy().subtract(this.drawAttributes.location);
         this.drawAttributes.angle = direction.angle();
     }
-
 }

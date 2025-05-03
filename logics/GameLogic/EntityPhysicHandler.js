@@ -1,13 +1,9 @@
+// Oyun içindeki tüm entity'lerin fiziksel hareketlerini ve ivme/konum güncellemelerini yöneten handler sınıfı
 class EntityPhysicHandler extends Handler {
 
     /**
-     * @param {Grid} grid
-     * @param {Player} player
+     * Tüm entity'lerin fiziksel güncellemelerini yapar
      */
-    constructor(grid, player) {
-        super(grid, player);
-    }
-
     update = () => {
         const deltaTime = (global.latestPaintTimestamp - global.previousLatestPaintTimestamp) / 7;
         this.grid.applyToAllEntities((entity) => {
@@ -20,6 +16,10 @@ class EntityPhysicHandler extends Handler {
         });
     };
 
+    /**
+     * Entity'ye kuvvetten ivme uygular
+     * @param {Entity} entity
+     */
     #applyAcceleration(entity) {
         const acceleration = entity.motionAttributes.force
             .copy()
@@ -27,6 +27,11 @@ class EntityPhysicHandler extends Handler {
         entity.motionAttributes.acceleration.add(acceleration);
     }
 
+    /**
+     * Entity'nin hızını ivmeden günceller
+     * @param {Entity} entity
+     * @param {number} dt - Zaman farkı
+     */
     #applySpeed(entity, dt) {
         const motion = entity.motionAttributes;
         const slowdownRate = motion.velocitySlowdownRate;
@@ -40,6 +45,11 @@ class EntityPhysicHandler extends Handler {
         }
     }
 
+    /**
+     * Entity'nin konumunu hızdan günceller
+     * @param {Entity} entity
+     * @param {number} dt - Zaman farkı
+     */
     #updateLocation(entity, dt) {
         const location = entity.drawAttributes.location;
         const velocity = entity.motionAttributes.velocity;
@@ -47,6 +57,11 @@ class EntityPhysicHandler extends Handler {
         location.y += velocity.y * dt;
     }
 
+    /**
+     * Entity'nin açısal ivmesini günceller
+     * @param {Entity} entity
+     * @param {number} dt - Zaman farkı
+     */
     #updateAngularAcceleration(entity, dt) {
         const motion = entity.motionAttributes;
         const angularAcceleration = motion.torque / motion.momentOfInertia;
@@ -54,6 +69,11 @@ class EntityPhysicHandler extends Handler {
         motion.torque = 0;
     }
 
+    /**
+     * Entity'nin açısını açısal hızdan günceller
+     * @param {Entity} entity
+     * @param {number} dt - Zaman farkı
+     */
     #updateAngle(entity, dt) {
         const motion = entity.motionAttributes;
         const draw = entity.drawAttributes;

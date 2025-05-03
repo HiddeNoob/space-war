@@ -1,21 +1,20 @@
+// Oyun içindeki coin (para) objelerinin yönetimini sağlayan handler sınıfı
 class CoinHandler extends Handler{
-    /**
-     * @param {Grid} grid
-     * @param {Player} player
-     */
-    constructor(grid,player){
-        super(grid,player);
-    }
 
+    /**
+     * Coin'lere kuvvet uygular ve yakalanan coin'leri kontrol eder
+     */
     update = () => {
         this.grid.applyToCertainEntities(Coin.name,(entity) => {
             this.#applyForceToCoin(/** @type {Coin} */ (entity));
         });
         this.#catchCoin();
-        
-
     };
 
+    /**
+     * Oyuncuya yakın coin'leri yakalar ve oyuncunun parasını artırır
+     * Coin yakalanınca isAlive false yapılır
+     */
     #catchCoin(){
         const playerDraw = this.player.drawAttributes;
         const entitesMap = this.grid.getEntitiesNearby(playerDraw.location.x,playerDraw.location.y);
@@ -27,20 +26,18 @@ class CoinHandler extends Handler{
                     coin.isAlive = false;
                 }
             }
-
         }
     }
 
-    /** @param {Coin} coin */
+    /**
+     * Coin'e oyuncudan gelen çekim kuvvetini uygular
+     * @param {Coin} coin - Kuvvet uygulanacak coin
+     */
     #applyForceToCoin(coin){
         const coinPos = coin.drawAttributes.location;
         const playerPos = this.player.drawAttributes.location;
-
         const relativePos = playerPos.copy().subtract(coinPos); // coin to player
         const multiplier = 1e-3 * (this.player.motionAttributes.mass * coin.motionAttributes.mass) /  relativePos.magnitude();
         coin.motionAttributes.force.add(relativePos.normalize().multiply(multiplier));
-
-
     }
-
 }

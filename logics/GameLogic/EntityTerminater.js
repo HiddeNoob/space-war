@@ -1,30 +1,27 @@
+// Oyun içindeki ölü entity'leri işleyen ve patlama animasyonlarını yöneten handler sınıfı
 class EntityTerminater extends Handler{
     /** @type {Entity[]} */
-    static deadEntitiesQueue = []
-    
-    /**
-     * @param {Grid} grid
-     * @param {Player} player
-     */
-    constructor(grid,player){
-        super(grid,player);
-    }
+    static deadEntitiesQueue = [] // Ölü entity'lerin kuyruğu
 
+    /**
+     * Kuyruktaki ölü entity'leri işler
+     */
     update = () => {
         this.#processDeadEntites();
     }
 
+    /**
+     * Kuyruktaki ölü entity'leri parçalarına ayırıp patlama animasyonu başlatır
+     */
     #processDeadEntites(){
-        while(EntityTerminater.deadEntitiesQueue.length > 0){ // baya kötü bu düzeltilmesi lazım TODO
+        while(EntityTerminater.deadEntitiesQueue.length > 0){ // TODO: Bu algoritma iyileştirilmeli
             /** @type {Entity} */
             const deadEntity = EntityTerminater.deadEntitiesQueue.pop();
             deadEntity.isAlive = false;
-
             const entitySpeedVector = deadEntity.motionAttributes.velocity;
             const bodyPartCount = deadEntity.drawAttributes.shell.lines.length;
-            const unitVector = new Vector(1,0); // for not creating every iteration
-
-            for(let i = 0; i < bodyPartCount ; i++){ // making explosin animation
+            const unitVector = new Vector(1,0); // Her iterasyonda tekrar oluşturulmaması için
+            for(let i = 0; i < bodyPartCount ; i++){ // Patlama animasyonu için
                 const selectedLine = deadEntity.drawAttributes.shell.lines[i];
                 if(selectedLine.health <= 0) continue;
                 const angle = i * (2 * Math.PI) / bodyPartCount;
@@ -36,7 +33,6 @@ class EntityTerminater extends Handler{
                 motionAttributes.velocity = speed;
                 this.grid.addEntity(new Entity(drawAttributes,motionAttributes));
             }
-
         }
     }
 }

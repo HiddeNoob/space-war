@@ -1,7 +1,8 @@
+// Oyun içindeki geçici efektleri (ör: güçlendirme, kalkan) temsil eden sınıf
 class Effect{
-    effectName;
-    healthValue;
-    shieldValue;
-    bulletHealthValue;
-    duration;
+    effectName; // Efektin adı
+    healthValue; // Sağlık etkisi
+    shieldValue; // Kalkan etkisi
+    bulletHealthValue; // Mermi sağlığı etkisi
+    duration; // Efekt süresi
 }
