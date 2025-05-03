@@ -60,8 +60,8 @@ class CollisionHandler extends Handler {
                 const v2 = entity2.motionAttributes.velocity.copy().add(acisal2);
                 const goreceliHiz = v2.copy().subtract(v1);
 
-                const n1 = e1L.normalVector();
-                const n2 = e2L.normalVector();
+                const n1 = e1L.copy().rotateLine(entity1.drawAttributes.angle).normalVector();
+                const n2 = e2L.copy().rotateLine(entity2.drawAttributes.angle).normalVector();
 
                 const n1Dot = goreceliHiz.copy().normalize().dot(n1);
                 const n2Dot = goreceliHiz.copy().normalize().dot(n2);
