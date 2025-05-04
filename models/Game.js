@@ -40,7 +40,7 @@ class Game{
             new DrawAttributes(GlobalShapes.RECTANGLE, new Vector(220, 180)),
         )
         );
-        Debugger.setup(this.canvasObject, ctx);
+        Debugger.setup(this, ctx);
         // Oyun mantığı başlatılır
         this.gameLogic = new GameLogic(this.canvasObject.grid,this.canvasObject.camera,this.player);
     }
@@ -55,23 +55,23 @@ class Game{
             if(this.#isPaused) return;
             global.previousLatestPaintTimestamp = global.latestPaintTimestamp;
             global.latestPaintTimestamp = timestamp;
+
             this.canvasObject.clearCanvas();
-            // Grid ve oyun mantığı güncellenir
+
+            // Entitylerin yeni lokasyonlarına göre tekrardan grid hesaplanır 
             this.canvasObject.grid.refreshGrid();
+            
+            // Game logic uygulanır
             this.gameLogic.update();
 
-            if(Settings.default.debug.showFPS.showLatency) {
-                Debugger.writeText(`${(global.latestPaintTimestamp - global.previousLatestPaintTimestamp).toFixed(2)} ms`, 100, 20);
-            }
-            if (Settings.default.debug.showFPS) {
-                Debugger.showFPS(timestamp, this.canvasObject.lastPaintTimestamp);
-                
-            }
-            if (Settings.default.debug.grid.show) {
-                Debugger.showGrid(this.canvasObject.grid, this.canvasObject.camera);
-            }
+
+            // Debuglar
+            this.#debug(timestamp);
+
             // Tüm objeler çizilir
             this.canvasObject.drawObjects(timestamp);
+
+
             self.requestAnimationFrame(task);
         }
         self.requestAnimationFrame(task);
@@ -90,6 +90,19 @@ class Game{
     continue(){
         this.#isPaused = false;
         this.run();
+    }
+
+    #debug(timestamp){
+        if(Settings.default.debug.showFPS.showLatency) {
+            Debugger.writeText(`${(global.latestPaintTimestamp - global.previousLatestPaintTimestamp).toFixed(2)} ms`, 100, 20);
+        }
+        if (Settings.default.debug.showFPS) {
+            Debugger.showFPS(timestamp, this.canvasObject.lastPaintTimestamp);
+            
+        }
+        if (Settings.default.debug.grid.show) {
+            Debugger.showGrid(this.canvasObject.grid);
+        }
     }
 
 

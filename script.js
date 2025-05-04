@@ -7,7 +7,7 @@ canvas.width = window.innerHeight * 1;
 canvas.height = window.innerHeight * 1;
 
 const player = new Player(500);
-const painter = new Canvas(ctx, canvas);
+const painter = new Canvas(ctx, canvas, new Camera(player, canvas.width, canvas.height));
 
 const global = {
     previousLatestPaintTimestamp: 0,

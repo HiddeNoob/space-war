@@ -1,23 +1,40 @@
 // Basit bir kamera sistemi. Player'ı ekranın ortasında tutmak için offset hesaplar.
 class Camera {
+
+    /** @type {Entity} */
+    trackedEntity; // Şu anda takip edilen entity
+
+    offset; // Kamera offseti
+
     /**
+     * @param {Entity} entityToTrack - Takip edilecek entity.
      * @param {number} screenWidth - Ekranın genişliği.
      * @param {number} screenHeight - Ekranın yüksekliği.
      */
-    constructor(screenWidth, screenHeight) {
+    constructor(entityToTrack,screenWidth, screenHeight) {
+        this.setTrackedEntity(entityToTrack);
         this.screenWidth = screenWidth;
         this.screenHeight = screenHeight;
-        this.offset = { x: 0, y: 0 };
+        this.offset = entityToTrack.drawAttributes.location.copy();
     }
 
     /**
-     * Kameranın offset değerini günceller.
-     * @param {Vector} playerPosition - Oyuncunun dünya koordinatındaki pozisyonu.
-     * @returns {void}
+     * Kamerayı seçilmiş entity'ye göre günceller.
      */
-    update(playerPosition) {
-        this.offset.x = this.screenWidth / 2 - playerPosition.x;
-        this.offset.y = this.screenHeight / 2 - playerPosition.y;
+    updateOffset(){
+        const dx = this.screenWidth / 2 - this.trackedEntity.drawAttributes.location.x;
+        const dy = this.screenHeight / 2 - this.trackedEntity.drawAttributes.location.y;
+        this.offset.x += (dx - this.offset.x) * 0.01;
+        this.offset.y += (dy - this.offset.y) * 0.01;
+    }
+
+    /**
+     * Verilen entity'yi takip etmeye başlar.
+     * @param {Entity} entity 
+     */
+    setTrackedEntity(entity){
+        if(!entity) throw new Error("you must provide an entity to track");
+        this.trackedEntity = entity;
     }
 
     /**

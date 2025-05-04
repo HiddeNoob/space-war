@@ -3,19 +3,23 @@
 class Debugger {
     /** @type {CanvasRenderingContext2D} */
     static #ctx = null; // Çizim bağlamı (statik)
+
     /** @type {Camera} */
     static #camera = null; // Kamera referansı (statik)
 
+    /** @type {Game} */
+    static #game = null; // Oyun referansı (statik)
+
     static #debug = Settings.default.debug; // Debug ayarları (statik)
-    /** @type {Canvas} */
 
     /**
      * Başlangıçta canvas referansını ayarla
-     * @param {Canvas} canvas - Canvas nesnesi
+     * @param {Game} game - Canvas nesnesi
      */
-    static setup(canvas,ctx) {
+    static setup(game,ctx) {
         Debugger.#ctx = ctx;
-        Debugger.#camera = canvas.camera;
+        Debugger.#game = game;
+        Debugger.#camera = game.canvasObject.camera;
         Debugger.#debug = Settings.default.debug;
     }
 
@@ -41,7 +45,7 @@ class Debugger {
      * @param {number} [kalinlik] - Çizgi kalınlığı
      */
     static drawVector(vector, startVector = new Vector(0, 0), color = "white", kalinlik = 4) {
-        if (!Debugger.#debug?.showPoint) return;
+        if (!Debugger.#debug?.showVector.show) return;
         let s = startVector;
         s = Debugger.#camera.worldToScreen(startVector.x, startVector.y);
         Debugger.#ctx.strokeStyle = color;
@@ -55,16 +59,15 @@ class Debugger {
     /**
      * Grid hücrelerindeki entity sayılarını ve grid çizgilerini çizer
      * @param {Grid} grid - Grid nesnesi
-     * @param {Camera} camera - Kamera
      */
-    static showGrid(grid, camera) {
+    static showGrid(grid) {
         const cellSize = grid.cellSize;
         Debugger.#ctx.lineWidth = 1;
         Debugger.#ctx.strokeStyle = "white";
         Debugger.#ctx.beginPath();
         // Ekranda görünen alanın world koordinatlarını bul
-        const topLeft = camera.screenToWorld(0, 0);
-        const bottomRight = camera.screenToWorld(grid.maxWidth, grid.maxHeight);
+        const topLeft = this.#camera.screenToWorld(0, 0);
+        const bottomRight = this.#camera.screenToWorld(grid.maxWidth, grid.maxHeight);
         // Grid hücre aralığını hesapla
         const minX = Math.floor(topLeft.x / cellSize);
         const minY = Math.floor(topLeft.y / cellSize);
@@ -78,14 +81,14 @@ class Debugger {
                 const selectedEntities = grid.cells.get(grid.getCellKey(x, y));
                 selectedEntities?.forEach((set) => totalEntities += set.size);
                 // Kamera offsetini uygula
-                const screenPos = camera.worldToScreen(x, y);
+                const screenPos = this.#camera.worldToScreen(x, y);
                 if (Debugger.#debug.grid.showObjectCount) {
                     Debugger.#ctx.fillText(totalEntities.toString(), screenPos.x + 5, screenPos.y + 10);
                 }
                 Debugger.#ctx.moveTo(screenPos.x, screenPos.y);
-                const screenPosRight = camera.worldToScreen(x + cellSize, y);
+                const screenPosRight = this.#camera.worldToScreen(x + cellSize, y);
                 Debugger.#ctx.lineTo(screenPosRight.x, screenPosRight.y);
-                const screenPosDown = camera.worldToScreen(x, y + cellSize);
+                const screenPosDown = this.#camera.worldToScreen(x, y + cellSize);
                 Debugger.#ctx.moveTo(screenPosDown.x, screenPosDown.y);
                 Debugger.#ctx.lineTo(screenPos.x, screenPos.y);
             }

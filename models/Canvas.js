@@ -22,15 +22,16 @@ class Canvas{
      * Canvas nesnesi oluşturur
      * @param {CanvasRenderingContext2D} ctx - Çizim bağlamı
      * @param {HTMLCanvasElement} canvasHTMLElement - Canvas HTML elementi
+     * @param {Camera} camera - Oyun kamerası
      */
-    constructor(ctx,canvasHTMLElement){
+    constructor(ctx,canvasHTMLElement,camera){
         this.#ctx = ctx;
         this.width = canvasHTMLElement.width;
         this.height = canvasHTMLElement.height;
         this.#canvasHTMLElement = canvasHTMLElement;
         // Grid ve kamera başlatılır
         this.grid = new Grid(Settings.default.gridCellSize,this.#canvasHTMLElement.height,this.#canvasHTMLElement.width);
-        this.camera = new Camera(this.#canvasHTMLElement.width, this.#canvasHTMLElement.height);
+        this.camera = camera;
         // Debugger ile ilişkilendirme (Canvas objesini kullan)
         ctx.font = "12px serif";
         ctx.fillStyle = "white";
@@ -42,10 +43,7 @@ class Canvas{
      */
     drawObjects(timestamp){
         this.lastPaintTimestamp = timestamp;
-        // Kamera player'ı takip etsin
-        if (global && global.game && global.game.player) {
-            this.camera.update(global.game.player.drawAttributes.location);
-        }
+        this.camera.updateOffset();
         // Griddeki tüm entity'ler için çizim ve debug işlemleri
         this.grid.applyToAllEntities((entity) => {
             this.drawEntity(entity);
@@ -99,15 +97,14 @@ class Canvas{
      */
     drawEntity(entity){
         // Kamera offsetini uygula
-        this.#drawPolygon(entity.drawAttributes.getActualShell(), this.camera);
+        this.#drawPolygon(entity.drawAttributes.getActualShell());
     }
 
     /**
      * Çokgen veya çizgi dizisini çizer
      * @param {Polygon | Line[] | BreakableLine[]} polygon - Çizilecek şekil
-     * @param {Camera} camera - Kamera
      */
-    #drawPolygon(polygon, camera = null) {
+    #drawPolygon(polygon) {
         for (let i = 0; i < (polygon instanceof Polygon ? polygon.lines.length : polygon.length); i++) {
             ctx.beginPath();
             const currentLine = polygon instanceof Polygon ? polygon.lines[i] : polygon[i];
@@ -116,8 +113,8 @@ class Canvas{
             let point2 = currentLine.endPoint;
 
             // oyuncunun offsetini uygula
-            point1 = camera.worldToScreen(point1.x, point1.y);
-            point2 = camera.worldToScreen(point2.x, point2.y);
+            point1 = this.camera.worldToScreen(point1.x, point1.y);
+            point2 = this.camera.worldToScreen(point2.x, point2.y);
 
             ctx.lineWidth = currentLine.lineWidth;
             if(currentLine instanceof BreakableLine){

@@ -75,8 +75,8 @@ class CollisionHandler extends Handler {
             Debugger.showPoint(collidePoint);
             Debugger.drawVector(yaricap1,merkez1)
             Debugger.drawVector(yaricap2,merkez2)
-            Debugger.drawVector(carpismaNormali.copy().multiply(20),collidePoint,"green",6)
-            Debugger.drawVector(impulse.copy().multiply(50),collidePoint,"red",2);
+            Debugger.drawVector(carpismaNormali.copy().multiply(5),collidePoint,"green",6)
+            Debugger.drawVector(impulse.copy().multiply(5),collidePoint,"red",2);
         }
     }
 

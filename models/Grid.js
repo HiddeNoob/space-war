@@ -261,6 +261,7 @@ class Grid {
     /**
      * Sadece ekranda görünen grid hücrelerindeki entity çiftleri için çarpışma kontrolü yapar
      * @param {(entity1: Entity, entity2: Entity) => void} callback - Uygulanacak callback
+     * @param {Camera} camera - Kamera nesnesi
      * @param {string} class1 - İlk entity sınıfı adı (opsiyonel)
      * @param {string} class2 - İkinci entity sınıfı adı (opsiyonel)
      */

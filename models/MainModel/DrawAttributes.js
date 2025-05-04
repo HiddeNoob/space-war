@@ -14,7 +14,8 @@ class DrawAttributes {
      * @param {number} angle - Başlangıç açısı
      * @param {string} color - Renk
      */
-    constructor(polygon, location = new Vector(50, 50), angle = 0, color = "#ffffff") {
+    constructor(polygon, location = new Vector(50, 50), angle = 0, color = "#ffffff") { 
+        // !!! TODO garip bir şekilde locationu x = 0 y = 0 olarak initial yaparsam fizik motoru bozuluyor ?
         this.location = location;
         this.shell = new EntityShell(polygon);
         this.angle = angle;
