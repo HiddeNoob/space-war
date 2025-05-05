@@ -1,5 +1,8 @@
 // Oyunda kullanılan silahları ve mermi üretimini yöneten sınıf
 class Weapon {
+
+    isReloading = false; // Yeniden doldurma işlemi yapılıyor mu
+
     /** @type {string} */
     weaponName; // Silahın adı
 
@@ -30,6 +33,7 @@ class Weapon {
         weaponName = "Weapon",
         bulletEjectPower = 50,
         maxBulletPerMagazine = 30,
+        reloadTime = 1000,
         remainingBullet = 30,
         bulletObject = new Bullet(1,
             new DrawAttributes(ShapeFactory.createRectangle(10,3)),
@@ -40,6 +44,7 @@ class Weapon {
         this.maxBulletPerMagazine = maxBulletPerMagazine;
         this.remainingBullet = remainingBullet;
         this.bulletObject = bulletObject;
+        this.reloadTime = reloadTime;
     }
 
     /**
@@ -53,7 +58,6 @@ class Weapon {
             return null;
         }
         const bullet = this.bulletObject.copy();
-        console.log(this.bulletEjectPower, bullet.motionAttributes.mass);
         const bulletSpeed = this.bulletEjectPower / bullet.motionAttributes.mass;
         // Yön vektörü hesaplanır
         const direction = new Vector(1,0).rotate(angle);
@@ -62,5 +66,18 @@ class Weapon {
         bullet.drawAttributes.angle = angle;
         this.remainingBullet--;
         return bullet;
+    }
+
+    reload() {
+        if (this.isReloading) {
+            return;
+        }
+        console.log("Reloading...");
+        this.isReloading = true;
+        Timer.add(this.reloadTime, () => {
+            console.log("Reloaded!");
+            this.remainingBullet = this.maxBulletPerMagazine;
+            this.isReloading = false;
+        })
     }
 }

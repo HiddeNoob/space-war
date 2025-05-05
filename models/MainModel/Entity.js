@@ -50,14 +50,10 @@ class Entity{
      * @returns {boolean}
      */
     isCollidingWith(entity){
-        const e1L = this.drawAttributes.shell.lines;
-        const e2L = entity.drawAttributes.shell.lines;
+        const e1L = this.drawAttributes.getActualShell().lines;
+        const e2L = entity.drawAttributes.getActualShell().lines;
         for(let line1 of e1L){
             for(let line2 of e2L){
-                // @ts-ignore
-                line1 = line1.copy().rotateLine(this.drawAttributes.angle).moveLine(this.drawAttributes.location.x,this.drawAttributes.location.y);
-                // @ts-ignore
-                line2 = line2.copy().rotateLine(entity.drawAttributes.angle).moveLine(entity.drawAttributes.location.x,entity.drawAttributes.location.y);
                 const point = line1.getIntersectPoint(line2);
                 if(point) return true;
             }

@@ -48,6 +48,10 @@ class Attacker extends Entity {
         this.motionAttributes.torque += angleDifference * this.rotatePower;
     }
 
+    reloadWeapon() {
+        this.weapon.reload();
+    }
+
     /**
      * Ateş eder (bir mermi oluşturur ve geri tepme uygular)
      */
@@ -61,11 +65,11 @@ class Attacker extends Entity {
         if (bullet) {
             global.game.canvasObject.grid.addEntity(bullet);
             const bulletMomentum = bullet.motionAttributes.mass * bullet.motionAttributes.velocity.magnitude();
-            const recoilForce = new Vector(
+            const deltaVelocity = new Vector(
                 -Math.cos(bulletAngle),
                 -Math.sin(bulletAngle)
-            ).multiply(bulletMomentum / this.motionAttributes.mass);
-            this.motionAttributes.force.add(recoilForce);
+            ).multiply((bulletMomentum / this.motionAttributes.mass));
+            this.motionAttributes.velocity.add(deltaVelocity);
         }
     }
 

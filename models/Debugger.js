@@ -83,7 +83,7 @@ class Debugger {
                 // Kamera offsetini uygula
                 const screenPos = this.#camera.worldToScreen(x, y);
                 if (Debugger.#debug.grid.showObjectCount) {
-                    Debugger.#ctx.fillText(totalEntities.toString(), screenPos.x + 5, screenPos.y + 10);
+                    Debugger.#ctx.fillText(`${totalEntities} ${x},${y}`, screenPos.x + 5, screenPos.y + 10);
                 }
                 Debugger.#ctx.moveTo(screenPos.x, screenPos.y);
                 const screenPosRight = this.#camera.worldToScreen(x + cellSize, y);

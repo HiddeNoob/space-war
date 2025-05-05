@@ -58,8 +58,11 @@ class Game{
 
             this.canvasObject.clearCanvas();
 
+            // zamanlanmış olay varsa çalıştırılır
+            Timer.update() 
+
             // Entitylerin yeni lokasyonlarına göre tekrardan grid hesaplanır 
-            this.canvasObject.grid.refreshGrid();
+            this.canvasObject.grid.refreshGrid(this.player.drawAttributes.location);
             
             // Game logic uygulanır
             this.gameLogic.update();

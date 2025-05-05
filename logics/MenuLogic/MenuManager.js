@@ -12,9 +12,8 @@ class MenuManager {
     /**
      * MenuManager oluşturucu
      * @param {HTMLElement} rootElement - Menülerin çizileceği ana HTML node
-     * @param {Player} player - Bağlı oyuncu
      */
-    constructor(rootElement, player) {
+    constructor(rootElement) {
         this.#rootNode = rootElement;
         
         // Klavye event handler'ı tanımlanır

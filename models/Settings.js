@@ -22,7 +22,7 @@ class Settings{
                 showLatency : true, // Gecikmeyi göster
             }, // FPS gösterimini aç/kapat
             showVector : {
-                show : true, // Vektör gösterimini aç/kapat
+                show : false, // Vektör gösterimini aç/kapat
             }
         },
     }

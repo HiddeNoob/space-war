@@ -8,6 +8,8 @@ class UserActionHandler extends Handler {
         s: false, // S tuşu basılı mı
         a: false, // A tuşu basılı mı
         d: false, // D tuşu basılı mı
+        r: false, // R tuşu basılı mı
+        esc: false, // Escape tuşu basılı mı
     };
 
     /**
@@ -29,7 +31,14 @@ class UserActionHandler extends Handler {
     update = () => {
         this.#applyMovement();
         this.#applyRotation();
+        this.#reloadWeapon();
     };
+
+    #reloadWeapon() {
+        if (this.#isPressed.r) {
+            this.player.reloadWeapon();
+        }
+    }
 
     /**
      * Klavye ile hareket uygular

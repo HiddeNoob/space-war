@@ -46,10 +46,10 @@ class CollisionHandler extends Handler {
             const goreceliHiz = v2.copy().subtract(v1);
 
             // normal seçiminde hala kararsızım
-            const n1 = e1L.copy().rotateLine(entity1.drawAttributes.angle).normalVector();
-            const n2 = e2L.copy().rotateLine(entity2.drawAttributes.angle).normalVector();
-            const n1Dot = goreceliHiz.copy().dot(n1);
-            const n2Dot = goreceliHiz.copy().dot(n2);
+            const n1 = e1L.normalVector();
+            const n2 = e2L.normalVector();
+            const n1Dot = goreceliHiz.dot(n1);
+            const n2Dot = goreceliHiz.dot(n2);
 
             let carpismaNormali = Math.abs(n1Dot) > Math.abs(n2Dot) ? n1 : n2; 
 
@@ -87,21 +87,17 @@ class CollisionHandler extends Handler {
      * @returns {Array[]} Çarpışan çizgi çiftleri ve kesişim noktası
      */
     #getCollidingLines(e1, e2) {
-        /** @type {Array[]} */
+        const actualShell1 = e1.drawAttributes.getActualShell();
+        const actualShell2 = e2.drawAttributes.getActualShell();
         const array = [];
-        for (let i = 0; i < e1.drawAttributes.shell.lines.length; i++) {
-            let e1L = e1.drawAttributes.shell.lines[i]
-                .copy()
-                .rotateLine(e1.drawAttributes.angle)
-                .moveLine(e1.drawAttributes.location.x, e1.drawAttributes.location.y);
-            for (let j = 0; j < e2.drawAttributes.shell.lines.length; j++) {
-                let e2L = e2.drawAttributes.shell.lines[j]
-                    .copy()
-                    .rotateLine(e2.drawAttributes.angle)
-                    .moveLine(e2.drawAttributes.location.x, e2.drawAttributes.location.y);
+        for (let i = 0; i < actualShell1.lines.length; i++) {
+            let e1L = actualShell1.lines[i]
+            for (let j = 0; j < actualShell2.lines.length; j++) {
+                let e2L = actualShell2.lines[j]
                 const intersectPoint = e2L.getIntersectPoint(e1L);
                 if (intersectPoint) {
-                    array.push([e1.drawAttributes.shell.lines[i], e2.drawAttributes.shell.lines[j],intersectPoint]);
+                    const intersectPoint = e2L.getIntersectPoint(e1L);
+                    array.push([actualShell1.lines[i], actualShell2.lines[j],intersectPoint]);
                 }
             }
         }

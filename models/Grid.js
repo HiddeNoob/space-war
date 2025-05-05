@@ -6,9 +6,9 @@ class Grid {
      * @param {number} cellSize - Hücre boyutu
      * @param {number} maxHeight - Grid yüksekliği
      * @param {number} maxWidth - Grid genişliği
-     * @param {number} destructRange - Yıkım aralığı (varsayılan: 2)
+     * @param {number} destructRange - Yıkım aralığı (varsayılan: 20)
      */
-    constructor(cellSize, maxHeight, maxWidth, destructRange = 2) {
+    constructor(cellSize, maxHeight, maxWidth, destructRange = 20) {
         this.cellSize = cellSize;
         this.destructRange = destructRange;
         this.maxHeight = maxHeight;
@@ -156,14 +156,23 @@ class Grid {
     refreshGrid(center = new Vector(0, 0)) {
         const oldCells = this.cells;
         this.cells = new Map();
+        const deletedEntites = [];
         oldCells.forEach((partition) =>
             partition.forEach((entities) => {
                 entities.forEach((entity) => {
-                    if (global.game)
-                        this.addEntity(entity);
+                    const distance = entity.drawAttributes.location.distanceTo(center);
+                    if(distance > this.destructRange * this.cellSize){// entity çok uzakta ise sil
+                        deletedEntites.push(entity);
+                        return;
+                    }; 
+                    this.addEntity(entity);
                 });
             })
         );
+        if(deletedEntites.length > 0) {
+            console.log("entityler silindi");
+            console.log(deletedEntites);
+        }
     }
 
     /**
