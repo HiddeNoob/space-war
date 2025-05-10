@@ -27,9 +27,9 @@ class Game{
         this.canvasObject.grid.addEntity(new Entity(
             new DrawAttributes(ShapeFactory.createRectangle(200,50), new Vector(100, 100), Math.PI / 2),
         ));
-        // for(let i = 0; i < 50; i++){
-        //     this.canvasObject.grid.addEntity(Coin.create(Math.random() * 500 + 300,Math.random() * 500 + 300,20));
-        // }
+        for(let i = 0; i < 50; i++){
+            this.canvasObject.grid.addEntity(Coin.create(Math.random() * 500 + 300,Math.random() * 500 + 300,20));
+        }
         this.canvasObject.grid.addEntity(
         new Entity(
             new DrawAttributes(ShapeFactory.createRegularPolygon(5,20), new Vector(420, 300),Math.PI / 2),
@@ -43,6 +43,7 @@ class Game{
         Debugger.setup(this, ctx);
         // Oyun mantığı başlatılır
         this.gameLogic = new GameLogic(this.canvasObject.grid,this.canvasObject.camera,this.player);
+
     }
 
     /**
@@ -55,11 +56,12 @@ class Game{
             if(this.#isPaused) return;
             global.previousLatestPaintTimestamp = global.latestPaintTimestamp;
             global.latestPaintTimestamp = timestamp;
+            const deltaTime = (timestamp - global.previousLatestPaintTimestamp)
 
             this.canvasObject.clearCanvas();
 
             // zamanlanmış olay varsa çalıştırılır
-            Timer.update() 
+            Timer.update(deltaTime) 
 
             // Entitylerin yeni lokasyonlarına göre tekrardan grid hesaplanır 
             this.canvasObject.grid.refreshGrid(this.player.drawAttributes.location);

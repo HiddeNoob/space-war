@@ -10,29 +10,16 @@ class EntityTerminater extends Handler{
         this.#processDeadEntites();
     }
 
-    /**
-     * Kuyruktaki ölü entity'leri parçalarına ayırıp patlama animasyonu başlatır
-     */
     #processDeadEntites(){
-        while(EntityTerminater.deadEntitiesQueue.length > 0){ // TODO: Bu algoritma iyileştirilmeli
+        while(EntityTerminater.deadEntitiesQueue.length > 0){
             /** @type {Entity} */
             const deadEntity = EntityTerminater.deadEntitiesQueue.pop();
             deadEntity.isAlive = false;
-            const entitySpeedVector = deadEntity.motionAttributes.velocity;
-            const bodyPartCount = deadEntity.drawAttributes.shell.lines.length;
-            const unitVector = new Vector(1,0); // Her iterasyonda tekrar oluşturulmaması için
-            for(let i = 0; i < bodyPartCount ; i++){ // Patlama animasyonu için
-                const selectedLine = deadEntity.drawAttributes.shell.lines[i];
-                if(selectedLine.health <= 0) continue;
-                const angle = i * (2 * Math.PI) / bodyPartCount;
-                const location = deadEntity.drawAttributes.location;
-                const lineLocation = location.add(selectedLine.centerPoint());
-                const speed = (unitVector.copy().rotate(angle).add(entitySpeedVector));
-                const motionAttributes = new MotionAttributes();
-                const drawAttributes = new DrawAttributes(new Polygon([selectedLine]),lineLocation);
-                motionAttributes.velocity = speed;
-                this.grid.addEntity(new Entity(drawAttributes,motionAttributes));
-            }
+            const sound = new Audio('assets/audios/pixel-explosion-319166.mp3');
+            sound.volume = 0.1;
+            sound.play();
         }
     }
+
+    
 }

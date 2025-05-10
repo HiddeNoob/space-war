@@ -74,10 +74,21 @@ class Weapon {
         }
         console.log("Reloading...");
         this.isReloading = true;
-        Timer.add(this.reloadTime, () => {
+        Timer.addOneTimeTask(new Task(this.reloadTime, () => {
             console.log("Reloaded!");
             this.remainingBullet = this.maxBulletPerMagazine;
             this.isReloading = false;
-        })
+        }))
+    }
+    
+    copy(){
+        return new Weapon(
+            this.weaponName,
+            this.bulletEjectPower,
+            this.maxBulletPerMagazine,
+            this.reloadTime,
+            this.remainingBullet,
+            this.bulletObject.copy()
+        );
     }
 }

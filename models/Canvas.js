@@ -43,7 +43,7 @@ class Canvas{
      */
     drawObjects(timestamp){
         this.lastPaintTimestamp = timestamp;
-        this.camera.updateOffset();
+        this.camera.updateOffset(this.lastPaintTimestamp - global.previousLatestPaintTimestamp);
         // Griddeki tüm entity'ler için çizim ve debug işlemleri
         this.grid.applyToAllEntities((entity) => {
             this.drawEntity(entity);

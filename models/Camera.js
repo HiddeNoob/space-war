@@ -21,11 +21,11 @@ class Camera {
     /**
      * Kamerayı seçilmiş entity'ye göre günceller.
      */
-    updateOffset(){
+    updateOffset(dt){
         const dx = this.screenWidth / 2 - this.trackedEntity.drawAttributes.location.x;
         const dy = this.screenHeight / 2 - this.trackedEntity.drawAttributes.location.y;
-        this.offset.x += (dx - this.offset.x) * 0.01;
-        this.offset.y += (dy - this.offset.y) * 0.01;
+        this.offset.x += (dx - this.offset.x) * 0.001 * dt;
+        this.offset.y += (dy - this.offset.y) * 0.001 * dt;
     }
 
     /**

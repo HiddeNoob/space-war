@@ -2,8 +2,9 @@
 class Settings{
     static default = {
         volume : 50, // Varsayılan ses seviyesi
-        maxLineLength : 30, // Maksimum çizgi uzunluğu
         gridCellSize : 100, // Grid hücre boyutu
+        spawnerDelay : 20000, // Üreteç gecikmesi
+        attackerSpawnDelay : 5000, // Saldırgan üretme gecikmesi
         debug : {
             showHandlerLatency : {
                 show : true, // Handler gecikmesini göster

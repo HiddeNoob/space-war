@@ -35,7 +35,7 @@ class Polygon {
     /** 
      * Çokgeni ölçeklendirir
      * @param {number} size 
-     * @returns {Polygon}
+     * @returns {this}
      */
     scaleBy(size) {
         this.#lines.forEach((line) => {
@@ -48,7 +48,7 @@ class Polygon {
     /**
      * Çokgenin tüm çizgilerinin rengini değiştirir
      * @param {string} color
-     * @returns {Polygon}
+     * @returns {this}
      */
     setColor(color) {
         this.#lines.forEach((line) => line.lineColor = color);
@@ -58,6 +58,7 @@ class Polygon {
     /**
      * Çokgeni verilen vektöre taşır
      * @param {Vector} vector 
+     * @returns {this}
      */
     move(vector) {
         this.#lines.forEach((line) => line.moveLine(vector.x, vector.y));
@@ -118,6 +119,7 @@ class Polygon {
     /**
      * İki poligon arasında en küçük çakışmayı bulur.
      * Çakışma eksenini ve çakışma miktarını döner.
+     * Çakışma yoksa null döner.
      * @param {Polygon} other
      * @returns {{minOverlap: number, smallestAxis: Vector} | null}
      */

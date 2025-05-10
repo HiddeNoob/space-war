@@ -6,34 +6,94 @@
 class Timer {
 
     /**
-     * @type {Set<{timeRemaining: number, callback: (currentTime: number) => void}>}
+     * @type {Set<Task>}
      */
-    static #timers = new Set();
+    static #oneTimeTasks = new Set();
+
+    /**
+     * @type {Set<Task>}
+    */
+    static #intervalTasks = new Set();
+
 
     /**
      * delay kadar süre bekleyip callback fonksiyonunu çağırır
-     * @param {number} delay 
-     * @param {(currentTime : number) => void} callback 
+     * @param {Task} task - Zamanlayıcı görevi
      */
-    static add(delay, callback) {
-        Timer.#timers.add({
-            timeRemaining: delay,
-            callback
-        });
+    static addOneTimeTask(task) {
+        this.#oneTimeTasks.add(task);
+    }
+
+    /**
+     * @param {Task} task 
+     */
+    static addIntervalTask(task) {
+        this.#intervalTasks.add(task);
     }
 
     /**
      * Bu fonksiyon, her zamanlayıcının kalan süresini günceller ve süresi dolmuş olanları çağırır. 
      * Her frame'de çağrılmalıdır.
      */
-    static update() {
-        const deltaTime = global.latestPaintTimestamp - global.previousLatestPaintTimestamp;
-        Timer.#timers.forEach((timer) => {
-            timer.timeRemaining -= deltaTime;
-            if (timer.timeRemaining <= 0) {
-                timer.callback(global.latestPaintTimestamp);
-                Timer.#timers.delete(timer); // Timer'ı sil
+    static update(deltaTime) {
+        Timer.#oneTimeTasks.forEach((timer) => {
+            timer.passTime(deltaTime);
+            if (timer.remainingTime <= 0) {
+                timer.callback();
+                Timer.#oneTimeTasks.delete(timer); // Timer'ı sil
             }
         });
+        Timer.#intervalTasks.forEach((timer) => {
+            timer.passTime(deltaTime);
+            if (timer.remainingTime <= 0) {
+                timer.callback();
+                timer.resetRemainingTime(); // Timer'ı sıfırla
+            }
+        });
+    }
+}
+
+class Task{
+    /** @type {function} */
+    #callback; // Zamanlayıcı tamamlandığında çağrılacak fonksiyon
+
+    /** @type {number} */
+    #remainingTime; // Kalan süre
+
+    /** @type {number} */
+    #delay; // Başlangıçta ayarlanan süre
+
+    /**
+     * Zamanlayıcı oluşturucu
+     * @param {function} callback - Zamanlayıcı tamamlandığında çağrılacak fonksiyon
+     * @param {number} delay - Zamanlayıcı süresi
+     */
+    constructor(delay,callback){
+        this.#callback = callback;
+        this.#remainingTime = delay;
+        this.#delay = delay;
+    }
+
+    resetRemainingTime(){
+        this.#remainingTime = this.#delay;
+    }
+
+    passTime(time){
+        this.#remainingTime -= time;
+    }
+
+    /**
+     * Kalan süreyi alır
+     * @returns {number} - Kalan süre
+     */
+    get remainingTime(){
+        return this.#remainingTime;
+    }
+
+    /**
+     *  Zamanlanan callback fonksiyonunu alır
+     */
+    get callback(){
+        return this.#callback;
     }
 }

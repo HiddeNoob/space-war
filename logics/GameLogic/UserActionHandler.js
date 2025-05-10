@@ -83,7 +83,10 @@ class UserActionHandler extends Handler {
             this.#latestClientMouseLocation = new Vector(e.offsetX, e.offsetY);
         });
         window.addEventListener("mousedown", () => {
-            this.player.shoot();
+            const bullet = this.player.shoot();
+            if (bullet) {
+                this.grid.addEntity(bullet);
+            }
         });
     }
 }

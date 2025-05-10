@@ -22,7 +22,7 @@ class Attacker extends Entity {
     ) {
         super(drawAttributes, motionAttributes);
         this.weapon = weapon;
-        this.motionAttributes.angularSlowdownRate = 0.90;
+        this.motionAttributes.angularSlowdownRate = 0.85;
         this.thrustPower = motionAttributes.mass * 1e-2;
         this.rotatePower = motionAttributes.momentOfInertia * 1e-2;
     }
@@ -63,14 +63,15 @@ class Attacker extends Entity {
             .add(tipOfAttacker.copy().rotate(bulletAngle).multiply(2));
         const bullet = this.weapon.shoot(bulletLocation, bulletAngle);
         if (bullet) {
-            global.game.canvasObject.grid.addEntity(bullet);
             const bulletMomentum = bullet.motionAttributes.mass * bullet.motionAttributes.velocity.magnitude();
             const deltaVelocity = new Vector(
                 -Math.cos(bulletAngle),
                 -Math.sin(bulletAngle)
             ).multiply((bulletMomentum / this.motionAttributes.mass));
             this.motionAttributes.velocity.add(deltaVelocity);
+            return bullet;
         }
+        return null;
     }
 
     /**
@@ -80,5 +81,16 @@ class Attacker extends Entity {
     shootTo(targetLocation) {
         this.rotateTo(targetLocation);
         this.shoot();
+    }
+
+    copy() {
+        const clonedAttacker = new Attacker(
+            this.drawAttributes.copy(),
+            this.motionAttributes.copy(),
+            this.weapon.copy()
+        );
+        clonedAttacker.thrustPower = this.thrustPower;
+        clonedAttacker.rotatePower = this.rotatePower;
+        return clonedAttacker;
     }
 }

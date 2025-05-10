@@ -18,7 +18,6 @@ class Entity{
     constructor(drawAttributes = new DrawAttributes(GlobalShapes.RECTANGLE),motionAttributes = new MotionAttributes()){
         this.drawAttributes = drawAttributes;
         this.motionAttributes = motionAttributes;
-        this.drawAttributes.shell.lines.forEach((line) => line.belongsTo = this);
         this.#calculateAttributes();
     }
 
@@ -45,20 +44,59 @@ class Entity{
     }
 
     /**
+     * @param {Polygon} polygon
+     */
+    setPolygon(polygon){
+        this.drawAttributes.shell = new EntityShell(polygon);
+        this.#calculateAttributes();
+        return this;
+    }
+
+    /**
+     * @param {string} color
+     * @returns {this}
+    */
+    setColor(color){
+        this.drawAttributes.shell.setColor(color);
+        return this;
+    }
+
+    /**
+     * @param {Vector} location
+     * @returns {this}
+     */
+    setLocation(location){
+        this.drawAttributes.location = location;
+        return this;
+    }
+
+
+
+
+
+
+    /**
      * İki entity'nin kabuk çizgileri arasında çarpışma olup olmadığını kontrol eder
      * @param {Entity} entity
-     * @returns {boolean}
+     * @returns {{line1: BreakableLine, line2: BreakableLine, point: Vector} | false}
+     * @description Çarpışma varsa çarpışma çizgilerini ve çarpışma noktasını döner
      */
     isCollidingWith(entity){
         const e1L = this.drawAttributes.getActualShell().lines;
         const e2L = entity.drawAttributes.getActualShell().lines;
-        for(let line1 of e1L){
-            for(let line2 of e2L){
+        for(let i = 0; i < e1L.length; i++){
+            let line1 = e1L[i];
+            for(let j = 0; j < e2L.length; j++){
+                let line2 = e2L[j];
                 const point = line1.getIntersectPoint(line2);
-                if(point) return true;
+                if(point) return {
+                    line1: this.drawAttributes.shell.lines[i],
+                    line2: entity.drawAttributes.shell.lines[j],
+                    point: point
+                };
             }
         }
-        return false;
+        return null;
     }
 
     /**

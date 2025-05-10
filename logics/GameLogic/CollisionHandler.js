@@ -12,7 +12,7 @@ class CollisionHandler extends Handler {
                 this.#makeCollisions(entity1, entity2);
                 this.#resolvePenetration(entity1, entity2);
             },
-            this.camera,
+            this.camera
         );
     };
 
@@ -96,7 +96,6 @@ class CollisionHandler extends Handler {
                 let e2L = actualShell2.lines[j]
                 const intersectPoint = e2L.getIntersectPoint(e1L);
                 if (intersectPoint) {
-                    const intersectPoint = e2L.getIntersectPoint(e1L);
                     array.push([actualShell1.lines[i], actualShell2.lines[j],intersectPoint]);
                 }
             }

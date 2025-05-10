@@ -161,7 +161,8 @@ class Grid {
             partition.forEach((entities) => {
                 entities.forEach((entity) => {
                     const distance = entity.drawAttributes.location.distanceTo(center);
-                    if(distance > this.destructRange * this.cellSize){// entity çok uzakta ise sil
+                    if(distance > this.destructRange * this.cellSize || !entity.isAlive){
+                        // entity çok uzakta ise sil
                         deletedEntites.push(entity);
                         return;
                     }; 
@@ -207,61 +208,52 @@ class Grid {
 
     /** 
      * Yakındaki entity çiftlerine verilen callback'i uygular
-     * @param {(entity1: Entity, entity2: Entity) => void} callback - Uygulanacak callback
+     * @param {(entity1: Entity, entity2: Entity) => void} callback - Uygulanacak callback, ilk parametre class1 classından, ikinci parametre class2 sınıfından bir entity
      * @param {string} class1 - İlk entity sınıfı adı (opsiyonel)
      * @param {string} class2 - İkinci entity sınıfı adı (opsiyonel)
      */
     applyToCloseEntityPairs(callback, class1 = null, class2 = null) {
 
-        if(class1 == null && class2 != null){
-            class1 = class2;
-            class2 = null;            
-        }
 
-        /** @type {Map<Entity, Set<Entity>>} */
+
+
+
+
         const processedEntities = new Map();
 
-        const addRelation = (entity1, entity2) => {
-            if (!processedEntities.has(entity1)) {
-                processedEntities.set(entity1, new Set());
+        for(let [key,_] of this.cells){
+            const [x,y] = key.split(",").map((item) => parseInt(item));
+            const localEntityMap = this.getEntitiesNearbyByCell(x,y);
+            if(class1 === null && class2 === null){ // tüm entity çiftleri için
+                const entities = []
+                localEntityMap.forEach((entitiesFromCell) => entities.push(...entitiesFromCell));
+                this.#processPermutations(entities,entities,processedEntities, callback);
             }
-            processedEntities.get(entity1).add(entity2);
-
-            if (!processedEntities.has(entity2)) {
-                processedEntities.set(entity2, new Set());
-            }
-            processedEntities.get(entity2).add(entity1);
-        };
-
-        for(let y = 0; y < Math.ceil(this.maxHeight / this.cellSize) ; y++){
-            for(let x = 0; x < Math.ceil(this.maxWidth / this.cellSize) ; x++){
-                const map = this.getEntitiesNearbyByCell(x,y);
-                if(class1 === null && class2 === null){
-                    const entities = []
-                    map.forEach((entitiesFromCell) => entities.push(...entitiesFromCell));
-                    entities.forEach((entity1) => {
-                        entities.forEach((entity2) => {
-                            if (entity1 === entity2) return;
-
-                            if (processedEntities.has(entity1) && processedEntities.get(entity1).has(entity2)) return; // islenenleri gec
-                            
-                            callback(entity1, entity2);
-                            addRelation(entity1, entity2);
-                        });
-                    })
+            else if(class1 != null && class2 != null){ // iki sınıf da verilmiş
+                this.#processPermutations(localEntityMap.get(class1),localEntityMap.get(class2),processedEntities, callback);
+            }else{ // sadece bir sınıf verilmiş
+                let reversed = false
+                if(class2 != null){
+                     // class 2 null değilmiş ancak ben algoritmamı class1'e göre yazdım bu yüzden değiştiriyorum
+                    class1 = class2;
+                    reversed = true;
                 }
-                else if(class1 != null){
-                    const selectedEntities = map.get(class1)
-                    map.delete(class1);
-                    const remainedEntities = []
-                    map.forEach((entitiesFromCell) => remainedEntities.push(entitiesFromCell));
-                    remainedEntities.forEach((remainedEntity) => {
-                        selectedEntities.forEach((selectedEntity) => {
-                            callback(remainedEntity, selectedEntity);
-                        })
-                    })
-                }
+                const selectedEntities = []
+                const remainedEntities = []
+                localEntityMap.forEach((entitiesFromCell, key) => {
+                    if (key === class1) {
+                        selectedEntities.push(...entitiesFromCell);
+                    }
+                    else {
+                        remainedEntities.push(...entitiesFromCell);
+                    }
+                });
 
+                // kullanıcı ikinci sınıfı verdiği için seçilenleri ikinci entitye gönderiyorum
+                if(reversed) this.#processPermutations(remainedEntities,selectedEntities,processedEntities, callback);
+
+                // kullanıcı ilk sınıfı verdiği için seçilenleri ilk entitye gönderiyorum
+                else this.#processPermutations(selectedEntities,remainedEntities,processedEntities, callback);
             }
         }
         
@@ -271,18 +263,23 @@ class Grid {
      * Sadece ekranda görünen grid hücrelerindeki entity çiftleri için çarpışma kontrolü yapar
      * @param {(entity1: Entity, entity2: Entity) => void} callback - Uygulanacak callback
      * @param {Camera} camera - Kamera nesnesi
-     * @param {string} class1 - İlk entity sınıfı adı (opsiyonel)
-     * @param {string} class2 - İkinci entity sınıfı adı (opsiyonel)
      */
     applyToVisibleEntityPairs(callback,camera,class1 = null, class2 = null) {
-        const cellSize = this.cellSize;
         // Ekranda görünen alanın world koordinatlarını bul
+
+        // ekranın sol üst köşesi oyun haritasında nereye denk geliyor
         const topLeft = camera.screenToWorld(0, 0);
+
+        // ekranın sağ alt köşesi oyun haritasında nereye denk geliyor
         const bottomRight = camera.screenToWorld(global.game.screenWidth, global.game.screenHeight);
-        const minX = Math.floor(topLeft.x / cellSize);
-        const minY = Math.floor(topLeft.y / cellSize);
-        const maxX = Math.ceil(bottomRight.x / cellSize);
-        const maxY = Math.ceil(bottomRight.y / cellSize);
+        
+        // cell boyutuna göre hücrelerin x ve y koordinatlarını hesapla
+        const minX = Math.floor(topLeft.x / this.cellSize);
+        const minY = Math.floor(topLeft.y / this.cellSize);
+
+        const maxX = Math.ceil(bottomRight.x / this.cellSize);
+        const maxY = Math.ceil(bottomRight.y / this.cellSize);
+
         /** @type {Map<Entity, Set<Entity>>} */
         const processedEntities = new Map();
         for (let y = minY; y <= maxY; y++) {
@@ -291,31 +288,80 @@ class Grid {
                 if(class1 === null && class2 === null){
                     const entities = [];
                     map.forEach((entitiesFromCell) => entities.push(...entitiesFromCell));
-                    entities.forEach((entity1) => {
-                        entities.forEach((entity2) => {
-                            if (entity1 === entity2) return;
-                            if (processedEntities.has(entity1) && processedEntities.get(entity1).has(entity2)) return;
-                            callback(entity1, entity2);
-                            if (!processedEntities.has(entity1)) processedEntities.set(entity1, new Set());
-                            processedEntities.get(entity1).add(entity2);
-                            if (!processedEntities.has(entity2)) processedEntities.set(entity2, new Set());
-                            processedEntities.get(entity2).add(entity1);
-                        });
-                    });
-                } else if(class1 != null){
-                    const selectedEntities = map.get(class1);
+                    this.#processPermutations(entities, entities, processedEntities, callback);
+                }else if(class1 != null && class2 != null){
+                    this.#processPermutations(map.get(class1), map.get(class2), processedEntities, callback); 
+                }
+                else{
+                    let reversed = false
+                    if(class2 != null){
+                        // class 2 null değil
+                        // ancak ben algoritmamı class1'e göre yazdım bu yüzden değiştiriyorum
+                        class1 = class2;
+                        reversed = true;
+                    }
+                    const selectedEntities = [];
+                    map.get(class1)?.forEach((entity) => selectedEntities.push(entity));
                     const remainedEntities = [];
                     map.forEach((entitiesFromCell, key) => {
                         if (key !== class1) {
                             remainedEntities.push(...entitiesFromCell);
+                        }else{
+                            selectedEntities.push(...entitiesFromCell);
                         }
                     });
-                    remainedEntities.forEach((remainedEntity) => {
-                        selectedEntities?.forEach((selectedEntity) => {
-                            callback(remainedEntity, selectedEntity);
-                        });
-                    });
-                }
+
+                    // kullanıcı ikinci sınıfı verdiği için seçilenleri ikinci entitye gönderiyorum
+                    if (reversed) this.#processPermutations(remainedEntities, selectedEntities, processedEntities, callback);
+
+                    // kullanıcı ilk sınıfı verdiği için seçilenleri ilk entitye gönderiyorum
+                    else this.#processPermutations(selectedEntities, remainedEntities, processedEntities, callback);
+                }   
+            }
+        }
+    }
+
+    /**
+     * verilen mape iki entity arası ilişki ekler
+     * entity1'e entity2'yi ekler
+     * entity2'ye entity1'i ekler
+     * böylece iki entity tekrar işlenmemiş olur
+     * @param {Entity} entity1 
+     * @param {Entity} entity2 
+     * @param {Map<Entity, Set<Entity>>} processedEntities 
+     */
+    #addRelationToEntities(entity1, entity2, processedEntities) {
+        if (!processedEntities.has(entity1)) {
+            processedEntities.set(entity1, new Set());
+        }
+        processedEntities.get(entity1).add(entity2);
+
+        if (!processedEntities.has(entity2)) {
+            processedEntities.set(entity2, new Set());
+        }
+        processedEntities.get(entity2).add(entity1);
+    }
+
+    /**
+     * 
+     * @param {Entity[]} entitySet1 
+     * @param {Entity[]} entitySet2 
+     * @param {Map<Entity, Set<Entity>>} processedEntities // entityler arasında ilişki eklemek için
+     * @param {(entity1 : Entity,entity2 : Entity) => void} callback 
+     * @returns 
+     */
+    #processPermutations(entitySet1, entitySet2,processedEntities, callback) {
+        if(!(entitySet1 && entitySet2)) return;
+        for (let entity1 of entitySet1) {
+            for (let entity2 of entitySet2) {
+
+                if (entity1 === entity2) continue;
+
+                if (processedEntities.has(entity1) && processedEntities.get(entity1).has(entity2)) continue; // islenenleri gec
+                
+                callback(entity1, entity2);
+                
+                this.#addRelationToEntities(entity1, entity2,processedEntities);
             }
         }
     }
