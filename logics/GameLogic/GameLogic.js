@@ -14,10 +14,11 @@ class GameLogic extends Handler{
         this.handlers.push(new CoinHandler(grid,player,camera));
         this.handlers.push(new AttackerSpawnerHandler(grid,player,camera));
         this.handlers.push(new BulletHitHandler(grid,player,camera));
+        this.handlers.push(new EntityTerminater(grid,player,camera))
         this.handlers.push(new CollisionHandler(grid,player,camera))
         this.handlers.push(new UserActionHandler(player,grid,camera))
         this.handlers.push(new EntityPhysicHandler(grid,player,camera))
-        this.handlers.push(new EntityTerminater(grid,player,camera))
+
     }
 
     /**

@@ -40,6 +40,7 @@ function showMainMenu() {
     const settings = new Menu("Settings");
     settings.addOption(new ValueHolder("Volume", (newVolume) => {
         Settings.default.volume = newVolume;
+        SFXPlayer.setVolume(Settings.default.volume / 100);
     }, 0, 100));
     mainMenu.addOption(settings);
     menuManager.push(mainMenu);

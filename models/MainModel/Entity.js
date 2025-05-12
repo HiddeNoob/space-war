@@ -47,7 +47,7 @@ class Entity{
      * @param {Polygon} polygon
      */
     setPolygon(polygon){
-        this.drawAttributes.shell = new EntityShell(polygon);
+        this.drawAttributes.shell = new EntityShell(polygon.lines.map(line => new BreakableLine(line)));
         this.#calculateAttributes();
         return this;
     }

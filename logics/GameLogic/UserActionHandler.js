@@ -79,13 +79,13 @@ class UserActionHandler extends Handler {
             }
         });
         canvas.addEventListener("mousemove", (e) => {
-            // Mouse ekran koordinatını world koordinatına çevir
             this.#latestClientMouseLocation = new Vector(e.offsetX, e.offsetY);
         });
         window.addEventListener("mousedown", () => {
             const bullet = this.player.shoot();
             if (bullet) {
                 this.grid.addEntity(bullet);
+                SFXPlayer.sfxs["shot"].play();
             }
         });
     }

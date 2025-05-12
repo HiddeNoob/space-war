@@ -12,14 +12,14 @@ class BreakableLine extends Line{
     /**
      * BreakableLine oluşturucu
      * @param {Line} line - Temel çizgi
-     * @param {number} health - Başlangıç sağlığı
+     * @param {number} maxHealth - Maksimum sağlık
+     * @param {number} currentHealth - Başlangıç sağlığı
      * @param {number} durability - Dayanıklılık katsayısı
      */
-    constructor(line,health = 10,durability = 100) {
+    constructor(line,currentHealth = 100,maxHealth = 100,durability = 10) {
         super(line.startPoint.x, line.startPoint.y, line.endPoint.x, line.endPoint.y,line.lineWidth,line.lineColor);
-        this.belongsTo = line.belongsTo;
-        this.health = health;
-        this.maxHealth = health;
+        this.health = currentHealth;
+        this.maxHealth = maxHealth;
         this.durability = durability;
     }
 
@@ -31,6 +31,7 @@ class BreakableLine extends Line{
         return new BreakableLine(
             super.copy(),
             this.health,
+            this.maxHealth,
             this.durability
         );
     }

@@ -4,24 +4,25 @@ class BulletHitHandler extends Handler{
      */
     update = () => {
         this.grid.applyToVisibleEntityPairs(
-        (/** @type {Bullet} */ entity1, /** @type {Entity} */ entity2) => {
-            const collide = entity1.isCollidingWith(entity2);
+        (/** @type {Bullet} */ bullet, /** @type {Entity} */ entity) => {
+            if(!entity.canCollide) return;
+            const collide = bullet.isCollidingWith(entity);
             if (collide) {
-                const {line1, line2, point} = collide;
-                const impactSize = entity1.motionAttributes.velocity.copy().multiply(-1).add(entity2.motionAttributes.velocity).magnitude() * 100;
-                const durabilityRate = line1.durability / line2.durability;
-                const entity1Damage = entity1.damage * impactSize * durabilityRate; // merminin verdiği hasar
-                const entity2Damage = impactSize * durabilityRate; // entity'nin verdiği hasar
+                const {line1: bulletLine, line2: entityLine, point} = collide;
+                const impactSize = bullet.motionAttributes.velocity.copy().multiply(-1).add(entity.motionAttributes.velocity).magnitude() * 100;
+                const durabilityRate = bulletLine.durability / entityLine.durability;
+                const bulletDamage = bullet.damage * impactSize * durabilityRate; // merminin verdiği hasar
+                const entityDamage = impactSize / durabilityRate; // entity'nin verdiği hasar
 
-                line1.health -= entity2Damage;
-                line2.health -= entity1Damage;
-                console.log("Entity1 Health: ", line1.health);
-                console.log("Entity2 Health: ", line2.health);
+                bulletLine.health -= entityDamage;
+                entityLine.health -= bulletDamage;
 
-                if(line1.health <= 0)
-                    EntityTerminater.deadEntitiesQueue.push(entity1);
-                if(line2.health <= 0)
-                    EntityTerminater.deadEntitiesQueue.push(entity2);
+                if(bulletLine.health <= 0)
+                    EntityTerminater.deadEntitiesQueue.push(bullet);
+                if(entityLine.health <= 0)
+                    EntityTerminater.deadEntitiesQueue.push(entity);
+
+                SFXPlayer.sfxs["hurt"].play();
 
             }
         },

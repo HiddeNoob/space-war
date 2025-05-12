@@ -24,6 +24,7 @@ class CoinHandler extends Handler{
                 if(playerDraw.getActualShell().isPenetrating(coin.drawAttributes.getActualShell())){
                     this.player.money += /** @type {Coin} */ (coin).value;
                     coin.isAlive = false;
+                    SFXPlayer.sfxs["coin-catch"].play();
                 }
             }
         }

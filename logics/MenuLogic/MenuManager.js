@@ -39,11 +39,11 @@ class MenuManager {
                     break;
                 case "arrowright":   
                 case "d":
-                    selectedComponent?.actions.onRight?.();
                     break
                 case " ":
                 case "enter":
                     selectedComponent?.actions.onSelect?.();
+                    SFXPlayer.sfxs["menu-select"].play();
                     if (selectedComponent instanceof Menu) {
                         this.push(selectedComponent);
                     }
@@ -54,6 +54,7 @@ class MenuManager {
                         this.pop();
                     }
                     selectedComponent?.actions.onReturn?.();
+                    SFXPlayer.sfxs["menu-discard"].play();
                     break;
                 default:
                     isUpdated = false;

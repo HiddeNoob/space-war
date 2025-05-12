@@ -106,7 +106,6 @@ class Canvas{
      */
     #drawPolygon(polygon) {
         for (let i = 0; i < (polygon instanceof Polygon ? polygon.lines.length : polygon.length); i++) {
-            ctx.beginPath();
             const currentLine = polygon instanceof Polygon ? polygon.lines[i] : polygon[i];
 
             let point1 = currentLine.startPoint;
@@ -116,17 +115,19 @@ class Canvas{
             point1 = this.camera.worldToScreen(point1.x, point1.y);
             point2 = this.camera.worldToScreen(point2.x, point2.y);
 
-            ctx.lineWidth = currentLine.lineWidth;
+            this.#ctx.lineWidth = currentLine.lineWidth;
             if(currentLine instanceof BreakableLine){
-                const health = 50 + (currentLine.health / currentLine.maxHealth )  * 50;
-                ctx.strokeStyle = `hsl(0 100% ${health}%)`;
+                const health = 50 + (currentLine.health / currentLine.maxHealth )  * 50; 
+                // 50 ise kırmızı 100 ise beyaz
+                
+                this.#ctx.strokeStyle = `hsl(0 100% ${health}%)`;
             }else{
-                ctx.strokeStyle = currentLine.lineColor;
+                this.#ctx.strokeStyle = currentLine.lineColor;
             }
-
-            ctx.moveTo(point1.x, point1.y); 
-            ctx.lineTo(point2.x, point2.y); 
-            ctx.stroke();
+            this.#ctx.beginPath();
+            this.#ctx.moveTo(point1.x, point1.y); 
+            this.#ctx.lineTo(point2.x, point2.y); 
+            this.#ctx.stroke();
         }
     }
 }

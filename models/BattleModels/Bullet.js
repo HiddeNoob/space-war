@@ -11,7 +11,7 @@ class Bullet extends Entity{
      */
     constructor(damage = 5,drawOptions = new DrawAttributes(BulletShapes.DEFAULT_BULLET),motionAttributes = new MotionAttributes(10,1,1)){
         super(drawOptions,motionAttributes);
-        this.drawAttributes.shell.setDurability(1);
+        this.drawAttributes.shell.setDurability(0.5);
         this.damage = damage;
     }
 

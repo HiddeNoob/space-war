@@ -5,17 +5,9 @@ class EntityShell extends Polygon {
 
     /**
      * EntityShell oluşturucu
-     * @param {Line[] | Polygon} obj - Çizgi dizisi veya Polygon
-     * @param {number} health - Çizgilerin başlangıç sağlığı
-     * @param {number} durability - Çizgilerin dayanıklılığı
+     * @param {BreakableLine[]} breakableLines - Kırılabilir çizgiler
      */
-    constructor(obj, health = 100, durability = 10) {
-        if(obj instanceof Polygon) {
-            obj = obj.copy().lines;
-        }
-        const breakableLines = obj.map(line =>
-            new BreakableLine(line, health, durability)
-        );
+    constructor(breakableLines) {
         super(breakableLines);
         this.#breakableLines = breakableLines;
     }
@@ -48,6 +40,6 @@ class EntityShell extends Polygon {
      * @returns {EntityShell}
      */
     copy() {
-        return new EntityShell(this.lines);
+        return new EntityShell(this.lines.map(line => line.copy()));
     }
 }

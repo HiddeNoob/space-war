@@ -35,7 +35,7 @@ class Weapon {
         maxBulletPerMagazine = 30,
         reloadTime = 1000,
         remainingBullet = 30,
-        bulletObject = new Bullet(1,
+        bulletObject = new Bullet(3,
             new DrawAttributes(ShapeFactory.createRectangle(10,3)),
             new MotionAttributes(1,5))
     ) {

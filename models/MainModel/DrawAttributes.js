@@ -17,7 +17,7 @@ class DrawAttributes {
     constructor(polygon, location = new Vector(50, 50), angle = 0, color = "#ffffff") { 
         // !!! TODO garip bir şekilde locationu x = 0 y = 0 olarak initial yaparsam fizik motoru bozuluyor ?
         this.location = location;
-        this.shell = new EntityShell(polygon);
+        this.shell = new EntityShell(polygon.lines.map(line => new BreakableLine(line)));
         this.angle = angle;
         this.color = color;
     }
@@ -38,7 +38,7 @@ class DrawAttributes {
     /**
      * Shell'i gerçek konumuna ve açısına göre döndürür ve taşır.
      * Eğer shell daha önce hesaplandıysa, önbellekten alır.
-     * @returns {Polygon}
+     * @returns {EntityShell}
      */
     getActualShell(){
         if(global.latestPaintTimestamp != DrawAttributes.calculatedTimestamp)

@@ -47,6 +47,7 @@ class Menu extends Component{
         if(this.#index < 1)
             return;
         this.#index--;
+        SFXPlayer.sfxs["menu-change"].play();
     }
     
     /**
@@ -56,6 +57,7 @@ class Menu extends Component{
         if(this.#index >= this.options.length - 1)
             return;
         this.#index++;
+        SFXPlayer.sfxs["menu-change"].play();
     }
 
     /**

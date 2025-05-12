@@ -15,9 +15,9 @@ class EntityTerminater extends Handler{
             /** @type {Entity} */
             const deadEntity = EntityTerminater.deadEntitiesQueue.pop();
             deadEntity.isAlive = false;
-            const sound = new Audio('assets/audios/pixel-explosion-319166.mp3');
-            sound.volume = 0.1;
-            sound.play();
+            if(!(deadEntity instanceof Bullet)){
+                SFXPlayer.sfxs["explosion"].play();
+            }
         }
     }
 
