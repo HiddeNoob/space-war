@@ -19,12 +19,21 @@ class Player extends Attacker {
         money = 0,
         level = 1,
         xp = 0,
-        drawAttributes = new DrawAttributes(PlayerShapes.DEFAULT_PLAYER),
-        motionAttributes = new MotionAttributes(1, 1.4, 500, 1000)
+        weapon = ReadyToUseObjects.weapons.PISTOL.copy(),
+        drawAttributes = new DrawAttributes(ShapeFactory.polygonToShell(GlobalShapes.TRIANGLE)),
+        motionAttributes = new MotionAttributes(1, 1.4)
     ) {
-        super(drawAttributes, motionAttributes);
+        super(weapon,drawAttributes, motionAttributes);
         this.money = money;
         this.level = level;
         this.xp = xp;
+    }
+
+    
+    copy(){
+        const player = new Player(this.money,this.level,this.xp,this.weapon.copy(),this.drawAttributes.copy(),this.motionAttributes.copy());
+        player.isAlive = this.isAlive;
+        player.canCollide = this.canCollide;
+        return player;
     }
 }

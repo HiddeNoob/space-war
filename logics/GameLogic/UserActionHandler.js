@@ -4,6 +4,9 @@ class UserActionHandler extends Handler {
     #latestClientMouseLocation = new Vector(0, 0); // Son mouse konumu (world koordinatı)
 
     #isPressed = {
+        leftMouse: false,
+        rightMouse: false,
+        shift: false,
         w: false, // W tuşu basılı mı
         s: false, // S tuşu basılı mı
         a: false, // A tuşu basılı mı
@@ -31,12 +34,24 @@ class UserActionHandler extends Handler {
     update = () => {
         this.#applyMovement();
         this.#applyRotation();
+        this.#playerShot();
         this.#reloadWeapon();
     };
 
     #reloadWeapon() {
         if (this.#isPressed.r) {
             this.player.reloadWeapon();
+        }
+    }
+
+    #playerShot(){
+        if(this.#isPressed.leftMouse){
+            const bullet = this.player.shoot();
+            if (bullet) {
+                this.grid.addEntity(bullet);
+                Timer.addOneTimeTask(new Task(5000, () => bullet.isAlive = false));
+                SFXPlayer.sfxs["shot"].play();
+        }
         }
     }
 
@@ -81,11 +96,20 @@ class UserActionHandler extends Handler {
         canvas.addEventListener("mousemove", (e) => {
             this.#latestClientMouseLocation = new Vector(e.offsetX, e.offsetY);
         });
-        window.addEventListener("mousedown", () => {
-            const bullet = this.player.shoot();
-            if (bullet) {
-                this.grid.addEntity(bullet);
-                SFXPlayer.sfxs["shot"].play();
+        window.addEventListener("mousedown", (e) => {
+            switch(e.button){
+                case 0:
+                    this.#isPressed.leftMouse = true;
+                case 2:
+                    this.#isPressed.rightMouse = true;
+            }
+        });
+        window.addEventListener("mouseup", (e) => {
+            switch(e.button){
+                case 0:
+                    this.#isPressed.leftMouse = false;
+                case 2:
+                    this.#isPressed.rightMouse = true;
             }
         });
     }

@@ -5,6 +5,8 @@ class Settings{
         gridCellSize : 100, // Grid hücre boyutu
         spawnerDelay : 20000, // Üreteç gecikmesi
         attackerSpawnDelay : 5000, // Saldırgan üretme gecikmesi
+        attackerShotDelay : 3000, // Saldırgan ateş etme
+        attackerFollowDistance : 500, // Saldırganın takip mesafesi
         debug : {
             showHandlerLatency : {
                 show : true, // Handler gecikmesini göster
@@ -12,11 +14,11 @@ class Settings{
                 handlerLatency : false, // Handler gecikmesini göster
             }, // Handler gecikmesini göster
             point: {
-                show: true, // Nokta gösterimini aç/kapat
+                show: false, // Nokta gösterimini aç/kapat
             },
             grid: {
                 show: true, // Grid gösterimini aç/kapat
-                showObjectCount: true, // Gridde obje sayısını göster
+                showObjectCount: false, // Gridde obje sayısını göster
             },
             showFPS : {
                 show : true, // FPS gösterimini aç/kapat

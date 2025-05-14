@@ -72,4 +72,10 @@ class ShapeFactory {
         }
         return ShapeFactory.createPolygon(lines);
     }
+
+    static polygonToShell(polygon,durability = 10,health = 100,maxHealth = 100,){ {
+        const lines = polygon.lines.map(line => new BreakableLine(line,health,maxHealth,durability));
+        return new EntityShell(lines);
+        }
+    }
 }

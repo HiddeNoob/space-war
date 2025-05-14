@@ -156,24 +156,18 @@ class Grid {
     refreshGrid(center = new Vector(0, 0)) {
         const oldCells = this.cells;
         this.cells = new Map();
-        const deletedEntites = [];
         oldCells.forEach((partition) =>
             partition.forEach((entities) => {
                 entities.forEach((entity) => {
                     const distance = entity.drawAttributes.location.distanceTo(center);
                     if(distance > this.destructRange * this.cellSize || !entity.isAlive){
                         // entity çok uzakta ise sil
-                        deletedEntites.push(entity);
                         return;
                     }; 
                     this.addEntity(entity);
                 });
             })
         );
-        if(deletedEntites.length > 0) {
-            console.log("entityler silindi");
-            console.log(deletedEntites);
-        }
     }
 
     /**

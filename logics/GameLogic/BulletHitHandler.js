@@ -9,7 +9,7 @@ class BulletHitHandler extends Handler{
             const collide = bullet.isCollidingWith(entity);
             if (collide) {
                 const {line1: bulletLine, line2: entityLine, point} = collide;
-                const impactSize = bullet.motionAttributes.velocity.copy().multiply(-1).add(entity.motionAttributes.velocity).magnitude() * 100;
+                const impactSize = bullet.motionAttributes.velocity.copy().multiply(-1).add(entity.motionAttributes.velocity).magnitude();
                 const durabilityRate = bulletLine.durability / entityLine.durability;
                 const bulletDamage = bullet.damage * impactSize * durabilityRate; // merminin verdiği hasar
                 const entityDamage = impactSize / durabilityRate; // entity'nin verdiği hasar

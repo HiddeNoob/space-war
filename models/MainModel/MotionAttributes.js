@@ -26,13 +26,9 @@ class MotionAttributes {
      * MotionAttributes oluşturucu
      * @param {number} maxAngularVelocity - Maksimum açısal hız
      * @param {number} maxVelocity - Maksimum hız
-     * @param {number} mass - Kütle
-     * @param {number} momentOfInertia - Atalet momenti
      */
-    constructor(maxAngularVelocity = 10,maxVelocity = 10, mass = 1e5,momentOfInertia = 1e8) {
-        this.mass = mass;
+    constructor(maxAngularVelocity = 10,maxVelocity = 10) {
         this.maxAngularVelocity = maxAngularVelocity;
-        this.momentOfInertia = momentOfInertia;
         this.maxVelocity = maxVelocity;
     }
     /**
@@ -48,6 +44,18 @@ class MotionAttributes {
      * @returns {MotionAttributes}
      */
     copy(){
-        return new MotionAttributes(this.maxAngularVelocity,this.maxVelocity,this.mass,this.momentOfInertia)
+        const motion = new MotionAttributes(this.maxAngularVelocity,this.maxVelocity);
+        motion.velocity = this.velocity.copy();
+        motion.acceleration = this.acceleration.copy();
+        motion.force = this.force.copy();
+        motion.mass = this.mass;
+        motion.velocitySlowdownRate = this.velocitySlowdownRate;
+        motion.angularSlowdownRate = this.angularSlowdownRate;
+        motion.angularVelocity = this.angularVelocity;
+        motion.torque = this.torque;
+        motion.momentOfInertia = this.momentOfInertia;
+        motion.maxAngularVelocity = this.maxAngularVelocity;
+        motion.maxVelocity = this.maxVelocity;
+        return motion;  
     }
 }

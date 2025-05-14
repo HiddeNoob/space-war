@@ -16,9 +16,9 @@ class Attacker extends Entity {
      * @param {Weapon} weapon - Silah
      */
     constructor(
-        drawAttributes = new DrawAttributes(PlayerShapes.DEFAULT_PLAYER),
-        motionAttributes = new MotionAttributes(1, 2),
-        weapon = new Weapon()
+        weapon = new Weapon(),
+        drawAttributes = new DrawAttributes(ShapeFactory.polygonToShell(GlobalShapes.TRIANGLE)),
+        motionAttributes = new MotionAttributes(1, 2)
     ) {
         super(drawAttributes, motionAttributes);
         this.weapon = weapon;
@@ -77,17 +77,18 @@ class Attacker extends Entity {
     /**
      * Verilen konuma doğru dönüp ateş eder
      * @param {Vector} targetLocation
+     * @return {Bullet | null} - Ateş edildiyse mermi, yoksa null
      */
     shootTo(targetLocation) {
         this.rotateTo(targetLocation);
-        this.shoot();
+        return this.shoot();
     }
 
     copy() {
         const clonedAttacker = new Attacker(
+            this.weapon.copy(),
             this.drawAttributes.copy(),
-            this.motionAttributes.copy(),
-            this.weapon.copy()
+            this.motionAttributes.copy()
         );
         clonedAttacker.thrustPower = this.thrustPower;
         clonedAttacker.rotatePower = this.rotatePower;

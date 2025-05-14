@@ -8,15 +8,16 @@ class AttackerSpawner extends Entity {
      * @param {number} spawnDelay - Spawn gecikmesi
      */
     constructor(spawnDelay = 1000,attackerToSpawn = new Attacker()){
-        super(new DrawAttributes(ShapeFactory.createRegularPolygon(8,20)),new MotionAttributes());
+        super(new DrawAttributes(ShapeFactory.polygonToShell(ShapeFactory.createRegularPolygon(8,20))),new MotionAttributes());
         this.spawnDelay = spawnDelay;
         this.attackerToSpawn = attackerToSpawn;
         this.motionAttributes.velocitySlowdownRate = 0.99;
-        this.motionAttributes.mass *= 1e2; 
     }
 
     spawnAttacker(){
         const attacker = this.attackerToSpawn.copy()
+        console.log("Attacker Spawned");
+        console.log(attacker);
         attacker.setLocation(this.drawAttributes.location.copy());
         this.#moveAttackerOuter(attacker);
         return attacker;

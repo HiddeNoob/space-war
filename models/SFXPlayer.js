@@ -32,7 +32,7 @@ class SFXPlayer{
         "menu-discard": new SoundEffect("./assets/audios/undertale_menu-return.wav"),
         "menu-select": new SoundEffect("./assets/audios/undertale_menu-select.wav"),
         "shot": new SoundEffect("./assets/audios/undertale_shot.wav"),
-        "explosion": new SoundEffect("./assets/audios/undertale_impact.wav"),
+        "explosion": new SoundEffect("./assets/audios/undertale_impact.wav",1/2),
         "coin-catch": new SoundEffect("./assets/audios/undertale_coin.wav",3/4),
         "hurt": new SoundEffect("./assets/audios/undertale_hurt.wav"),
         "spawner-appear": new SoundEffect("./assets/audios/undertale_spawner-appear.wav"),

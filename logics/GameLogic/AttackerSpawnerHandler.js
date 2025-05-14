@@ -1,17 +1,18 @@
 class AttackerSpawnerHandler extends Handler {
 
     update = () => {
-        this.moveToPlayer();
-        this.attackToPlayer();
+        this.movementOfAttacker();
+        this.onAttackerCollideWithPlayer();
     }
 
     init = () => {
-        Timer.addIntervalTask(new Task(Settings.default.spawnerDelay, () => {
+        Timer.addIntervalTask(new Task(10000, () => {
             console.log("Spawner created");
+            const gridCellSize = Settings.default.gridCellSize;
             const playerLocation = this.player.drawAttributes.location.copy();
-            playerLocation.x += Math.random() * 1000 - 500;
-            playerLocation.y += Math.random() * 1000 - 500; 
-            this.createSpawner(playerLocation.x,playerLocation.y,Settings.default.attackerSpawnDelay, new Attacker());
+            playerLocation.x += Math.random() * gridCellSize * 20 - gridCellSize * 10;
+            playerLocation.y += Math.random() * gridCellSize * 20 - gridCellSize * 10; 
+            this.createSpawner(playerLocation.x,playerLocation.y,Settings.default.attackerSpawnDelay, ReadyToUseObjects.attackers["mini-drone"]);
         }));
 
     }
@@ -32,15 +33,38 @@ class AttackerSpawnerHandler extends Handler {
         return spawner;
     }
 
-    attackToPlayer() {
+    movementOfAttacker() {
         this.grid.applyToCertainEntities(Attacker.name, (/** @type {Attacker} */ attacker) => {
-            attacker.shootTo(this.player.drawAttributes.location);         
+            let direction;
+            if(this.player.drawAttributes.location.distanceTo(attacker.drawAttributes.location) > Settings.default.attackerFollowDistance){ // oyuncudan uzaksa rasgele dolaşsın
+                direction = attacker.drawAttributes.location.copy().add(new Vector(Math.random() * 2 - 1, Math.random() * 2 - 1));
+            }else{
+                direction = this.player.drawAttributes.location.copy();
+            }
+            attacker.moveTo(direction);
+            attacker.rotateTo(direction);
         });
     }
 
-    moveToPlayer() {
-        this.grid.applyToCertainEntities(Attacker.name, (/** @type {Attacker} */ attacker) => {
-            attacker.moveTo(this.player.drawAttributes.location);         
-        });
+    onAttackerCollideWithPlayer(){
+        this.grid.applyToVisibleEntityPairs((/** @type {Attacker} */ attacker, /** @type {Player} */ player) => {
+            const collide = attacker.isCollidingWith(player)
+            if(collide){
+                const {line1 : attackerLine,line2 : playerLine,point} = collide;
+                const impactSize = attacker.motionAttributes.velocity.copy().multiply(-1).add(player.motionAttributes.velocity).magnitude();
+                const durabilityRate = attackerLine.durability / playerLine.durability;
+                const attackerDamage = impactSize * durabilityRate; // düşmanın verdiği hasar
+                playerLine.health -= attackerDamage;
+                EntityTerminater.deadEntitiesQueue.push(attacker);
+                if(playerLine.health <= 0)
+                    EntityTerminater.deadEntitiesQueue.push(player);
+
+                SFXPlayer.sfxs["explosion"].play();
+            }
+
+        },
+        this.camera,
+        Attacker.name,
+        Player.name);
     }
 }

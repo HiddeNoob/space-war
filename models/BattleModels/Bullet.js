@@ -1,7 +1,7 @@
 // Oyunda ateşlenen mermileri (bullet) temsil eden sınıf
 class Bullet extends Entity{
     /** @type {number} */
-    damage = 0; // Merminin verdiği hasar
+    damage; // Merminin verdiği hasar
 
     /**
      * Bullet oluşturucu
@@ -9,10 +9,17 @@ class Bullet extends Entity{
      * @param {DrawAttributes} drawOptions - Çizim özellikleri
      * @param {MotionAttributes} motionAttributes - Fiziksel özellikler
      */
-    constructor(damage = 5,drawOptions = new DrawAttributes(BulletShapes.DEFAULT_BULLET),motionAttributes = new MotionAttributes(10,1,1)){
+    constructor(damage = 1,drawOptions = new DrawAttributes(ShapeFactory.polygonToShell(GlobalShapes.DEFAULT_BULLET)),motionAttributes = new MotionAttributes(10,10)){
         super(drawOptions,motionAttributes);
-        this.drawAttributes.shell.setDurability(0.5);
         this.damage = damage;
+    }
+    /**
+     * @param {number} damage 
+     * @returns {this}
+     */
+    setDamage(damage){
+        this.damage = damage;
+        return this;
     }
 
     /**

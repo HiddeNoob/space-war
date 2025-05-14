@@ -9,15 +9,15 @@ class DrawAttributes {
 
     /**
      * DrawAttributes oluşturucu
-     * @param {Polygon} polygon - Entity'nin şekli
+     * @param {EntityShell} shell - Entity'nin şekli
      * @param {Vector} location - Başlangıç konumu
      * @param {number} angle - Başlangıç açısı
      * @param {string} color - Renk
      */
-    constructor(polygon, location = new Vector(50, 50), angle = 0, color = "#ffffff") { 
+    constructor(shell = ShapeFactory.polygonToShell(GlobalShapes.TRIANGLE,10,100), location = new Vector(50, 50), angle = 0, color = "#ffffff") { 
         // !!! TODO garip bir şekilde locationu x = 0 y = 0 olarak initial yaparsam fizik motoru bozuluyor ?
         this.location = location;
-        this.shell = new EntityShell(polygon.lines.map(line => new BreakableLine(line)));
+        this.shell = shell;
         this.angle = angle;
         this.color = color;
     }
@@ -28,7 +28,7 @@ class DrawAttributes {
      */
     copy() {
         return new DrawAttributes(
-            new Polygon(this.shell.lines),
+            this.shell.copy(),
             this.location.copy(),
             this.angle,
             this.color

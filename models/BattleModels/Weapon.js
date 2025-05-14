@@ -21,6 +21,12 @@ class Weapon {
     /** @type {number} */
     reloadTime; // Yeniden doldurma süresi
 
+    /** @type {number} */
+    shotDelayTime;
+
+    /** @type {number} */
+    latestShotTimestamp = Date.now();
+
     /**
      * Weapon oluşturucu
      * @param {string} weaponName - Silah adı
@@ -28,17 +34,20 @@ class Weapon {
      * @param {number} maxBulletPerMagazine - Şarjör kapasitesi
      * @param {number} remainingBullet - Başlangıç mermi sayısı
      * @param {Bullet} bulletObject - Mermi şablonu
+     * @param {number} reloadTime - Şarjör Değiştirme Süresi (ms)
      */
     constructor(
         weaponName = "Weapon",
         bulletEjectPower = 50,
         maxBulletPerMagazine = 30,
+        shotPerSecond = 10,
         reloadTime = 1000,
         remainingBullet = 30,
         bulletObject = new Bullet(3,
-            new DrawAttributes(ShapeFactory.createRectangle(10,3)),
+            new DrawAttributes(ShapeFactory.polygonToShell(ShapeFactory.createRectangle(10,3))),
             new MotionAttributes(1,5))
     ) {
+        this.shotDelayTime = 1000 / shotPerSecond;
         this.weaponName = weaponName;
         this.bulletEjectPower = bulletEjectPower;
         this.maxBulletPerMagazine = maxBulletPerMagazine;
@@ -54,9 +63,11 @@ class Weapon {
      * @returns {Bullet | null} - Ateş edildiyse mermi, yoksa null
      */
     shoot(bulletLocation, angle) {
-        if (this.remainingBullet <= 0) {
+        // eğer şarjörde mermi yoksa veya ateş etme süresi dolmadıysa sıkma
+        if (this.remainingBullet <= 0 || (Date.now() - this.latestShotTimestamp <= this.shotDelayTime)) {
             return null;
         }
+        this.latestShotTimestamp = Date.now();
         const bullet = this.bulletObject.copy();
         const bulletSpeed = this.bulletEjectPower / bullet.motionAttributes.mass;
         // Yön vektörü hesaplanır
@@ -65,7 +76,18 @@ class Weapon {
         bullet.drawAttributes.location = bulletLocation.copy();
         bullet.drawAttributes.angle = angle;
         this.remainingBullet--;
+        this.remainingShotDelayTime = this.shotDelayTime;
         return bullet;
+    }
+
+    /**
+     * Örnek merminin hasar değerini ayarlar
+     * @param {number} damage - Merminin hasar değeri
+     * @returns {this}
+     */
+    setDamage(damage) {
+        this.bulletObject.setDamage(damage);
+        return this;
     }
 
     reload() {
@@ -86,6 +108,7 @@ class Weapon {
             this.weaponName,
             this.bulletEjectPower,
             this.maxBulletPerMagazine,
+            1000 / this.shotDelayTime,
             this.reloadTime,
             this.remainingBullet,
             this.bulletObject.copy()

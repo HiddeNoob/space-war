@@ -9,7 +9,7 @@ class Game{
     screenWidth = 0; // Ekran genişliği
     screenHeight = 0; // Ekran yüksekliği
     
-    #isPaused = false; // Oyun duraklatıldı mı?
+    isPaused = false; // Oyun duraklatıldı mı?
 
     /**
      * Game nesnesi oluşturur
@@ -25,19 +25,17 @@ class Game{
 
         // Başlangıçta bazı entity'ler ekleniyor
         this.canvasObject.grid.addEntity(new Entity(
-            new DrawAttributes(ShapeFactory.createRectangle(200,50), new Vector(100, 100), Math.PI / 2),
+            new DrawAttributes(ShapeFactory.polygonToShell(ShapeFactory.createRectangle(200,50)), new Vector(100, 100), Math.PI / 2),
         ));
-        for(let i = 0; i < 50; i++){
-            this.canvasObject.grid.addEntity(Coin.create(Math.random() * 500 + 300,Math.random() * 500 + 300,20));
-        }
+
         this.canvasObject.grid.addEntity(
         new Entity(
-            new DrawAttributes(ShapeFactory.createRegularPolygon(5,20), new Vector(420, 300),Math.PI / 2),
+            new DrawAttributes(ShapeFactory.polygonToShell(ShapeFactory.createRegularPolygon(5,20)), new Vector(420, 300),Math.PI / 2),
         )
         );
         this.canvasObject.grid.addEntity(
         new Entity(
-            new DrawAttributes(GlobalShapes.RECTANGLE, new Vector(220, 180)),
+            new DrawAttributes(ShapeFactory.polygonToShell(GlobalShapes.RECTANGLE), new Vector(220, 180)),
         )
         );
         Debugger.setup(this, ctx);
@@ -50,10 +48,10 @@ class Game{
      * Oyun döngüsünü başlatır
      */
     run(){
-        global.latestPaintTimestamp = Date.now() - global.latestPaintTimestamp;
+        global.latestPaintTimestamp = Date.now() - global.pageInitTimestamp;
         this.gameLogic.init();
         const task = (timestamp) => {
-            if(this.#isPaused) return;
+            if(this.isPaused) return;
             global.previousLatestPaintTimestamp = global.latestPaintTimestamp;
             global.latestPaintTimestamp = timestamp;
             const deltaTime = (timestamp - global.previousLatestPaintTimestamp)
@@ -76,6 +74,8 @@ class Game{
             // Tüm objeler çizilir
             this.canvasObject.drawObjects(timestamp);
 
+            this.canvasObject.showEntityInformation(this.player)
+
 
             self.requestAnimationFrame(task);
         }
@@ -86,14 +86,14 @@ class Game{
      * Oyunu duraklatır
      */
     pause(){
-        this.#isPaused = true;
+        this.isPaused = true;
     }
 
     /**
      * Oyunu devam ettirir
      */
     continue(){
-        this.#isPaused = false;
+        this.isPaused = false;
         this.run();
     }
 

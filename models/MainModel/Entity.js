@@ -1,5 +1,10 @@
 // Oyun içindeki tüm varlıkların (entity) temelini oluşturan ana sınıf
 class Entity{
+
+
+    /** @type {((timestamp : number) => void)[]} */
+    onDeconstruct = [] // Entity yok edildiğinde çağrılır
+
     /** @type {MotionAttributes} */
     motionAttributes // Fiziksel özellikler
     /** @type {DrawAttributes} */
@@ -15,7 +20,7 @@ class Entity{
      * @param {DrawAttributes} drawAttributes - Çizim özellikleri
      * @param {MotionAttributes} motionAttributes - Fiziksel özellikler
      */
-    constructor(drawAttributes = new DrawAttributes(GlobalShapes.RECTANGLE),motionAttributes = new MotionAttributes()){
+    constructor(drawAttributes = new DrawAttributes(),motionAttributes = new MotionAttributes()){
         this.drawAttributes = drawAttributes;
         this.motionAttributes = motionAttributes;
         this.#calculateAttributes();
@@ -70,10 +75,24 @@ class Entity{
         return this;
     }
 
+    /**
+     * Bütün çizgilerin şuanki canını ve maksimumum canını verilen değere eşitler
+     * @param {number} health 
+     * @returns {this}
+     */
+    setHealth(health){
+        this.drawAttributes.shell.lines.forEach((line) => (line.health = health) && (line.maxHealth = health));
+        return this;
+    }
 
-
-
-
+    /**
+     * Bütün çizgilerin şuanki dayanıklılığını verilen değere eşitler
+     * @param {number} durability 
+     */
+    setDurability(durability){
+        this.drawAttributes.shell.lines.forEach((line) => line.durability = durability);
+        return this;
+    }
 
     /**
      * İki entity'nin kabuk çizgileri arasında çarpışma olup olmadığını kontrol eder

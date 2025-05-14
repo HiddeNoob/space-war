@@ -31,6 +31,7 @@ class Polygon {
         center.multiply(1 / this.#lines.length);
         return center;
     }
+
     
     /** 
      * Çokgeni ölçeklendirir

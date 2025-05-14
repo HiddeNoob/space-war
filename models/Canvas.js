@@ -130,4 +130,16 @@ class Canvas{
             this.#ctx.stroke();
         }
     }
+    
+    /**
+     * verilen entity'nin kırılabilir çizgilerinin kalan canını ve dayanıklılığını gösterir
+     * @param {Entity} entity 
+     */
+    showEntityInformation(entity){
+        this.writeText("durability, health", 40, this.height - 100);
+        for(let i = 0; i < entity.drawAttributes.shell.lines.length; i++){
+            const line = entity.drawAttributes.shell.lines[i];
+            this.writeText(`${line.durability.toFixed(2)} ${line.health.toFixed(2)}`, 40, this.height - 100 + (i+1) * 20);
+        }
+    }
 }
