@@ -3,30 +3,35 @@ class Settings{
     static default = {
         volume : 50, // Varsayılan ses seviyesi
         gridCellSize : 100, // Grid hücre boyutu
+        difficulty : 1, // Oyun zorluğu
         spawnerDelay : 20000, // Üreteç gecikmesi
         attackerSpawnDelay : 5000, // Saldırgan üretme gecikmesi
-        attackerShotDelay : 3000, // Saldırgan ateş etme
-        attackerFollowDistance : 500, // Saldırganın takip mesafesi
+        attackerFollowDistance : 300, // Saldırganın takip mesafesi
+        debugMode : false, // Debug modu
         debug : {
-            showHandlerLatency : {
-                show : true, // Handler gecikmesini göster
-                totalLatency : false, // Toplam gecikmeyi göster
-                handlerLatency : false, // Handler gecikmesini göster
-            }, // Handler gecikmesini göster
-            point: {
-                show: false, // Nokta gösterimini aç/kapat
-            },
+            fps: true,
+            latency: true,
             grid: {
-                show: true, // Grid gösterimini aç/kapat
-                showObjectCount: false, // Gridde obje sayısını göster
+                entityCount: true,
+                location: true,
             },
-            showFPS : {
-                show : true, // FPS gösterimini aç/kapat
-                showLatency : true, // Gecikmeyi göster
-            }, // FPS gösterimini aç/kapat
-            showVector : {
-                show : false, // Vektör gösterimini aç/kapat
-            }
+            physicVectors: true,
+            LinePoints: true,
+            entityBaseLine: true,
         },
+        
+        /**
+         * Zorluk değeri alarak oyunun parametrelerini günceller
+         * @param {Number} difficulty 1 ile 3 arasında zorluk 
+         */
+        setDifficulty(difficulty){
+            this.difficulty = difficulty;
+            this.spawnerDelay = 30000 - (difficulty * 5000); // Zorluk arttıkça üretim süresi azalır
+            this.attackerSpawnDelay = 10000 - (difficulty * 2000); // Zorluk arttıkça saldırgan üretim süresi azalır
+            this.attackerFollowDistance = (difficulty * 500); // Zorluk arttıkça takip mesafesi artar
+            ReadyToUseObjects.attackers["mini-drone"].setDurability(difficulty * 2);
+        }
     }
+
+    static 
 }

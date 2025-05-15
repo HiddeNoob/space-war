@@ -25,10 +25,10 @@ const global = {
     game: null
 };
 
-const debug = Settings.default.debug;
 function showMainMenu() {
     const menuManager = new MenuManager(document.getElementById("menu"));
     const mainMenu = new Menu("Main Menu");
+
     mainMenu.addOption(Component.create("Start Game", () => {
         const player = ReadyToUseObjects.players["DEFAULT_PLAYER"].copy();
         const painter = new Canvas(ctx, canvas, new Camera(player, canvas.width, canvas.height));
@@ -37,14 +37,23 @@ function showMainMenu() {
         menuManager.terminate();
         window.removeEventListener("resize", resizeCanvas);
     }));
+
     const settings = new Menu("Settings");
+
     settings.addOption(new ValueHolder("Volume", (newVolume) => {
         Settings.default.volume = newVolume;
         SFXPlayer.setVolume(Settings.default.volume / 100);
     }, 0, 100));
+
     settings.addOption(new ValueHolder("Difficulty", (newDifficulty) => {
-        Settings.default.difficulty = newDifficulty;
+        Settings.default.setDifficulty(newDifficulty);
+        console.log(Settings.default);
     }, 1, 3));
+
+    settings.addOption(new CheckBox("Debug Mode",(newDebug) => {
+        Settings.default.debugMode = newDebug;
+    }));
+
     mainMenu.addOption(settings);
     menuManager.push(mainMenu);
 }

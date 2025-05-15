@@ -23,7 +23,7 @@ class ValueHolder extends Component {
         this.title = title;
         this.#min = min;
         this.#max = max;
-        this.#value = Math.floor( (min + max) / 2);
+
         this.actions.onRight = () => {
             this.increaseValue();
             this.actions.onUpdate()
@@ -33,6 +33,9 @@ class ValueHolder extends Component {
             this.actions.onUpdate()
         };
         this.#updateDisplay();
+
+        this.#value = Math.floor( (min + max) / 2);
+        this.actions.onUpdate();
     }
 
     /**

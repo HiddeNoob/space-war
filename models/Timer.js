@@ -32,6 +32,13 @@ class Timer {
     }
 
     /**
+     * @param {Task} task 
+     */
+    static removeIntervalTask(task) {
+        this.#intervalTasks.delete(task);
+    }
+
+    /**
      * Bu fonksiyon, her zamanlayıcının kalan süresini günceller ve süresi dolmuş olanları çağırır. 
      * Her frame'de çağrılmalıdır.
      */

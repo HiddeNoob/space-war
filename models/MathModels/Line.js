@@ -25,7 +25,7 @@ class Line {
      * @param {number} lineWidth - Çizgi kalınlığı
      * @param {string} lineColor - Çizgi rengi
      */
-    constructor(x1, y1, x2, y2, lineWidth = 1, lineColor = "#fff") {
+    constructor(x1, y1, x2, y2, lineWidth = 1, lineColor = "#ffffff") {
         this.startPoint = new Vector(x1, y1);
         this.endPoint = new Vector(x2, y2);
         this.lineWidth = lineWidth;

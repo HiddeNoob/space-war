@@ -1,14 +1,14 @@
 
 class AttackerSpawner extends Entity {
-
-    spawnDelay = 1000; // Spawn gecikmesi
+    /**@type {Number} */
+    spawnDelay; // Spawn gecikmesi
 
     /**
      * @param {Attacker} attackerToSpawn - Spawn edilecek düşman
      * @param {number} spawnDelay - Spawn gecikmesi
      */
-    constructor(spawnDelay = 1000,attackerToSpawn = new Attacker()){
-        super(new DrawAttributes(ShapeFactory.polygonToShell(ShapeFactory.createRegularPolygon(8,20))),new MotionAttributes());
+    constructor(spawnDelay = 5000,attackerToSpawn = new Attacker(),durability = 1,health = 1){
+        super(new DrawAttributes(ShapeFactory.polygonToShell(ShapeFactory.createRegularPolygon(8,20),durability,health,health)),new MotionAttributes());
         this.spawnDelay = spawnDelay;
         this.attackerToSpawn = attackerToSpawn;
         this.motionAttributes.velocitySlowdownRate = 0.99;

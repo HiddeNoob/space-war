@@ -21,6 +21,20 @@ class Debugger {
         Debugger.#game = game;
         Debugger.#camera = game.canvasObject.camera;
         Debugger.#debug = Settings.default.debug;
+
+        const setObjectValuesFalse = (object) => {
+            for (const key in object) {
+                if (typeof object[key] === "object") {
+                    setObjectValuesFalse(object[key]);
+                } else {
+                    object[key] = false;
+                }
+            }
+        }
+
+        if(!Settings.default.debugMode){
+            setObjectValuesFalse(Debugger.#debug);
+        }
     }
 
 
@@ -29,7 +43,7 @@ class Debugger {
      * @param {Vector} vector - Gösterilecek vektör
      */
     static showPoint(vector) {
-        if (!Debugger.#debug.point.show) return;
+        if (!Debugger.#debug.showPoint) return;
         let v = vector;
         v = Debugger.#camera.worldToScreen(vector.x, vector.y);
         Debugger.#ctx.beginPath();
@@ -45,7 +59,7 @@ class Debugger {
      * @param {number} [kalinlik] - Çizgi kalınlığı
      */
     static drawVector(vector, startVector = new Vector(0, 0), color = "white", kalinlik = 4) {
-        if (!Debugger.#debug?.showVector.show) return;
+        if (!Debugger.#debug?.showVector) return;
         let s = startVector;
         s = Debugger.#camera.worldToScreen(startVector.x, startVector.y);
         Debugger.#ctx.strokeStyle = color;
@@ -64,6 +78,7 @@ class Debugger {
         const cellSize = grid.cellSize;
         Debugger.#ctx.lineWidth = 1;
         Debugger.#ctx.strokeStyle = "white";
+        Debugger.#ctx.font = "10px serif";
         Debugger.#ctx.beginPath();
         // Ekranda görünen alanın world koordinatlarını bul
         const topLeft = this.#camera.screenToWorld(0, 0);
@@ -82,15 +97,18 @@ class Debugger {
                 selectedEntities?.forEach((set) => totalEntities += set.size);
                 // Kamera offsetini uygula
                 const screenPos = this.#camera.worldToScreen(x, y);
-                if (Debugger.#debug.grid.showObjectCount) {
+                if (Debugger.#debug.grid.entityCount) {
                     Debugger.#ctx.fillText(`${totalEntities} ${x},${y}`, screenPos.x + 5, screenPos.y + 10);
                 }
-                Debugger.#ctx.moveTo(screenPos.x, screenPos.y);
+
                 const screenPosRight = this.#camera.worldToScreen(x + cellSize, y);
-                Debugger.#ctx.lineTo(screenPosRight.x, screenPosRight.y);
                 const screenPosDown = this.#camera.worldToScreen(x, y + cellSize);
-                Debugger.#ctx.moveTo(screenPosDown.x, screenPosDown.y);
-                Debugger.#ctx.lineTo(screenPos.x, screenPos.y);
+                
+                Debugger.#ctx.moveTo(screenPos.x, screenPos.y);
+                Debugger.#ctx.lineTo(screenPosRight.x, screenPosRight.y);
+                Debugger.#ctx.moveTo(screenPos.x, screenPos.y);
+                Debugger.#ctx.lineTo(screenPosDown.x, screenPosDown.y);
+
             }
         }
         Debugger.#ctx.stroke();
@@ -102,6 +120,7 @@ class Debugger {
      * @param {number} lastPaintTimestamp - Son çizim zamanı
      */
     static showFPS(timestamp, lastPaintTimestamp) {
+        if (!Debugger.#debug.fps) return;
         Debugger.#ctx.font = "12px serif";
         Debugger.#ctx.fillStyle = "white";
         Debugger.#ctx.fillText((`${(1000 / (timestamp - lastPaintTimestamp)).toFixed(2)} FPS`), 10, 20);

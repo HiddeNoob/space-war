@@ -9,6 +9,7 @@ class CollisionHandler extends Handler {
         this.grid.applyToVisibleEntityPairs(
             (entity1, entity2) => {
                 if (!(entity1.canCollide && entity2.canCollide)) return;
+                if (entity1.isAlive === false || entity2.isAlive === false) return;
                 this.#makeCollisions(entity1, entity2);
                 this.#resolvePenetration(entity1, entity2);
             },

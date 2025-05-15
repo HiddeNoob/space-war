@@ -27,10 +27,12 @@ class GameLogic extends Handler{
     update = () => {
         this.grid.applyToAllEntities((entity) => {
             entity.motionAttributes.resetInstantVectors();
-            if (debug.showPoint) {
-                const vector = entity.drawAttributes
-                    .getActualShell()
-                    .lines[0].normalVector(entity.drawAttributes.location);
+
+            const vector = entity.drawAttributes
+                .getActualShell()
+                .lines[0].normalVector(entity.drawAttributes.location);
+            
+            if(Settings.default.debug.entityBaseLine){
                 Debugger.drawVector(vector.multiply(20), entity.drawAttributes.location);
             }
         });
@@ -39,10 +41,10 @@ class GameLogic extends Handler{
             let a = Date.now();
             handler.update()
             let b = Date.now();
-            if(debug.showHandlerLatency){
-                ctx.fillText(`${handler.constructor.name}: ${(b-a).toFixed(2)} ms`,10,i * 20 + 20);
-                i+= 1
+            if(Settings.default.debug.latency){
+                Debugger.writeText(`${handler.constructor.name}: ${(b-a).toFixed(2)} ms`,10,i * 20 + 20);
             }
+            i+= 1
         });
     };
 

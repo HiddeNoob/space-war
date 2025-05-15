@@ -37,6 +37,17 @@ class Attacker extends Entity {
     }
 
     /**
+     * - Her karede verilen oran kadar hızla çarpar.
+     * - speed *= slowdownRate
+     * @param {Number} value 
+     * @returns {this}
+     */
+    setVelocitySlowdownRate(value) {
+        this.motionAttributes.velocitySlowdownRate = value;
+        return this;
+    }
+
+    /**
      * Verilen konuma doğru döner
      * @param {Vector} targetLocation
      */

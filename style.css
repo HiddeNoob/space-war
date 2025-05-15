@@ -59,8 +59,10 @@ canvas{
     height: fit-content;
     height: fit-content;
 }
-
-
+.CheckBoxComponent input[type="checkbox"]:disabled {
+  accent-color: red; /* Checkbox rengi burada belirleniyor */
+  cursor: not-allowed;
+}
 
 
 .selected{

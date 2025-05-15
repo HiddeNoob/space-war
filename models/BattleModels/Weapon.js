@@ -64,9 +64,12 @@ class Weapon {
      */
     shoot(bulletLocation, angle) {
         // eğer şarjörde mermi yoksa veya ateş etme süresi dolmadıysa sıkma
-        if (this.remainingBullet <= 0 || (Date.now() - this.latestShotTimestamp <= this.shotDelayTime)) {
+        if (this.remainingBullet <= 0 ||
+            Date.now() - this.latestShotTimestamp <= this.shotDelayTime ||
+            this.isReloading
+            ) 
             return null;
-        }
+        
         this.latestShotTimestamp = Date.now();
         const bullet = this.bulletObject.copy();
         const bulletSpeed = this.bulletEjectPower / bullet.motionAttributes.mass;

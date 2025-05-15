@@ -97,33 +97,32 @@ class Canvas{
      */
     drawEntity(entity){
         // Kamera offsetini uygula
-        this.#drawPolygon(entity.drawAttributes.getActualShell());
+        const shell = entity.drawAttributes.getActualShell();
+
+        shell.lines.forEach((line) => {
+            line.startPoint = this.camera.worldToScreen(line.startPoint.x, line.startPoint.y);
+            line.endPoint = this.camera.worldToScreen(line.endPoint.x, line.endPoint.y);
+            if(entity.canCollide){
+                const health = 50 + (line.health / line.maxHealth )  * 50; 
+                // 50 ise kırmızı 100 ise beyaz
+                line.lineColor = `hsl(0 100% ${health}%)`;
+            }
+        })
+
+        this.#drawPolygon(shell);
     }
 
     /**
      * Çokgen veya çizgi dizisini çizer
-     * @param {Polygon | Line[] | BreakableLine[]} polygon - Çizilecek şekil
+     * @param {Polygon} polygon - Çizilecek şekil
      */
     #drawPolygon(polygon) {
-        for (let i = 0; i < (polygon instanceof Polygon ? polygon.lines.length : polygon.length); i++) {
-            const currentLine = polygon instanceof Polygon ? polygon.lines[i] : polygon[i];
-
+        for (let i = 0; i < polygon.lines.length; i++) {
+            const currentLine = polygon.lines[i];
             let point1 = currentLine.startPoint;
             let point2 = currentLine.endPoint;
-
-            // oyuncunun offsetini uygula
-            point1 = this.camera.worldToScreen(point1.x, point1.y);
-            point2 = this.camera.worldToScreen(point2.x, point2.y);
-
+            this.#ctx.strokeStyle = currentLine.lineColor;
             this.#ctx.lineWidth = currentLine.lineWidth;
-            if(currentLine instanceof BreakableLine){
-                const health = 50 + (currentLine.health / currentLine.maxHealth )  * 50; 
-                // 50 ise kırmızı 100 ise beyaz
-                
-                this.#ctx.strokeStyle = `hsl(0 100% ${health}%)`;
-            }else{
-                this.#ctx.strokeStyle = currentLine.lineColor;
-            }
             this.#ctx.beginPath();
             this.#ctx.moveTo(point1.x, point1.y); 
             this.#ctx.lineTo(point2.x, point2.y); 
@@ -135,11 +134,20 @@ class Canvas{
      * verilen entity'nin kırılabilir çizgilerinin kalan canını ve dayanıklılığını gösterir
      * @param {Entity} entity 
      */
-    showEntityInformation(entity){
-        this.writeText("durability, health", 40, this.height - 100);
+    showEntityInformation(entity,x,y){
+        this.writeText("durability, health", x, y);
         for(let i = 0; i < entity.drawAttributes.shell.lines.length; i++){
             const line = entity.drawAttributes.shell.lines[i];
-            this.writeText(`${line.durability.toFixed(2)} ${line.health.toFixed(2)}`, 40, this.height - 100 + (i+1) * 20);
+            this.writeText(`${line.durability.toFixed(2)} ${line.health.toFixed(2)}`, x, y + (i+1) * 20);
         }
+    }
+
+    /**
+     * @param {Player} player 
+     */
+    showPlayerInformation(player){
+        this.showEntityInformation(player,40,this.height - 100);
+        this.writeText(`money ${player.money}`, 40, this.height - 120);
+        
     }
 }

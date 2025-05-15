@@ -14,13 +14,26 @@ class BulletHitHandler extends Handler{
                 const bulletDamage = bullet.damage * impactSize * durabilityRate; // merminin verdiği hasar
                 const entityDamage = impactSize / durabilityRate; // entity'nin verdiği hasar
 
-                bulletLine.health -= entityDamage;
-                entityLine.health -= bulletDamage;
+                
+                let minimumShotToDestroyEntity = entityLine.health / bulletDamage
+                let minimumShotToDestroyBullet = bulletLine.health / entityDamage
+
+                if(minimumShotToDestroyBullet > minimumShotToDestroyEntity){
+                    EntityTerminater.deadEntitiesQueue.push(entity);
+                    bulletLine.health -= entityDamage;
+                    if(bulletLine.health <= 0){
+                        EntityTerminater.deadEntitiesQueue.push(bullet);
+                    }
+                }else{
+                    EntityTerminater.deadEntitiesQueue.push(bullet);
+                    entityLine.health -= bulletDamage;
+                    if(entityLine.health <= 0){
+                        EntityTerminater.deadEntitiesQueue.push(entity);
+                    }
+                }
 
                 if(bulletLine.health <= 0)
-                    EntityTerminater.deadEntitiesQueue.push(bullet);
                 if(entityLine.health <= 0)
-                    EntityTerminater.deadEntitiesQueue.push(entity);
 
                 SFXPlayer.sfxs["hurt"].play();
 

@@ -8,7 +8,7 @@ class Coin extends Entity{
      * @param {DrawAttributes} drawAttributes - Çizim özellikleri
      * @param {MotionAttributes} motionAttributes - Fiziksel özellikler
      */
-    constructor(value,drawAttributes = new DrawAttributes(ShapeFactory.createRegularPolygon(8,20)),motionAttributes = new MotionAttributes()){
+    constructor(value,drawAttributes = new DrawAttributes(ShapeFactory.polygonToShell(ShapeFactory.createRegularPolygon(8,20))),motionAttributes = new MotionAttributes()){
         super(drawAttributes,motionAttributes);
         this.value = value;
         this.motionAttributes.velocitySlowdownRate = 0.99
@@ -23,7 +23,7 @@ class Coin extends Entity{
      * @param {number} size - Coin boyutu
      * @returns {Coin}
      */
-    static create(x,y,value = 1,size = 20){
-        return new Coin(value,new DrawAttributes(ShapeFactory.createRegularPolygon(10,size),new Vector(x,y)))
+    static create(x,y,value = 1,size = 5){
+        return new Coin(value,new DrawAttributes(ShapeFactory.polygonToShell(ShapeFactory.createRegularPolygon(10,size,"yellow",2)),new Vector(x,y)))
     }
 }

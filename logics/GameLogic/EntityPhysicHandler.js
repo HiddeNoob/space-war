@@ -65,7 +65,7 @@ class EntityPhysicHandler extends Handler {
     #updateAngularAcceleration(entity, dt) {
         const motion = entity.motionAttributes;
         const angularAcceleration = motion.torque / motion.momentOfInertia;
-        motion.angularVelocity += angularAcceleration * dt;
+        motion.angularVelocity += angularAcceleration;
     }
 
     /**

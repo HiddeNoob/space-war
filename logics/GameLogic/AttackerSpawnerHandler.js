@@ -6,7 +6,7 @@ class AttackerSpawnerHandler extends Handler {
     }
 
     init = () => {
-        Timer.addIntervalTask(new Task(10000, () => {
+        Timer.addIntervalTask(new Task(Settings.default.spawnerDelay, () => {
             console.log("Spawner created");
             const gridCellSize = Settings.default.gridCellSize;
             const playerLocation = this.player.drawAttributes.location.copy();
@@ -24,12 +24,17 @@ class AttackerSpawnerHandler extends Handler {
      * @param {Attacker} attackerToSpawn 
      */
     createSpawner(spawnerX,spawnerY,nextSpawnDelay,attackerToSpawn) {
-        const spawner = new AttackerSpawner(nextSpawnDelay,attackerToSpawn).setLocation(new Vector(spawnerX,spawnerY));
+        const spawner = new AttackerSpawner(nextSpawnDelay,attackerToSpawn,20,70).setLocation(new Vector(spawnerX,spawnerY));
         this.grid.addEntity(spawner);
-        Timer.addIntervalTask(new Task(nextSpawnDelay, () => {
+        const task = new Task(nextSpawnDelay, () => {
+            if(!spawner.isAlive){
+                Timer.removeIntervalTask(task);
+                return;
+            };
             const attacker = spawner.spawnAttacker();
             this.grid.addEntity(attacker);
-        }));
+        })
+        Timer.addIntervalTask(task);
         return spawner;
     }
 

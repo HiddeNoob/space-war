@@ -74,7 +74,7 @@ class Game{
             // Tüm objeler çizilir
             this.canvasObject.drawObjects(timestamp);
 
-            this.canvasObject.showEntityInformation(this.player)
+            this.canvasObject.showPlayerInformation(this.player)
 
 
             self.requestAnimationFrame(task);
@@ -98,16 +98,8 @@ class Game{
     }
 
     #debug(timestamp){
-        if(Settings.default.debug.showFPS.showLatency) {
-            Debugger.writeText(`${(global.latestPaintTimestamp - global.previousLatestPaintTimestamp).toFixed(2)} ms`, 100, 20);
-        }
-        if (Settings.default.debug.showFPS) {
-            Debugger.showFPS(timestamp, this.canvasObject.lastPaintTimestamp);
-            
-        }
-        if (Settings.default.debug.grid.show) {
-            Debugger.showGrid(this.canvasObject.grid);
-        }
+        Debugger.showFPS(timestamp, this.canvasObject.lastPaintTimestamp);
+        Debugger.showGrid(this.canvasObject.grid);
     }
 
 
