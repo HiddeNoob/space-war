@@ -20,6 +20,9 @@ class BulletHitHandler extends Handler{
 
                 if(minimumShotToDestroyBullet > minimumShotToDestroyEntity){
                     EntityTerminater.deadEntitiesQueue.push(entity);
+                    const location = entity.drawAttributes.location;
+                    const coin = Coin.create(location.x, location.y, entityLine.durability,entityLine.durability + 2);
+                    this.grid.addEntity(coin);
                     bulletLine.health -= entityDamage;
                     if(bulletLine.health <= 0){
                         EntityTerminater.deadEntitiesQueue.push(bullet);
@@ -29,11 +32,13 @@ class BulletHitHandler extends Handler{
                     entityLine.health -= bulletDamage;
                     if(entityLine.health <= 0){
                         EntityTerminater.deadEntitiesQueue.push(entity);
+                        const location = entity.drawAttributes.location;
+                        const coin = Coin.create(location.x, location.y, entityLine.durability,entityLine.durability + 2);
+                        this.grid.addEntity(coin);
                     }
                 }
 
-                if(bulletLine.health <= 0)
-                if(entityLine.health <= 0)
+
 
                 SFXPlayer.sfxs["hurt"].play();
 
