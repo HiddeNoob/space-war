@@ -100,8 +100,10 @@ class UserActionHandler extends Handler {
             switch(e.button){
                 case 0:
                     this.#isPressed.leftMouse = true;
+                    break;
                 case 2:
                     this.#isPressed.rightMouse = true;
+                    break;
             }
         });
         window.addEventListener("mouseup", (e) => {

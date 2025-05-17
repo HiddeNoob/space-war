@@ -2,7 +2,7 @@
 class Entity{
 
 
-    /** @type {((timestamp : number) => void)[]} */
+    /** @type {(() => void)[]} */
     onDeconstruct = [] // Entity yok edildiğinde çağrılır
 
     /** @type {MotionAttributes} */

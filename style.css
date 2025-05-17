@@ -22,12 +22,12 @@ canvas{
 
 .menu{
     position: absolute;
-    top: 25vh;
-    left: 25vw;
-    width: 50vw;
-    height: 50vh;
+    top: 20vh;
+    left: 15vw;
+    width: 70vw;
+    height: 60vh;
     display: grid;
-    grid-template-rows: repeat(3, 1fr);
+    grid-template-rows: 0.8fr repeat(3, 1fr);
     grid-template-columns: 60%;
     text-align: center;
     justify-content: center;
@@ -73,4 +73,11 @@ canvas{
     transition: background-color 2s cubic-bezier(0,.72,0,.92);
     transition: letter-spacing 2s cubic-bezier(0,.72,0,.92);
     transform: scale(1.05);
+}
+
+.menu-title{
+    color: #8dc6c1;
+    font-size: 2rem;
+    letter-spacing: 0px;
+    text-align: center;
 }

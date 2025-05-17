@@ -162,6 +162,7 @@ class Grid {
                     const distance = entity.drawAttributes.location.distanceTo(center);
                     if(distance > this.destructRange * this.cellSize || !entity.isAlive){
                         // entity çok uzakta ise sil
+                        entity.onDeconstruct.forEach((callback) => callback());
                         return;
                     }; 
                     this.addEntity(entity);
@@ -207,11 +208,6 @@ class Grid {
      * @param {string} class2 - İkinci entity sınıfı adı (opsiyonel)
      */
     applyToCloseEntityPairs(callback, class1 = null, class2 = null) {
-
-
-
-
-
 
         const processedEntities = new Map();
 

@@ -9,6 +9,8 @@ class Settings{
         attackerFollowDistance : 300, // Saldırganın takip mesafesi
         debugMode : false, // Debug modu
         debug : {
+            location: true,
+            collision: true,
             fps: true,
             latency: true,
             grid: {
@@ -26,9 +28,9 @@ class Settings{
          */
         setDifficulty(difficulty){
             this.difficulty = difficulty;
-            this.spawnerDelay = 30000 - (difficulty * 5000); // Zorluk arttıkça üretim süresi azalır
-            this.attackerSpawnDelay = 10000 - (difficulty * 2000); // Zorluk arttıkça saldırgan üretim süresi azalır
-            this.attackerFollowDistance = (difficulty * 500); // Zorluk arttıkça takip mesafesi artar
+            this.spawnerDelay = 20000 - (difficulty * 5000); // Zorluk arttıkça üretim süresi azalır
+            this.attackerSpawnDelay = 8000 - (difficulty * 2000); // Zorluk arttıkça saldırgan üretim süresi azalır
+            this.attackerFollowDistance = (difficulty * 300); // Zorluk arttıkça takip mesafesi artar
             ReadyToUseObjects.attackers["mini-drone"].setDurability(difficulty * 2);
         }
     }

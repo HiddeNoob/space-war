@@ -17,7 +17,7 @@ class ReadyToUseObjects{
     }
 
     static players = {
-        "DEFAULT_PLAYER" : new Player(500,1,1,this.weapons.SNIPER.copy(),new DrawAttributes(ShapeFactory.polygonToShell(GlobalShapes.TRIANGLE.copy().scaleBy(2),8,10,10)))
+        "DEFAULT_PLAYER" : new Player(0,1,1,this.weapons.SNIPER.copy(),new DrawAttributes(ShapeFactory.polygonToShell(GlobalShapes.TRIANGLE.copy().scaleBy(2),8,10,10)))
     }
 
 

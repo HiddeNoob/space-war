@@ -22,7 +22,7 @@ class Game{
         this.screenHeight = canvasObject.height;
         this.player = player;
         this.canvasObject.grid.addEntity(this.player);
-
+        
         // Başlangıçta bazı entity'ler ekleniyor
         this.canvasObject.grid.addEntity(new Entity(
             new DrawAttributes(ShapeFactory.polygonToShell(ShapeFactory.createRectangle(200,50)), new Vector(100, 100), Math.PI / 2),
@@ -75,6 +75,8 @@ class Game{
             this.canvasObject.drawObjects(timestamp);
 
             this.canvasObject.showPlayerInformation(this.player)
+
+            this.canvasObject.paintGameMap(this.player);
 
 
             self.requestAnimationFrame(task);

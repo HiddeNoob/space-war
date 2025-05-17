@@ -28,7 +28,8 @@ class CollisionHandler extends Handler {
             /** @type {Vector} */
             const collidePoint = new Vector();
             collidingLines.forEach((array) => {
-                Debugger.showPoint(array[2]);
+                if(Settings.default.debug.collision)
+                    Debugger.showPoint(array[2],"green");
                 collidePoint.add(array[2])
             })
             collidePoint.multiply(1 / collidingLines.length);
@@ -47,8 +48,8 @@ class CollisionHandler extends Handler {
             const goreceliHiz = v2.copy().subtract(v1);
 
             // normal seçiminde hala kararsızım
-            const n1 = e1L.normalVector();
-            const n2 = e2L.normalVector();
+            const n1 = e1L.normalVector(entity1.drawAttributes.location);
+            const n2 = e2L.normalVector(entity2.drawAttributes.location);
             const n1Dot = goreceliHiz.dot(n1);
             const n2Dot = goreceliHiz.dot(n2);
 
@@ -73,11 +74,13 @@ class CollisionHandler extends Handler {
                 entity2.motionAttributes.angularVelocity += yaricap2.crossProduct(impulse) / entity2.motionAttributes.momentOfInertia;
             }
             // Debug çizimleri
-            Debugger.showPoint(collidePoint);
-            Debugger.drawVector(yaricap1,merkez1)
-            Debugger.drawVector(yaricap2,merkez2)
-            Debugger.drawVector(carpismaNormali.copy().multiply(5),collidePoint,"green",6)
-            Debugger.drawVector(impulse.copy().multiply(5),collidePoint,"red",2);
+            if(Settings.default.debug.collision){
+                Debugger.showPoint(collidePoint,"purple",2);
+                Debugger.drawVector(yaricap1,merkez1,"white",2)
+                Debugger.drawVector(yaricap2,merkez2,"white",2)
+                Debugger.drawVector(carpismaNormali.copy().multiply(30),collidePoint,"green",6)
+                Debugger.drawVector(impulse.copy().multiply(5),collidePoint,"red",2);
+            }
         }
     }
 

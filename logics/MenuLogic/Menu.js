@@ -1,8 +1,11 @@
 // Menüde birden fazla seçeneği (component) yöneten ana menü sınıfı
 class Menu extends Component{
+    /** @type {TextComponent} */
+    #title
     /** @type {Component[]} */
     #options = [] // Menüdeki seçenekler
     #index = 0 // Seçili olan seçeneğin indeksi
+    
 
     /**
      * Menu oluşturucu
@@ -12,6 +15,9 @@ class Menu extends Component{
         const htmlElement = document.createElement("div")
         htmlElement.innerText = menuName;
         super(htmlElement);
+        this.#title = new TextComponent(menuName);
+        this.#title.HTMLComponent.classList.add("menu-title");
+
 
     }
 
@@ -22,6 +28,10 @@ class Menu extends Component{
     addOption(component){
         this.#options.push(component);
         this.changeSelectedComponentBackground();
+    }
+
+    get title(){
+        return this.#title;
     }
 
     /**

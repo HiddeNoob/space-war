@@ -9,7 +9,7 @@ class Polygon {
      */
     constructor(lines) {
         this.#lines = lines;
-        this.move(this.#getCenter().multiply(-1));
+        this.move(this.getCenter().multiply(-1));
     }
 
     /**
@@ -23,7 +23,7 @@ class Polygon {
      * Çokgenin merkezini hesaplar
      * @returns {Vector}
      */
-    #getCenter() {
+    getCenter() {
         let center = new Vector(0, 0);
         for (let i = 0; i < this.#lines.length; i++) {
             center.add(this.#lines[i].startPoint);   
@@ -71,7 +71,7 @@ class Polygon {
      * @param {number} angle
      */
     rotate(angle) {
-        const center = this.#getCenter();
+        const center = this.getCenter();
         this.#lines.forEach((line) => line.rotateLine(angle, center));
         return this;
     }
@@ -114,7 +114,7 @@ class Polygon {
      * @returns {Vector[]}
     */
     getNormals() {
-        return this.#lines.map(line => line.normalVector(this.#getCenter()));
+        return this.#lines.map(line => line.normalVector(this.getCenter()));
     }
 
     /**

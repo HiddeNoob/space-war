@@ -15,6 +15,9 @@ class EntityTerminater extends Handler{
             /** @type {Entity} */
             const deadEntity = EntityTerminater.deadEntitiesQueue.pop();
             deadEntity.isAlive = false;
+            deadEntity.onDeconstruct.forEach((callback) => {
+                callback();
+            });
             if(!(deadEntity instanceof Bullet)){
                 SFXPlayer.sfxs["explosion"].play();
             }

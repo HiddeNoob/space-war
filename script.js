@@ -15,7 +15,14 @@ const resizeCanvas = () => {
     canvas.style.height = `${window.innerHeight}px`;
 };
 
-window.addEventListener("resize", resizeCanvas);
+function addMenuToHTML(){
+        const htmlMenu = document.createElement("div");
+        htmlMenu.classList.add("menu");
+        document.body.append(htmlMenu);
+        return htmlMenu;
+}
+
+
 
 const global = {
     previousLatestPaintTimestamp: 0,
@@ -26,15 +33,35 @@ const global = {
 };
 
 function showMainMenu() {
-    const menuManager = new MenuManager(document.getElementById("menu"));
-    const mainMenu = new Menu("Main Menu");
+    window.addEventListener("resize", resizeCanvas);
+    const htmlMenu = addMenuToHTML();
+    const menuManager = new MenuManager(htmlMenu);
+    const mainMenu = new Menu("Space War");
 
     mainMenu.addOption(Component.create("Start Game", () => {
         const player = ReadyToUseObjects.players["DEFAULT_PLAYER"].copy();
+
         const painter = new Canvas(ctx, canvas, new Camera(player, canvas.width, canvas.height));
         global.game = new Game(painter, player);
         global.game.run();
         menuManager.terminate();
+
+        player.onDeconstruct.push(() => { // on death
+            const htmlMenu = addMenuToHTML();
+            const deathMenuManager = new MenuManager(htmlMenu);
+            const deathMenu = new Menu(`Score: ${player.money}`);
+            deathMenu.addOption(Component.create("Restart", () => {
+                deathMenuManager.terminate();
+                painter.clearCanvas();
+                showMainMenu();
+            }));
+            deathMenu.addOption(Component.create("Exit", () => {
+                window.close();
+            }));
+            deathMenuManager.push(deathMenu);
+            global.game.pause();
+
+        });
         window.removeEventListener("resize", resizeCanvas);
     }));
 
@@ -47,7 +74,6 @@ function showMainMenu() {
 
     settings.addOption(new ValueHolder("Difficulty", (newDifficulty) => {
         Settings.default.setDifficulty(newDifficulty);
-        console.log(Settings.default);
     }, 1, 3));
 
     settings.addOption(new CheckBox("Debug Mode",(newDebug) => {

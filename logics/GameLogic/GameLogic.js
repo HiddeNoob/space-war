@@ -28,13 +28,10 @@ class GameLogic extends Handler{
         this.grid.applyToAllEntities((entity) => {
             entity.motionAttributes.resetInstantVectors();
 
-            const vector = entity.drawAttributes
-                .getActualShell()
-                .lines[0].normalVector(entity.drawAttributes.location);
-            
-            if(Settings.default.debug.entityBaseLine){
-                Debugger.drawVector(vector.multiply(20), entity.drawAttributes.location);
-            }
+            if(Settings.default.debug.location)
+                Debugger.showPoint(entity.drawAttributes.location);
+
+
         });
         let i = 1;
         this.handlers.forEach((handler) => {

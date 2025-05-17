@@ -18,6 +18,7 @@ class MenuManager {
         
         // Klavye event handler'ı tanımlanır
         this.#handler = (e) => {
+            console.log(this);
             const currMenu = this.peek();
             const selectedComponent = currMenu.currentSelectedComponent;
             const key = e.key.toLowerCase();
@@ -60,8 +61,9 @@ class MenuManager {
                 default:
                     isUpdated = false;
             }
-            currMenu.changeSelectedComponentBackground();
-            isUpdated && this.updateOnChange();
+            if(isUpdated){
+                currMenu.changeSelectedComponentBackground();
+            }
         };
         document.addEventListener("keydown", this.#handler);
     }
@@ -98,19 +100,10 @@ class MenuManager {
      */
     #drawCurrentState() {
         this.#rootNode.innerHTML = "";
+        this.#rootNode.appendChild(this.peek().title.HTMLComponent);
         this.peek().options.forEach((element) => {
             this.#rootNode.appendChild(element.HTMLComponent);
         });
-    }
-
-    /**
-     * Seçili component değiştiğinde arka planı günceller
-     */
-    updateOnChange(){
-        this.peek().options.forEach((element) => {
-            this.#rootNode.classList.remove("selected");
-        });
-        this.peek().currentSelectedComponent.HTMLComponent.classList.add("selected");
     }
 
     /**
@@ -119,6 +112,6 @@ class MenuManager {
     terminate() {
         document.removeEventListener("keydown", this.#handler);
         this.#rootNode.innerHTML = "";
-        this.#rootNode.parentElement.removeChild(this.#rootNode);
+        this.#rootNode.remove();
     }
 }
