@@ -1,7 +1,7 @@
 // Oyun ayarlarını ve debug seçeneklerini tutan sınıf
 class Settings{
     static default = {
-        volume : 50, // Varsayılan ses seviyesi
+        volume : 25, // Varsayılan ses seviyesi
         gridCellSize : 100, // Grid hücre boyutu
         difficulty : 1, // Oyun zorluğu
         spawnerDelay : 20000, // Üreteç gecikmesi

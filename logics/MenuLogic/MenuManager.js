@@ -18,7 +18,6 @@ class MenuManager {
         
         // Klavye event handler'ı tanımlanır
         this.#handler = (e) => {
-            console.log(this);
             const currMenu = this.peek();
             const selectedComponent = currMenu.currentSelectedComponent;
             const key = e.key.toLowerCase();

@@ -1,18 +1,20 @@
 // Oyuncu hareketleri ve kullanıcı etkileşimlerini yöneten handler sınıfı
 class UserActionHandler extends Handler {
+
     /** @type {Vector} */
     #latestClientMouseLocation = new Vector(0, 0); // Son mouse konumu (world koordinatı)
 
     #isPressed = {
-        leftMouse: false,
-        rightMouse: false,
-        shift: false,
         w: false, // W tuşu basılı mı
         s: false, // S tuşu basılı mı
         a: false, // A tuşu basılı mı
         d: false, // D tuşu basılı mı
         r: false, // R tuşu basılı mı
         esc: false, // Escape tuşu basılı mı
+        1: false,
+        2: false,
+        3: false,
+        4: false
     };
 
     /**
@@ -36,6 +38,7 @@ class UserActionHandler extends Handler {
         this.#applyRotation();
         this.#playerShot();
         this.#reloadWeapon();
+        this.#changeWeapon();
     };
 
     #reloadWeapon() {
@@ -51,8 +54,27 @@ class UserActionHandler extends Handler {
                 this.grid.addEntity(bullet);
                 Timer.addOneTimeTask(new Task(5000, () => bullet.isAlive = false));
                 SFXPlayer.sfxs["shot"].play();
+            }
         }
+    }
+
+
+    #changeWeapon() {
+        switch (true) {
+            case this.#isPressed[1]:
+                this.player.changeWeapon(0);
+                break;
+            case this.#isPressed[2]:
+                this.player.changeWeapon(1);
+                break;
+            case this.#isPressed[3]:
+                this.player.changeWeapon(2);
+                break;
+            case this.#isPressed[4]:
+                this.player.changeWeapon(3);
+                break;
         }
+
     }
 
     /**

@@ -23,21 +23,6 @@ class Game{
         this.player = player;
         this.canvasObject.grid.addEntity(this.player);
         
-        // Başlangıçta bazı entity'ler ekleniyor
-        this.canvasObject.grid.addEntity(new Entity(
-            new DrawAttributes(ShapeFactory.polygonToShell(ShapeFactory.createRectangle(200,50)), new Vector(100, 100), Math.PI / 2),
-        ));
-
-        this.canvasObject.grid.addEntity(
-        new Entity(
-            new DrawAttributes(ShapeFactory.polygonToShell(ShapeFactory.createRegularPolygon(5,20)), new Vector(420, 300),Math.PI / 2),
-        )
-        );
-        this.canvasObject.grid.addEntity(
-        new Entity(
-            new DrawAttributes(ShapeFactory.polygonToShell(GlobalShapes.RECTANGLE), new Vector(220, 180)),
-        )
-        );
         Debugger.setup(this, ctx);
         // Oyun mantığı başlatılır
         this.gameLogic = new GameLogic(this.canvasObject.grid,this.canvasObject.camera,this.player);
@@ -74,9 +59,11 @@ class Game{
             // Tüm objeler çizilir
             this.canvasObject.drawObjects(timestamp);
 
-            this.canvasObject.showPlayerInformation(this.player)
+            
+            this.canvasObject.showPlayerInformation(20,this.screenHeight - 130,this.player)
 
-            this.canvasObject.paintGameMap(this.player);
+            const margin = 15;
+            this.canvasObject.paintMiniMap(this.screenWidth - 200 - margin,this.screenHeight - 200 - margin,this.player);
 
 
             self.requestAnimationFrame(task);

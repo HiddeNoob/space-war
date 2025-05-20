@@ -13,7 +13,7 @@ class AttackerSpawnerHandler extends Handler {
             playerLocation.x += Math.random() * gridCellSize * 20 - gridCellSize * 10;
             playerLocation.y += Math.random() * gridCellSize * 20 - gridCellSize * 10; 
             this.createSpawner(playerLocation.x,playerLocation.y,Settings.default.attackerSpawnDelay, ReadyToUseObjects.attackers["mini-drone"]);
-        }));
+        },0));
 
     }
     /**
@@ -28,12 +28,13 @@ class AttackerSpawnerHandler extends Handler {
         this.grid.addEntity(spawner);
         const task = new Task(nextSpawnDelay, () => {
             if(!spawner.isAlive){
+                console.log("Spawner removed");
                 Timer.removeIntervalTask(task);
                 return;
             };
             const attacker = spawner.spawnAttacker();
             this.grid.addEntity(attacker);
-        })
+        },nextSpawnDelay / 2)
         Timer.addIntervalTask(task);
         return spawner;
     }

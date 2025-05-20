@@ -4,13 +4,15 @@ class CheckBox extends Component{
 
     /**
      * CheckBox oluşturucu
+     * @param {boolean} initalValue - Başlangıç değeri (işaretli mi?)
      * @param {(value : boolean) => void} onSelect - Seçim değiştiğinde çağrılacak fonksiyon
      */
-    constructor(title,onSelect){
+    constructor(title,initalValue,onSelect){
         const div = document.createElement("div");
         div.classList.add("CheckBox");
         super(div);
         this.title = title;
+        this.#value = initalValue;
 
         // Seçim değiştiğinde state güncellenir ve callback çalışır
         this.actions.onSelect = () => {

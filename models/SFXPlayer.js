@@ -2,11 +2,19 @@ class SoundEffect{
     /**
      * @param {string} src - Ses kaynağı
      */
-    constructor(src,dxMultiplier = 1){
+    constructor(src,dxMultiplier = 0.1){
         this.src = src;
         this.audio = new Audio(this.src);
-        this.audio.volume = dxMultiplier * (Settings.default.volume / 100);
+        this.dxMultiplier = dxMultiplier;
+        this.setVolume(Settings.default.volume);
         this.audio.loop = false;
+    }
+
+    /**
+     * @param {number} volume 1 - 100 arasında ses seviyesi 
+     */
+    setVolume(volume){
+        this.audio.volume = volume * this.dxMultiplier / 100;
     }
 
     play(){
@@ -32,20 +40,20 @@ class SFXPlayer{
         "menu-discard": new SoundEffect("./assets/audios/undertale_menu-return.wav"),
         "menu-select": new SoundEffect("./assets/audios/undertale_menu-select.wav"),
         "shot": new SoundEffect("./assets/audios/undertale_shot.wav"),
-        "explosion": new SoundEffect("./assets/audios/undertale_impact.wav",1/2),
-        "coin-catch": new SoundEffect("./assets/audios/undertale_coin.wav",3/4),
+        "explosion": new SoundEffect("./assets/audios/undertale_impact.wav",0.08),
+        "coin-catch": new SoundEffect("./assets/audios/undertale_coin.wav",0.08),
         "hurt": new SoundEffect("./assets/audios/undertale_hurt.wav"),
         "spawner-appear": new SoundEffect("./assets/audios/undertale_spawner-appear.wav"),
         "speed-up": new SoundEffect("./assets/audios/undertale_speed-up.wav"),
     }
 
     /**
-     * @param {number} volume 
+     * @param {number} volume 1 - 100 arasında ses seviyesi
      */
-    static setVolume(volume){
+    static setAllEffectVolumes(volume){
         for(const sfxName in SFXPlayer.sfxs){
             const sfx = SFXPlayer.sfxs[sfxName];
-            sfx.audio.volume = volume;
+            sfx.setVolume(volume);
         }
     }
 }

@@ -1,7 +1,10 @@
 // Saldırı yapabilen (ateş edebilen) entity'leri temsil eden ana sınıf
 class Attacker extends Entity {
-    /** @type {Weapon} */
-    weapon; // Saldırı silahı
+    /** @type {Weapon[]} */
+    weapons; // Saldırı silahı
+
+    /** @type {Number} */
+    currentWeaponIndex = 0; // Geçerli silah indeksi
 
     /** @type {number} */
     thrustPower; // İleri itme gücü
@@ -13,15 +16,15 @@ class Attacker extends Entity {
      * Attacker oluşturucu
      * @param {DrawAttributes} drawAttributes - Çizim özellikleri
      * @param {MotionAttributes} motionAttributes - Fiziksel özellikler
-     * @param {Weapon} weapon - Silah
+     * @param {Weapon[]} weapons - Sahip Olduğu silahlar
      */
     constructor(
-        weapon = new Weapon(),
+        weapons = [new Weapon()],
         drawAttributes = new DrawAttributes(ShapeFactory.polygonToShell(GlobalShapes.TRIANGLE)),
         motionAttributes = new MotionAttributes(1, 2)
     ) {
         super(drawAttributes, motionAttributes);
-        this.weapon = weapon;
+        this.weapons = weapons;
         this.motionAttributes.angularSlowdownRate = 0.85;
         this.thrustPower = motionAttributes.mass * 1e-2;
         this.rotatePower = motionAttributes.momentOfInertia * 1e-2;
@@ -60,7 +63,7 @@ class Attacker extends Entity {
     }
 
     reloadWeapon() {
-        this.weapon.reload();
+        this.weapons[this.currentWeaponIndex].reload();
     }
 
     /**
@@ -72,7 +75,7 @@ class Attacker extends Entity {
         const bulletLocation = this.drawAttributes.location
             .copy()
             .add(tipOfAttacker.copy().rotate(bulletAngle).multiply(2));
-        const bullet = this.weapon.shoot(bulletLocation, bulletAngle);
+        const bullet = this.weapons[this.currentWeaponIndex].shoot(bulletLocation, bulletAngle);
         if (bullet) {
             const bulletMomentum = bullet.motionAttributes.mass * bullet.motionAttributes.velocity.magnitude();
             const deltaVelocity = new Vector(
@@ -95,9 +98,17 @@ class Attacker extends Entity {
         return this.shoot();
     }
 
+    changeWeapon(index) {
+        if (index < 0 || index >= this.weapons.length) {
+            return;
+        }
+        this.currentWeaponIndex = index;
+    }
+
     copy() {
+        const clonedWeapons = this.weapons.map(weapon => weapon.copy());
         const clonedAttacker = new Attacker(
-            this.weapon.copy(),
+            clonedWeapons,
             this.drawAttributes.copy(),
             this.motionAttributes.copy()
         );

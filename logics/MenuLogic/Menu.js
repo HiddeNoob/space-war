@@ -9,7 +9,7 @@ class Menu extends Component{
 
     /**
      * Menu oluşturucu
-     * @param {string} menuName - Menü başlığı
+     * @param {string} menuName - Menü başlığı, menü açıldığında üstte görünen isim
      */
     constructor(menuName){
         const htmlElement = document.createElement("div")

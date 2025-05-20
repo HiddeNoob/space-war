@@ -74,10 +74,11 @@ class Task{
      * Zamanlayıcı oluşturucu
      * @param {function} callback - Zamanlayıcı tamamlandığında çağrılacak fonksiyon
      * @param {number} delay - Zamanlayıcı süresi
+     * @param {number} remainingTime - ilk kalan süre
      */
-    constructor(delay,callback){
+    constructor(delay,callback,remainingTime = delay){
         this.#callback = callback;
-        this.#remainingTime = delay;
+        this.#remainingTime = remainingTime;
         this.#delay = delay;
     }
 
@@ -85,6 +86,10 @@ class Task{
         this.#remainingTime = this.#delay;
     }
 
+    /**
+     * Kalan süreyi azaltır
+     * @param {Number} time - Geçen süre
+     */
     passTime(time){
         this.#remainingTime -= time;
     }

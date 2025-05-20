@@ -12,7 +12,7 @@ class ValueHolder extends Component {
      * @param {number} min - Minimum değer
      * @param {number} max - Maksimum değer
      */
-    constructor(title, onUpdate, min, max) {
+    constructor(title, onUpdate, min, max, initalValue = (min + max) / 2) {
         const item = document.createElement("div");
         item.classList.add("valueHolder");
         super(item);
@@ -21,6 +21,7 @@ class ValueHolder extends Component {
             this.#updateDisplay();
         }
         this.title = title;
+
         this.#min = min;
         this.#max = max;
 
@@ -34,7 +35,7 @@ class ValueHolder extends Component {
         };
         this.#updateDisplay();
 
-        this.#value = Math.floor( (min + max) / 2);
+        this.#value = initalValue;
         this.actions.onUpdate();
     }
 

@@ -19,12 +19,14 @@ class Handler{
      * Handler oluşturucu
      * @param {Grid} grid - Oyun grid'i
      * @param {Player} player - Oyuncu
+     * @param {Camera} camera - Oyun kamerası
      */
     constructor(grid,player,camera){
         this.grid = grid;
         this.player = player;
         this.camera = camera;
     }
+
 
 
 }

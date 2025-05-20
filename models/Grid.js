@@ -161,6 +161,7 @@ class Grid {
                 entities.forEach((entity) => {
                     const distance = entity.drawAttributes.location.distanceTo(center);
                     if(distance > this.destructRange * this.cellSize || !entity.isAlive){
+                        entity.isAlive = false;
                         // entity çok uzakta ise sil
                         entity.onDeconstruct.forEach((callback) => callback());
                         return;

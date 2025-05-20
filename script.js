@@ -1,20 +1,20 @@
 const canvas = /** @type {HTMLCanvasElement} */ (document.getElementById('canvas'));
 /** @type {CanvasRenderingContext2D} */
 const ctx = canvas.getContext('2d');
-console.log(ReadyToUseObjects.players)
-// Önce canvas boyutunu ayarla
-canvas.width = window.innerWidth * 1;
-canvas.height = window.innerHeight * 1;
-canvas.style.width = `${window.innerWidth}px`;
-canvas.style.height = `${window.innerHeight}px`;
 
+// Önce canvas boyutunu ayarla
 const resizeCanvas = () => {
     canvas.width = window.innerWidth * 1;
     canvas.height = window.innerHeight * 1;
     canvas.style.width = `${window.innerWidth}px`;
     canvas.style.height = `${window.innerHeight}px`;
 };
+resizeCanvas();
 
+/**
+ * Body içerisinde menüyü çizmek için bir div oluşturur.
+ * @returns {HTMLDivElement}
+ */
 function addMenuToHTML(){
         const htmlMenu = document.createElement("div");
         htmlMenu.classList.add("menu");
@@ -69,14 +69,14 @@ function showMainMenu() {
 
     settings.addOption(new ValueHolder("Volume", (newVolume) => {
         Settings.default.volume = newVolume;
-        SFXPlayer.setVolume(Settings.default.volume / 100);
-    }, 0, 100));
+        SFXPlayer.setAllEffectVolumes(Settings.default.volume);
+    }, 0, 100, 20));
 
     settings.addOption(new ValueHolder("Difficulty", (newDifficulty) => {
         Settings.default.setDifficulty(newDifficulty);
     }, 1, 3));
 
-    settings.addOption(new CheckBox("Debug Mode",(newDebug) => {
+    settings.addOption(new CheckBox("Debug Mode",false,(newDebug) => {
         Settings.default.debugMode = newDebug;
     }));
 
