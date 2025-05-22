@@ -10,7 +10,7 @@ class UserActionHandler extends Handler {
         a: false, // A tuşu basılı mı
         d: false, // D tuşu basılı mı
         r: false, // R tuşu basılı mı
-        esc: false, // Escape tuşu basılı mı
+        escape: false, // Escape tuşu basılı mı
         1: false,
         2: false,
         3: false,
@@ -39,7 +39,27 @@ class UserActionHandler extends Handler {
         this.#playerShot();
         this.#reloadWeapon();
         this.#changeWeapon();
+        this.#isPressed.escape && this.#gamePause();
     };
+
+    #gamePause(){
+        if(global.game.isPaused) return;
+        global.game.pause();
+        // Menü oluştur ve göster
+        const htmlMenu = addMenuToHTML();
+        const menuManager = new MenuManager(htmlMenu);
+        const pauseMenu = new Menu("Paused");
+        pauseMenu.addOption(Component.create("Continue", () => {
+            menuManager.terminate();
+            global.game.continue();
+        }));
+        pauseMenu.addOption(Component.create("Main Menu", () => {
+            global.game.canvasObject.clearCanvas();
+            menuManager.terminate();
+            showMainMenu();
+        }));
+        menuManager.push(pauseMenu);
+    }
 
     #reloadWeapon() {
         if (this.#isPressed.r) {
@@ -136,5 +156,9 @@ class UserActionHandler extends Handler {
                     this.#isPressed.rightMouse = true;
             }
         });
+        document.addEventListener("visibilitychange", () => {
+            this.#gamePause();
+        });
+        
     }
 }

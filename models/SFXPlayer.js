@@ -1,13 +1,15 @@
 class SoundEffect{
     /**
      * @param {string} src - Ses kaynağı
+     * @param {number} dxMultiplier - Sesin inital çarpanı
+     * @param {boolean} loop - Sesin döngüde çalıp çalmayacağı
      */
-    constructor(src,dxMultiplier = 0.1){
+    constructor(src,dxMultiplier = 0.1,loop = false){
         this.src = src;
         this.audio = new Audio(this.src);
+        this.audio.loop = loop;
         this.dxMultiplier = dxMultiplier;
         this.setVolume(Settings.default.volume);
-        this.audio.loop = false;
     }
 
     /**
@@ -18,17 +20,25 @@ class SoundEffect{
     }
 
     play(){
-        if(!this.audio.ended){ // ses bitmemişse echo yapmak için yeni ses oluşturdum
-            const copy = new Audio(this.src); 
-            copy.volume = this.audio.volume;
-            copy.play();
+        if(this.audio.loop){
+            this.audio.paused && this.audio.play();
             return;
+        }else{
+            if(!this.audio.ended){ // ses bitmemişse echo yapmak için yeni ses oluşturdum
+                
+                const copy = new Audio(this.src); 
+                copy.volume = this.audio.volume;
+                copy.play();
+                return;
+            }
+            this.audio.currentTime = 0;
+            this.audio.play();
         }
-        this.audio.currentTime = 0;
-        this.audio.play();
+
+
     }
 
-    stop(){
+    pause(){
         this.audio.pause();
     }
 }
@@ -45,6 +55,7 @@ class SFXPlayer{
         "hurt": new SoundEffect("./assets/audios/undertale_hurt.wav"),
         "spawner-appear": new SoundEffect("./assets/audios/undertale_spawner-appear.wav"),
         "speed-up": new SoundEffect("./assets/audios/undertale_speed-up.wav"),
+        "background": new SoundEffect("./assets/audios/hopes_and_dreams.mp3",0.1,true),
     }
 
     /**

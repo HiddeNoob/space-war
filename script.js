@@ -40,7 +40,7 @@ function showMainMenu() {
 
     mainMenu.addOption(Component.create("Start Game", () => {
         const player = ReadyToUseObjects.players["DEFAULT_PLAYER"].copy();
-
+        SFXPlayer.sfxs["background"].play();
         const painter = new Canvas(ctx, canvas, new Camera(player, canvas.width, canvas.height));
         global.game = new Game(painter, player);
         global.game.run();
@@ -70,7 +70,7 @@ function showMainMenu() {
     settings.addOption(new ValueHolder("Volume", (newVolume) => {
         Settings.default.volume = newVolume;
         SFXPlayer.setAllEffectVolumes(Settings.default.volume);
-    }, 0, 100, 20));
+    }, 0, 100, 50));
 
     settings.addOption(new ValueHolder("Difficulty", (newDifficulty) => {
         Settings.default.setDifficulty(newDifficulty);

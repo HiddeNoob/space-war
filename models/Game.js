@@ -26,7 +26,7 @@ class Game{
         Debugger.setup(this, ctx);
         // Oyun mantığı başlatılır
         this.gameLogic = new GameLogic(this.canvasObject.grid,this.canvasObject.camera,this.player);
-
+        this.gameLogic.init();
     }
 
     /**
@@ -34,7 +34,6 @@ class Game{
      */
     run(){
         global.latestPaintTimestamp = Date.now() - global.pageInitTimestamp;
-        this.gameLogic.init();
         const task = (timestamp) => {
             if(this.isPaused) return;
             global.previousLatestPaintTimestamp = global.latestPaintTimestamp;
@@ -76,6 +75,7 @@ class Game{
      */
     pause(){
         this.isPaused = true;
+        SFXPlayer.sfxs["background"].pause();
     }
 
     /**
@@ -83,6 +83,7 @@ class Game{
      */
     continue(){
         this.isPaused = false;
+        SFXPlayer.sfxs["background"].play();
         this.run();
     }
 
