@@ -6,6 +6,7 @@ Space War, 2D bir uzay savaş oyunudur. Amacınız, uzay geminizi geliştirerek 
 ## Nasıl Oynanır?
 - **W-A-S-D**: Hareket, Menü Yönetim
 - **Space-Enter** Menüde Seçenek Seçme
+- **Escape-Backspace** Menüden Çıkma, Oyunu Durdurma
 - **Mouse**: Nişan alma (dönme)
 - **Sol Mouse**: Ateş etme
 - **R**: Şarjör değiştir (reload)
@@ -20,13 +21,18 @@ Space War, 2D bir uzay savaş oyunudur. Amacınız, uzay geminizi geliştirerek 
 - Oyun içi ses efektleri
 - Menü ve ayarlar
 
-## Oyun İçi Görseller
+## Kurulum ve Çalıştırma
+- `index.html` dosyasını bir tarayıcıda açarak oyunu başlatabilirsiniz.
+#### Veya
+- [bu adresten](https://hiddenoob.github.io/space-war/) doğrudan oynayabilirsiniz.
+
+## Oyundan Görseller
 ### Ana Menü
 ![Ana Menü](assets/images/screenshot1.png)
 ### Oyun İçi
 ![Oyun İçi Görsel](assets/images/screenshot2.png)
 
-## Kurulum ve Çalıştırma
-- `index.html` dosyasını bir tarayıcıda açarak oyunu başlatabilirsiniz.
-#### Veya
-- [bu adresten](https://hiddenoob.github.io/space-war/) doğrudan oynayabilirsiniz.
+### Proje Tanıtımı
+[![Watch the video](https://img.youtube.com/vi/w-e-tQbOAzs/default.jpg)](https://youtu.be/w-e-tQbOAzs?si=AuEZmGHW1VPIJO2m)
+
+
