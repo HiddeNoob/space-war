@@ -50,8 +50,10 @@ function showMainMenu() {
             const htmlMenu = addMenuToHTML();
             const deathMenuManager = new MenuManager(htmlMenu);
             const deathMenu = new Menu(`Score: ${player.money}`);
+            SFXPlayer.sfxs["death-menu"].play();                
             deathMenu.addOption(Component.create("Restart", () => {
                 deathMenuManager.terminate();
+                SFXPlayer.sfxs["death-menu"].pause();
                 painter.clearCanvas();
                 showMainMenu();
             }));

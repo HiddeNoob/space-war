@@ -56,6 +56,7 @@ class SFXPlayer{
         "spawner-appear": new SoundEffect("./assets/audios/undertale_spawner-appear.wav"),
         "speed-up": new SoundEffect("./assets/audios/undertale_speed-up.wav"),
         "background": new SoundEffect("./assets/audios/hopes_and_dreams.mp3",0.1,true),
+        "death-menu": new SoundEffect("./assets/audios/death.mp3",0.1,true),
     }
 
     /**
