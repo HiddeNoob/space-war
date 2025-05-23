@@ -77,7 +77,7 @@ class Debugger {
         Debugger.#ctx.fillStyle = "white";
         Debugger.#ctx.strokeStyle = "white";
         Debugger.#ctx.lineWidth = 1;
-        Debugger.#ctx.font = "10px serif";
+        Debugger.#ctx.font = "10px undertale-font";
     }
 
     /**

@@ -144,7 +144,7 @@ class Canvas{
         this.#ctx.fillStyle = "white";
         this.#ctx.strokeStyle = "white";
         this.#ctx.lineWidth = 1;
-        this.#ctx.font = "10px serif";
+        this.#ctx.font = "12px undertale-font";
     }
     
     /**
@@ -197,19 +197,19 @@ class Canvas{
             const isCurrent = (i === player.currentWeaponIndex);
 
             // Silah adı
-            this.#ctx.font = isCurrent ? "bold 18px Arial" : "16px Arial";
+            this.#ctx.font = isCurrent ? "bold 18px undertale-font" : "16px undertale-font";
             this.#ctx.fillStyle = isCurrent ? "#FFD700" : "#AAA";
             this.writeText(`${isCurrent ? '▶ ' : ''}${weapon.weaponName}`, x, weaponY);
 
             // Mermi durumu
-            this.#ctx.font = "14px Arial";
+            this.#ctx.font = "14px undertale-font";
             this.#ctx.fillStyle = weapon.remainingBullet > 0 ? "#00FF00" : "#FF3333";
 
             const ammoX = x + 10 + weapon.weaponName.length * 15;
             
             // Yeniden doldurma durumu
             if (weapon.isReloading) {
-                this.#ctx.font = "italic 14px Arial";
+                this.#ctx.font = "italic 14px undertale-font";
                 this.#ctx.fillStyle = "#FF8800";
                 this.writeText("Reloading...", ammoX, weaponY);
             }else if(isCurrent){

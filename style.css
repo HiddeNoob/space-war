@@ -1,6 +1,6 @@
 *{
     user-select: none;
-    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    font-family: 'undertale-font', sans-serif;
     font-size: 1.2rem;
     letter-spacing: 2px;
 }
@@ -18,6 +18,11 @@ body{
 
 canvas{
     background-color: #000000;
+}
+
+@font-face {
+  font-family: undertale-font;
+  src: url(assets/fonts/PixelOperator-Bold.ttf);
 }
 
 .menu{
