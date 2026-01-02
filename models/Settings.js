@@ -34,6 +34,4 @@ class Settings{
             ReadyToUseObjects.attackers["mini-drone"].setDurability(difficulty * 2);
         }
     }
-
-    static 
 }
