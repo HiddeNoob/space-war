@@ -1,45 +1,84 @@
 class SoundEffect{
+    static bufferCache = new Map();
+    static audioContext = new AudioContext();
+
     /**
      * @param {string} src - Ses kaynağı
      * @param {number} dxMultiplier - Sesin inital çarpanı
      * @param {boolean} loop - Sesin döngüde çalıp çalmayacağı
      */
     constructor(src,dxMultiplier = 0.1,loop = false){
-        this.src = src;
-        this.audio = new Audio(this.src);
-        this.audio.loop = loop;
+        this.loop = loop;
         this.dxMultiplier = dxMultiplier;
-        this.setVolume(Settings.default.volume);
+        this.buffer = null;
+        this.sourceNode = null;
+        this.startedAt = 0;
+        this.pausedAt = 0;
+        this.isPlaying = false;
+        this.volume = Settings.default.volume * dxMultiplier / 100;
+        this.gainNode = SoundEffect.audioContext.createGain();
+        this.gainNode.gain.value = this.volume;
+        this.gainNode.connect(SoundEffect.audioContext.destination);
+        this.bufferReady = SoundEffect.loadBuffer(src).then(/** @param {AudioBuffer} buffer */ (buffer) => {
+            this.buffer = buffer;
+            return buffer;
+        });
+    }
+
+    /** @param {string} src @returns {Promise<AudioBuffer>} */
+    static loadBuffer(src){
+        if(!SoundEffect.bufferCache.has(src)){
+            const bufferPromise = fetch(src)
+                .then((response) => response.arrayBuffer())
+                .then((audioData) => SoundEffect.audioContext.decodeAudioData(audioData));
+            SoundEffect.bufferCache.set(src, bufferPromise);
+        }
+        return SoundEffect.bufferCache.get(src);
     }
 
     /**
-     * @param {number} volume 1 - 100 arasında ses seviyesi 
+     * @param {number} volume 1 - 100 arasında ses seviyesi
      */
     setVolume(volume){
-        this.audio.volume = volume * this.dxMultiplier / 100;
+        this.volume = volume * this.dxMultiplier / 100;
+        this.gainNode.gain.value = this.volume;
     }
 
     play(){
-        if(this.audio.loop){
-            this.audio.paused && this.audio.play();
+        SoundEffect.audioContext.resume();
+        if(!this.buffer){
+            this.bufferReady.then(() => this.play());
             return;
-        }else{
-            if(!this.audio.ended){ // ses bitmemişse echo yapmak için yeni ses oluşturdum
-                
-                const copy = new Audio(this.src); 
-                copy.volume = this.audio.volume;
-                copy.play();
-                return;
-            }
-            this.audio.currentTime = 0;
-            this.audio.play();
+        }
+        if(this.loop && this.isPlaying){
+            return;
         }
 
-
+        const sourceNode = SoundEffect.audioContext.createBufferSource();
+        sourceNode.buffer = this.buffer;
+        sourceNode.loop = this.loop;
+        sourceNode.connect(this.gainNode);
+        sourceNode.onended = () => {
+            if(sourceNode === this.sourceNode && !this.loop){
+                this.isPlaying = false;
+                this.pausedAt = 0;
+            }
+        };
+        const offset = this.loop ? this.pausedAt % this.buffer.duration : 0;
+        sourceNode.start(0, offset);
+        this.sourceNode = sourceNode;
+        this.startedAt = SoundEffect.audioContext.currentTime - offset;
+        this.isPlaying = true;
     }
 
     pause(){
-        this.audio.pause();
+        if(!this.isPlaying || !this.sourceNode){
+            return;
+        }
+        this.pausedAt = SoundEffect.audioContext.currentTime - this.startedAt;
+        this.sourceNode.stop();
+        this.sourceNode = null;
+        this.isPlaying = false;
     }
 }
 
@@ -63,9 +102,10 @@ class SFXPlayer{
      * @param {number} volume 1 - 100 arasında ses seviyesi
      */
     static setAllEffectVolumes(volume){
-        for(const sfxName in SFXPlayer.sfxs){
-            const sfx = SFXPlayer.sfxs[sfxName];
-            sfx.setVolume(volume);
+        /** @type {Object.<string, SoundEffect>} */
+        const effects = SFXPlayer.sfxs;
+        for(const sfxName in effects){
+            effects[sfxName].setVolume(volume);
         }
     }
 }
