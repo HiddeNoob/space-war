@@ -73,6 +73,51 @@ class ShapeFactory {
         return ShapeFactory.createPolygon(lines);
     }
 
+    static createPlus(size, color = "#FFFFFF", thickness = 2) {
+        // Build the plus as one closed ordered polygon loop so each segment starts
+        // exactly where the previous one ends while keeping the middle visibly hollow.
+        const halfArm = size / 2;
+        const halfThickness = thickness / 2;
+        const gap = Math.max(thickness * 2, 4);
+        const halfGap = gap / 2;
+
+        const points = [
+            new Vector(-halfArm, -halfThickness),
+            new Vector(-halfGap, -halfThickness),
+            new Vector(-halfGap, -halfArm),
+            new Vector(-halfThickness, -halfArm),
+            new Vector(-halfThickness, -halfGap),
+            new Vector(-halfArm, -halfGap),
+            new Vector(-halfArm, halfGap),
+            new Vector(-halfThickness, halfGap),
+            new Vector(-halfThickness, halfArm),
+            new Vector(-halfGap, halfArm),
+            new Vector(-halfGap, halfThickness),
+            new Vector(-halfArm, halfThickness),
+            new Vector(halfArm, halfThickness),
+            new Vector(halfGap, halfThickness),
+            new Vector(halfGap, halfArm),
+            new Vector(halfThickness, halfArm),
+            new Vector(halfThickness, halfGap),
+            new Vector(halfArm, halfGap),
+            new Vector(halfArm, -halfGap),
+            new Vector(halfThickness, -halfGap),
+            new Vector(halfThickness, -halfArm),
+            new Vector(halfGap, -halfArm),
+            new Vector(halfGap, -halfThickness),
+            new Vector(halfArm, -halfThickness)
+        ];
+
+        const lines = [];
+        for (let i = 0; i < points.length; i++) {
+            const start = points[i];
+            const end = points[(i + 1) % points.length];
+            lines.push(new Line(start.x, start.y, end.x, end.y, thickness, color));
+        }
+
+        return new Polygon(lines);
+    }
+
     static polygonToShell(polygon,durability = 10,health = 100,maxHealth = 100,){ {
         const lines = polygon.lines.map(line => new BreakableLine(line,health,maxHealth,durability));
         return new EntityShell(lines);
