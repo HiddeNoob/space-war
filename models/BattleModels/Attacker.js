@@ -67,14 +67,51 @@ class Attacker extends Entity {
     }
 
     /**
+     * Shell'in ön tarafındaki en öndeki noktayı bulur.
+     * @returns {Vector}
+     */
+    getFrontTip() {
+        const forward = new Vector(Math.cos(this.drawAttributes.angle), Math.sin(this.drawAttributes.angle));
+        const actualShell = this.drawAttributes.getActualShell();
+        let bestPoint = actualShell.lines[0].startPoint.copy();
+        let bestProjection = -Infinity;
+
+        actualShell.lines.forEach((line) => {
+            [line.startPoint, line.endPoint].forEach((point) => {
+                const local = point.copy().subtract(this.drawAttributes.location);
+                const projection = local.dot(forward);
+                if (projection > bestProjection) {
+                    bestProjection = projection;
+                    bestPoint = point.copy();
+                }
+            });
+        });
+
+        return bestPoint;
+    }
+
+    getBulletSpawnLocation(bullet) {
+        const bulletAngle = this.drawAttributes.angle;
+        const forward = new Vector(Math.cos(bulletAngle), Math.sin(bulletAngle));
+        let bulletFrontExtent = 0;
+
+        bullet.drawAttributes.shell.lines.forEach((line) => {
+            [line.startPoint, line.endPoint].forEach((point) => {
+                bulletFrontExtent = Math.max(bulletFrontExtent, point.dot(forward));
+            });
+        });
+
+        return this.getFrontTip()
+            .add(forward.multiply(bulletFrontExtent + 1));
+    }
+
+    /**
      * Ateş eder (bir mermi oluşturur ve geri tepme uygular)
      */
     shoot() {
         const bulletAngle = this.drawAttributes.angle;
-        const tipOfAttacker = this.drawAttributes.shell.lines[0].startPoint;
-        const bulletLocation = this.drawAttributes.location
-            .copy()
-            .add(tipOfAttacker.copy().rotate(bulletAngle).multiply(2));
+        const bulletTemplate = this.weapons[this.currentWeaponIndex].bulletObject;
+        const bulletLocation = this.getBulletSpawnLocation(bulletTemplate);
         const bullet = this.weapons[this.currentWeaponIndex].shoot(bulletLocation, bulletAngle);
         if (bullet) {
             const bulletMomentum = bullet.motionAttributes.mass * bullet.motionAttributes.velocity.magnitude();

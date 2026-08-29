@@ -7,6 +7,7 @@ class Settings{
         spawnerDelay : 20000, // Üreteç gecikmesi
         attackerSpawnDelay : 5000, // Saldırgan üretme gecikmesi
         attackerFollowDistance : 300, // Saldırganın takip mesafesi
+        asteroidCount : 12,
         debugMode : false, // Debug modu
         debug : {
             location: true,

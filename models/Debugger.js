@@ -85,15 +85,13 @@ class Debugger {
      * @param {Grid} grid - Grid nesnesi
      */
     static showGrid(grid) {
-
+        if (!Settings.default.debugMode) return;
 
         const cellSize = grid.cellSize;
         Debugger.#setStyle();
         Debugger.#ctx.beginPath();
-        // Ekranda görünen alanın world koordinatlarını bul
         const topLeft = this.#camera.screenToWorld(0, 0);
         const bottomRight = this.#camera.screenToWorld(grid.maxWidth, grid.maxHeight);
-        // Grid hücre aralığını hesapla
         const minX = Math.floor(topLeft.x / cellSize);
         const minY = Math.floor(topLeft.y / cellSize);
         const maxX = Math.ceil(bottomRight.x / cellSize);
@@ -105,22 +103,16 @@ class Debugger {
                 let totalEntities = 0;
                 const selectedEntities = grid.cells.get(grid.getCellKey(x, y));
                 selectedEntities?.forEach((set) => totalEntities += set.size);
-                // Kamera offsetini uygula
                 const screenPos = this.#camera.worldToScreen(x, y);
-                
                 const screenPosRight = this.#camera.worldToScreen(x + cellSize, y);
                 const screenPosDown = this.#camera.worldToScreen(x, y + cellSize);
                 Debugger.#ctx.moveTo(screenPos.x, screenPos.y);
                 Debugger.#ctx.lineTo(screenPosRight.x, screenPosRight.y);
                 Debugger.#ctx.moveTo(screenPos.x, screenPos.y);
                 Debugger.#ctx.lineTo(screenPosDown.x, screenPosDown.y);
-                
-                if(Settings.default.debugMode){
 
-                    if (Debugger.#debug.grid.entityCount) {
-                        Debugger.#ctx.fillText(`${totalEntities} ${x},${y}`, screenPos.x + 5, screenPos.y + 10);
-                    }
-                    
+                if (Debugger.#debug.grid.entityCount) {
+                    Debugger.#ctx.fillText(`${totalEntities} ${x},${y}`, screenPos.x + 5, screenPos.y + 10);
                 }
             }
         }

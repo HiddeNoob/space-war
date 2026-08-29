@@ -147,11 +147,11 @@ class CollisionHandler extends Handler {
         }
         const totalMass = mass1 + mass2;
         const correction = smallestAxis.normalize().multiply(minOverlap);
-        if(!entity1.isStatic){
-            pos2.add(correction.copy().multiply(mass1 / totalMass));
-        }
-        if(!entity1.isStatic){
+        if (!entity1.isStatic) {
             pos1.subtract(correction.copy().multiply(mass2 / totalMass));
+        }
+        if (!entity2.isStatic) {
+            pos2.add(correction.copy().multiply(mass1 / totalMass));
         }
     }
 }

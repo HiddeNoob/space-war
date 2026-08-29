@@ -27,9 +27,10 @@ class MotionAttributes {
      * @param {number} maxAngularVelocity - Maksimum açısal hız
      * @param {number} maxVelocity - Maksimum hız
      */
-    constructor(maxAngularVelocity = 10,maxVelocity = 10) {
+    constructor(maxAngularVelocity = 10,maxVelocity = 10,mass = 10) {
         this.maxAngularVelocity = maxAngularVelocity;
         this.maxVelocity = maxVelocity;
+        this.mass = mass
     }
     /**
      * Anlık vektörleri (ivme, kuvvet, tork) sıfırlar

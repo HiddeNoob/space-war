@@ -6,8 +6,65 @@ class ShapeFactory {
      * @returns {Polygon}
      */
     static createPolygon(lines) {
-        // Kullanıcıdan gelen çizgilerde de kontrol et
-        return new Polygon(lines);
+        if (!Array.isArray(lines) || lines.length < 3) {
+            throw new Error("A polygon needs at least 3 edges.");
+        }
+
+        const vertices = [];
+        lines.forEach((line) => {
+            vertices.push(line.startPoint.copy());
+            vertices.push(line.endPoint.copy());
+        });
+
+        const convexVertices = ShapeFactory.#makeConvexVertices(vertices);
+        const orderedLines = [];
+        for (let i = 0; i < convexVertices.length; i++) {
+            const start = convexVertices[i];
+            const end = convexVertices[(i + 1) % convexVertices.length];
+            orderedLines.push(new Line(start.x, start.y, end.x, end.y, 1, "#FFFFFF"));
+        }
+
+        return new Polygon(orderedLines);
+    }
+
+    static #makeConvexVertices(points) {
+        if (points.length < 3) return points;
+
+        const unique = [];
+        points.forEach((point) => {
+            const alreadyExists = unique.some((existing) =>
+                Math.abs(existing.x - point.x) < 1e-6 && Math.abs(existing.y - point.y) < 1e-6
+            );
+            if (!alreadyExists) unique.push(point.copy());
+        });
+
+        if (unique.length < 3) return unique;
+
+        const sorted = unique.slice().sort((a, b) => {
+            if (a.x === b.x) return a.y - b.y;
+            return a.x - b.x;
+        });
+
+        const cross = (o, a, b) => (a.x - o.x) * (b.y - o.y) - (a.y - o.y) * (b.x - o.x);
+        const lower = [];
+        for (const point of sorted) {
+            while (lower.length >= 2 && cross(lower[lower.length - 2], lower[lower.length - 1], point) <= 0) {
+                lower.pop();
+            }
+            lower.push(point);
+        }
+
+        const upper = [];
+        for (let i = sorted.length - 1; i >= 0; i--) {
+            const point = sorted[i];
+            while (upper.length >= 2 && cross(upper[upper.length - 2], upper[upper.length - 1], point) <= 0) {
+                upper.pop();
+            }
+            upper.push(point);
+        }
+
+        const hull = lower.slice(0, -1).concat(upper.slice(0, -1));
+        return hull.length >= 3 ? hull : unique;
     }
 
     /**
