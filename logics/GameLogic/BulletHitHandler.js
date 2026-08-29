@@ -33,6 +33,12 @@ class BulletHitHandler extends Handler{
                     const location = entity.drawAttributes.location;
                     const coin = Coin.create(location.x, location.y, entityLine.durability,entityLine.durability + 2);
                     this.grid.addEntity(coin);
+
+                    // Bazı durumlarda sağlık paketi düşebilir (ör. %30 şans)
+                    if(Math.random() < 0.3){
+                        const health = Health.create(location.x, location.y, entityLine.durability * 10, 8);
+                        this.grid.addEntity(health);
+                    }
                     
 
                     // aynı şekilde mermi de hasar alır çünkü çarpıştılar
@@ -50,6 +56,12 @@ class BulletHitHandler extends Handler{
                         const location = entity.drawAttributes.location;
                         const coin = Coin.create(location.x, location.y, entityLine.durability,entityLine.durability + 2);
                         this.grid.addEntity(coin);
+
+                        // Bazı durumlarda sağlık paketi düşebilir (ör. %30 şans)
+                        if(Math.random() < 0.3){
+                            const health = Health.create(location.x, location.y, entityLine.durability * 10, 8);
+                            this.grid.addEntity(health);
+                        }
                     }
                 }
 
